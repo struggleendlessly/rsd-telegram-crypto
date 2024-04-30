@@ -116,9 +116,9 @@ namespace Shared.Telegram
         {
             switch (what)
             {
-                case "api_id": return "23880234";
-                case "api_hash": return "c349bbf6c93c7df984219a77aeb320df";
-                case "phone_number": return "+380996000291";
+                case "api_id": return "23139632";
+                case "api_hash": return "248945b6004da3e679fc64919f571c1e";
+                case "phone_number": return "+380689446698";
                 case "server_address": return "2>149.154.167.50:443";
                 case "verification_code": Console.Write("Code: "); return Console.ReadLine();
                 case "first_name": return "John";      // if sign-up is required

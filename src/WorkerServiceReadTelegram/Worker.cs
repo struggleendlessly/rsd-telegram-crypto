@@ -1,14 +1,16 @@
-using WorkerService.TelegramApi;
+using Shared.Telegram;
 
-namespace WorkerService
+namespace WorkerServiceReadTelegram
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly Telegram telegram;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, Telegram telegram)
         {
             _logger = logger;
+            this.telegram = telegram;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -20,8 +22,8 @@ namespace WorkerService
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await new MessagesRead().Start();
-                await Task.Delay(1000, stoppingToken);
+                await telegram.Start();
+                await Task.Delay(60000, stoppingToken);
             }
         }
     }

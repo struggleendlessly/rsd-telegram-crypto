@@ -31,12 +31,27 @@ namespace WorkerService.TelegramApi
 
         public async Task Start()
         {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://www.c-sharpcorner.com/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                //GET Method
+                HttpResponseMessage response = await client.GetAsync("article/calling-web-api-using-httpclient/");
+                if (response.IsSuccessStatusCode)
+                {
+                }
+                else
+                {
+                    Console.WriteLine("Internal server Error");
+                }
+            }
+
             Console.WriteLine("MessagesRead started");
 
-            using var client = new WTelegram.Client(Config);
+            //using var client = new WTelegram.Client(Config);
             
-            var myself = await client.LoginUserIfNeeded();
-            Console.WriteLine($"Logged in as {myself.last_name}");
+            //var myself = await client.LoginUserIfNeeded();
+            //Console.WriteLine($"Logged in as {myself.last_name}");
             // Create a new instance of the Telegram client
             //using (var client = new WTelegram.Client())
             //{

@@ -3,7 +3,7 @@ using ConsoleApp1;
 
 using TL;
 
-await new Telegram().ReadNewMessages();
+await new Telegram().Start();
 
 Console.WriteLine("Hello, World!");
 

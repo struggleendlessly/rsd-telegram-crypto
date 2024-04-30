@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 
 using TL;
 
@@ -10,7 +6,44 @@ namespace ConsoleApp1
 {
     public class Telegram
     {
-        public async Task ReadNewMessages()
+        public async Task Start()
+        {
+            var latestTelegramMessageId = await GetLatestTelegramMessageId();
+            var newTelegramMessages = await ReadNewMessages(latestTelegramMessageId);
+            var savedToDB = await SaveToDB(newTelegramMessages);
+        }
+
+        private async Task<int> GetLatestTelegramMessageId()
+        {
+            var res = 0;
+
+            using var db = new DBModel();
+            {
+                var min_id = await db.
+                    TokenInfos.
+                    OrderByDescending(x => x.TelegramMessageId).
+                    FirstOrDefaultAsync();
+
+                res = min_id?.TelegramMessageId ?? 0;
+            }
+
+            return res;
+        }
+
+        private async Task<int> SaveToDB(List<TokenInfo> val)
+        {
+            var res = 0;
+
+            using var db = new DBModel();
+            {
+                await db.TokenInfos.AddRangeAsync(val);
+                res = await db.SaveChangesAsync();
+            }
+
+            return res;
+        }
+
+        private async Task<List<TokenInfo>> ReadNewMessages(int min_id)
         {
             using var client = new WTelegram.Client(Config);
             var myself = await client.LoginUserIfNeeded();
@@ -19,63 +52,62 @@ namespace ConsoleApp1
             int chatBaseNewTokenId = 1958915778;
             InputPeer peerBaseNewToken = chats.chats[chatBaseNewTokenId];
 
-            using var db = new DBModel();
+            List<TokenInfo> res = new();
+
+            for (int offset_id = 0; ;)
             {
-                var min_id = db.
-                    TokenInfos.
-                    OrderByDescending(x => x.TelegramMessageId).
-                    FirstOrDefault()?.
-                    TelegramMessageId ?? 0;
+                var messages = await client.Messages_GetHistory(peerBaseNewToken, offset_id, default, 0, int.MaxValue, 0, min_id);
 
-                var res = new List<TokenInfo>();
+                if (messages.Messages.Length == 0) break;
 
-                for (int offset_id = 0; ;)
+                foreach (MessageBase msgBase in messages.Messages)
                 {
-                    var messages = await client.Messages_GetHistory(peerBaseNewToken, offset_id, default, 0, int.MaxValue, 0, min_id);
-
-                    if (messages.Messages.Length == 0) break;
-                    
-                    foreach (var msgBase in messages.Messages)
+                    //var from = messages.UserOrChat(msgBase.From ?? msgBase.Peer); // from can be User/Chat/Channel
+                    if (msgBase is Message msg)
                     {
-                        //var from = messages.UserOrChat(msgBase.From ?? msgBase.Peer); // from can be User/Chat/Channel
-                        if (msgBase is Message msg)
-                        {
-                            var entities = msg.entities;
+                        var tokenInfo = Map(msg, msgBase);
 
-                            var tokenInfo = new TokenInfo()
-                            {
-                                AddressToken = string.Empty,
-                                AddressOwnersWallet = string.Empty,
-
-                                TelegramMessageId = msgBase.ID,
-                                TelegramMessage = msg.message,
-
-                                UrlToken = (entities[2] as MessageEntityTextUrl).url,
-                                UrlOwnersWallet = (entities[3] as MessageEntityTextUrl).url,
-                                UrlChart = (entities[4] as MessageEntityTextUrl).url,
-
-                                TimeAdded = DateTime.UtcNow,
-                                TimeUpdated = DateTime.UtcNow
-                            };
-
-                            var addressToken = tokenInfo.UrlToken.Split("https://basescan.org/token/").Last();
-                            var addressOwnersWallet = tokenInfo.UrlOwnersWallet.Split("https://basescan.org/address/").Last();
-
-                            tokenInfo.AddressToken = addressToken;
-                            tokenInfo.AddressOwnersWallet = addressOwnersWallet;
-
-                            res.Add(tokenInfo);
-                            Console.WriteLine($"> {msg.message} {msg.media}");
-                            Console.WriteLine(Environment.NewLine);
-                        }
+                        res.Add(tokenInfo);
+                        Console.WriteLine($"> {msg.message} {msg.media}");
+                        Console.WriteLine(Environment.NewLine);
                     }
-
-                    db.TokenInfos.AddRange(res);
-                    db.SaveChanges();
-                    offset_id = messages.Messages[^1].ID;
                 }
             }
+
+            return res;
         }
+
+        private static TokenInfo Map(Message msg, MessageBase msgBase)
+        {
+            TokenInfo res = new();
+
+            var entities = msg.entities;
+
+            var tokenInfo = new TokenInfo()
+            {
+                AddressToken = string.Empty,
+                AddressOwnersWallet = string.Empty,
+
+                TelegramMessageId = msgBase.ID,
+                TelegramMessage = msg.message,
+
+                UrlToken = (entities[2] as MessageEntityTextUrl).url,
+                UrlOwnersWallet = (entities[3] as MessageEntityTextUrl).url,
+                UrlChart = (entities[4] as MessageEntityTextUrl).url,
+
+                TimeAdded = DateTime.UtcNow,
+                TimeUpdated = DateTime.UtcNow
+            };
+
+            var addressToken = tokenInfo.UrlToken.Split("https://basescan.org/token/").Last();
+            var addressOwnersWallet = tokenInfo.UrlOwnersWallet.Split("https://basescan.org/address/").Last();
+
+            tokenInfo.AddressToken = addressToken;
+            tokenInfo.AddressOwnersWallet = addressOwnersWallet;
+
+            return res;
+        }
+
         static string Config(string what)
         {
             switch (what)

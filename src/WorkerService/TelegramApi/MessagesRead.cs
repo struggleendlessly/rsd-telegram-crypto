@@ -34,7 +34,7 @@ namespace WorkerService.TelegramApi
             Console.WriteLine("MessagesRead started");
 
             using var client = new WTelegram.Client(Config);
-            await client.();
+            
             var myself = await client.LoginUserIfNeeded();
             Console.WriteLine($"Logged in as {myself.last_name}");
             // Create a new instance of the Telegram client

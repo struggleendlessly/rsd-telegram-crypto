@@ -3,7 +3,7 @@ using TL;
 
 using var client = new WTelegram.Client(Config);
 var myself = await client.LoginUserIfNeeded();
-Console.WriteLine($"We are logged-in as {myself} (id {myself.id})");
+//Console.WriteLine($"We are logged-in as {myself} (id {myself.id})");
 var chats = await client.Messages_GetAllChats();
 var chatBaseNewTokenId = "1958915778";
 InputPeer peerBaseNewToken = chats.chats[1958915778];
@@ -17,16 +17,19 @@ for (int offset_id = 0; ;)
         var from = messages.UserOrChat(msgBase.From ?? msgBase.Peer); // from can be User/Chat/Channel
         if (msgBase is Message msg)
         {
-            Console.WriteLine($"{from}> {msg.message} {msg.media}");
-            Console.WriteLine(Environment.NewLine);
+            //Console.WriteLine($"{from}> {msg.message} {msg.media}");
+            //Console.WriteLine(Environment.NewLine);
         }
         else if (msgBase is MessageService ms)
-            Console.WriteLine($"{from} [{ms.action.GetType().Name[13..]}]");
+        {
+
+        }
+            //Console.WriteLine($"{from} [{ms.action.GetType().Name[13..]}]");
     }
     offset_id = messages.Messages[^1].ID;
 }
 
-Console.WriteLine("Hello, World!");
+//Console.WriteLine("Hello, World!");
 static string Config(string what)
 {
     switch (what)
@@ -35,7 +38,7 @@ static string Config(string what)
         case "api_hash": return "c349bbf6c93c7df984219a77aeb320df";
         case "phone_number": return "+380996000291";
         case "server_address": return "2>149.154.167.50:443";
-        case "verification_code": Console.Write("Code: "); return Console.ReadLine();
+        //case "verification_code": Console.Write("Code: "); return Console.ReadLine();
         case "first_name": return "John";      // if sign-up is required
         case "last_name": return "Doe";        // if sign-up is required
         case "password": return "secret!";     // if user has enabled 2FA

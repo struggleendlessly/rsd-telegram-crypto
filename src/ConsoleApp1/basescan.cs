@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using WTelegram;
 
-namespace Console
+namespace ConsoleApp1
 {
     internal class basescan
     {
@@ -45,9 +45,9 @@ namespace Console
                  .WriteRequestToConsole();
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            //Console.WriteLine($"{jsonResponse}\n");
+            Console.WriteLine($"{jsonResponse}\n");
 
-                 return jsonResponse;
+            return jsonResponse;
         }
 
     }
@@ -61,9 +61,9 @@ namespace Console
             }
 
             var request = response.RequestMessage;
-            //Console.Write($"{request?.Method} ");
-            //Console.Write($"{request?.RequestUri} ");
-            //Console.WriteLine($"HTTP/{request?.Version}");
+            Console.Write($"{request?.Method} ");
+            Console.Write($"{request?.RequestUri} ");
+            Console.WriteLine($"HTTP/{request?.Version}");
         }
     }
 }

@@ -107,7 +107,7 @@ namespace Shared.Filters
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
-                Take(3).
+                Take(2).
                 ToListAsync();
 
             return res;
@@ -121,7 +121,7 @@ namespace Shared.Filters
                 TokenInfos.
                 Where(x => x.IsProcessed2 == false && x.IsValid == true).
                 Where(x => x.TimeUpdated > DateTime.UtcNow.AddHours(-5)).
-                Take(3).
+                Take(2).
                 ToListAsync();
 
             return res;

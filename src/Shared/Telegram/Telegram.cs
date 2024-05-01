@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
+using Shared.ConfigurationOptions;
 using Shared.DB;
 
 using TL;
@@ -9,9 +11,11 @@ namespace Shared.Telegram
     public class Telegram
     {
         private readonly DBContext dBContext;
-        public Telegram(DBContext dBContext)
+        private readonly OptionsTelegram optionsTelegram;
+        public Telegram(DBContext dBContext, IOptions<OptionsTelegram> optionsTelegram)
         {
             this.dBContext = dBContext;
+            this.optionsTelegram = optionsTelegram.Value;
         }
         public async Task Start()
         {
@@ -58,7 +62,7 @@ namespace Shared.Telegram
 
             for (int offset_id = 0; ;)
             {
-                var messages = await client.Messages_GetHistory(peerBaseNewToken, offset_id, default, 0, int.MaxValue, 0, min_id);
+                var messages = await client.Messages_GetHistory(peerBaseNewToken, offset_id, default, 0, 50, 0, min_id);
 
                 if (messages.Messages.Length == 0) break;
 
@@ -112,13 +116,13 @@ namespace Shared.Telegram
             return res;
         }
 
-        static string Config(string what)
+        string Config(string what)
         {
             switch (what)
             {
-                case "api_id": return "23139632";
-                case "api_hash": return "248945b6004da3e679fc64919f571c1e";
-                case "phone_number": return "+380689446698";
+                case "api_id": return optionsTelegram.api_id;
+                case "api_hash": return optionsTelegram.api_hash;
+                case "phone_number": return optionsTelegram.phone_number;
                 case "server_address": return "2>149.154.167.50:443";
                 case "verification_code": Console.Write("Code: "); return Console.ReadLine();
                 case "first_name": return "John";      // if sign-up is required

@@ -12,7 +12,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceReadTelegram",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared.csproj", "{31F62D14-23AB-4D47-A6C6-81958DB02925}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerServiceCryptoFilter", "src\WorkerServiceCryptoFilter\WorkerServiceCryptoFilter.csproj", "{82469012-F9DB-4390-9D90-FADB6FE759A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceCryptoFilter", "src\WorkerServiceCryptoFilter\WorkerServiceCryptoFilter.csproj", "{82469012-F9DB-4390-9D90-FADB6FE759A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "src\BlazorApp\BlazorApp.csproj", "{42EF1A7C-0054-4F1B-954C-4AE99BD51F7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{82469012-F9DB-4390-9D90-FADB6FE759A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82469012-F9DB-4390-9D90-FADB6FE759A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82469012-F9DB-4390-9D90-FADB6FE759A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42EF1A7C-0054-4F1B-954C-4AE99BD51F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42EF1A7C-0054-4F1B-954C-4AE99BD51F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42EF1A7C-0054-4F1B-954C-4AE99BD51F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42EF1A7C-0054-4F1B-954C-4AE99BD51F7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

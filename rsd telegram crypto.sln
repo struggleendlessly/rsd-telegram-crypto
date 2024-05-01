@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "src\ConsoleApp1\ConsoleApp1.csproj", "{DCFD617F-CC05-4D00-A8F8-58631700B2A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerServiceReadTelegram", "src\WorkerServiceReadTelegram\WorkerServiceReadTelegram.csproj", "{B575A996-5BC1-40D5-AA21-D34F1F493A11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceReadTelegram", "src\WorkerServiceReadTelegram\WorkerServiceReadTelegram.csproj", "{B575A996-5BC1-40D5-AA21-D34F1F493A11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "src\Shared\Shared.csproj", "{31F62D14-23AB-4D47-A6C6-81958DB02925}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared.csproj", "{31F62D14-23AB-4D47-A6C6-81958DB02925}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

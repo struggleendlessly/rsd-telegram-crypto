@@ -1,4 +1,7 @@
-﻿using Shared.BaseScan.Model;
+﻿using Microsoft.Extensions.Options;
+
+using Shared.BaseScan.Model;
+using Shared.ConfigurationOptions;
 
 using System.Net.Http.Json;
 using System.Text;
@@ -7,11 +10,10 @@ namespace Shared.BaseScan
 {
     public class BaseScan
     {
-        string baseUrl = "https://api.basescan.org";
-        string apiKeyToken = "VPD99DPE6Z57DP1QNYRXAUS4PHR54B1QZW";
-        public BaseScan()
+        private readonly OptionsBaseScan optionsBaseScan;
+        public BaseScan(IOptions<OptionsBaseScan> optionsBaseScan)
         {
-
+            this.optionsBaseScan = optionsBaseScan.Value;
         }
 
         public async Task<AddressModel> GetInfoByAddress(string address)
@@ -20,7 +22,7 @@ namespace Shared.BaseScan
 
             var url = await UrlBuilderAddress(address);
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(baseUrl) })
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
             {
                 HttpResponseMessage response = await sharedClient.GetAsync(url);
 
@@ -45,7 +47,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("&page=1");
             urlBuilder.Append("&offset=100");
             urlBuilder.Append("&sort=asc");
-            urlBuilder.Append($"&apikey={apiKeyToken}");
+            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 
             res = urlBuilder.ToString();
 

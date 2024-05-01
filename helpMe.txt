@@ -1,1 +1,7 @@
 https://docs.basescan.org/api-endpoints/accounts#get-a-list-of-normal-transactions-by-address
+
+
+PS H:\rsd-telegram-crypto\src> 
+
+dotnet ef migrations add In5 -o DB/Migrations --project Shared --startup-project WorkerServiceReadTelegram
+dotnet ef database update --project Shared --startup-project WorkerServiceReadTelegram

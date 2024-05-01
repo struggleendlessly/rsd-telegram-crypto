@@ -60,7 +60,7 @@ namespace Shared.Telegram
 
             List<TokenInfo> res = new();
 
-            for (int offset_id = 0; ;)
+            for (int offset_id = 0; offset_id < 50; offset_id ++)
             {
                 var messages = await client.Messages_GetHistory(peerBaseNewToken, offset_id, default, 0, 50, 0, min_id);
 

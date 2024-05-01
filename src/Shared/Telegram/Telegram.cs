@@ -60,9 +60,16 @@ namespace Shared.Telegram
 
             List<TokenInfo> res = new();
 
-            for (int offset_id = 0; offset_id < 50; offset_id ++)
+            for (int offset_id = 0; ;)
             {
-                var messages = await client.Messages_GetHistory(peerBaseNewToken, offset_id, default, 0, 50, 0, min_id);
+                var messages = await client.Messages_GetHistory(
+                    peer: peerBaseNewToken,
+                    offset_id: offset_id,
+                    offset_date: default,
+                    add_offset: 0,
+                    limit: 50,
+                    max_id: 0,
+                    min_id: min_id);
 
                 if (messages.Messages.Length == 0) break;
 
@@ -78,6 +85,9 @@ namespace Shared.Telegram
                         Console.WriteLine(Environment.NewLine);
                     }
                 }
+
+                offset_id = messages.Messages[^1].ID;
+                await Task.Delay(5000);
             }
 
             return res;
@@ -125,7 +135,7 @@ namespace Shared.Telegram
                 case "phone_number": return optionsTelegram.phone_number;
                 case "server_address": return "2>149.154.167.50:443";
                 case "verification_code": Console.Write("Code: "); return Console.ReadLine();
-                case "session_pathname": return optionsTelegram.session_pathname;   
+                case "session_pathname": return optionsTelegram.session_pathname;
                 default: return null;                  // let WTelegramClient decide the default config
             }
         }

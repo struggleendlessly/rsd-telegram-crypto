@@ -6,6 +6,7 @@ using Shared.Filters;
 using WorkerServiceCryptoFilter;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSystemd();
 builder.Services.AddHostedService<Worker>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

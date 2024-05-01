@@ -9,6 +9,7 @@ using WorkerServiceReadTelegram;
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSystemd();
 builder.Services.AddHostedService<Worker>();
+
 builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection(StripeOptions.SectionName));
 builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(OptionsTelegram.SectionName));
 

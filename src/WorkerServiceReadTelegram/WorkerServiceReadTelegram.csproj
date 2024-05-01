@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -6,6 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-WorkerServiceReadTelegram-44bf03d7-bd8e-4221-926b-db512a8d505a</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="WTelegram.session" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="WTelegram.session">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />

@@ -4,6 +4,8 @@ using Shared.DB;
 using Shared.Filters.Chain;
 using Shared.Filters.Model;
 
+using System.Diagnostics;
+
 namespace Shared.Filters
 {
     public class CryptoFilter
@@ -16,26 +18,42 @@ namespace Shared.Filters
 
         public async Task Start()
         {
-            var timeHandler = new TimeHandler();
+            List<TokenInfo> toProcess1 = await GetRecordForProcessing1();
+
+            var timeHandlerProcess1 = new TimeHandler();
             var removeLiquidityHandler = new RemoveLiquidityHandler();
 
-            timeHandler.SetNext(removeLiquidityHandler);
+            timeHandlerProcess1.SetNext(removeLiquidityHandler);
 
-            List<TokenInfo> process1 = await GetRecordForProcessing();
-            List<AddressRequest> processed1 = new();
+            var processed1 = await Process(toProcess1, timeHandlerProcess1);
+            var resProcessed1 = await UpdateDB(processed1, 1);
 
-            foreach (var item in process1)
+            // Process2
+            List<TokenInfo> toProcess2 = await GetRecordForProcessing2();
+
+            var removeLiquidityHandlerProcess2 = new RemoveLiquidityHandler();
+
+            var processed2 = await Process(toProcess2, removeLiquidityHandlerProcess2);
+            var resProcessed2 = await UpdateDB(processed2, 2);
+        }
+
+        public async Task<List<AddressRequest>> Process(List<TokenInfo> toProcess, AbstractHandler handler)
+        {           
+            List<AddressRequest> res = new();
+
+            foreach (var item in toProcess)
             {
                 var addressRequest = new AddressRequest();
                 addressRequest.TokenInfo = item;
                 addressRequest.AddressModel = await new BaseScan.BaseScan().GetInfoByAddress(item.AddressOwnersWallet);
 
-                var filtered = await timeHandler.Handle(addressRequest);
-                processed1.Add(filtered);
+                var filtered = await handler.Handle(addressRequest);
+                res.Add(filtered);
             }
 
-            var res = await UpdateDB(processed1, 1);
+            return res;
         }
+
 
         private async Task<int> UpdateDB(List<AddressRequest> collection, int processStep)
         {
@@ -45,6 +63,7 @@ namespace Shared.Filters
             {
                 var token = dBContext.TokenInfos.Where(x => x.Id == item.TokenInfo.Id).FirstOrDefault();
                 token.IsValid = item.IsValid;
+                token.TimeUpdated = DateTime.UtcNow;
 
                 switch (processStep)
                 {
@@ -71,13 +90,27 @@ namespace Shared.Filters
 
             return res;
         }
-        private async Task<List<TokenInfo>> GetRecordForProcessing()
+        private async Task<List<TokenInfo>> GetRecordForProcessing1()
         {
             List<TokenInfo> res = new();
 
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
+                Take(5).
+                ToListAsync();
+
+            return res;
+        }
+
+        private async Task<List<TokenInfo>> GetRecordForProcessing2()
+        {
+            List<TokenInfo> res = new();
+
+            res = await dBContext.
+                TokenInfos.
+                Where(x => x.IsProcessed2 == false && x.IsValid == true).
+                Where(x => x.TimeUpdated > DateTime.UtcNow.AddHours(-5)).
                 Take(5).
                 ToListAsync();
 

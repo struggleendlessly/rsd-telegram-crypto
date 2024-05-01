@@ -34,6 +34,7 @@ namespace Shared.Filters
             var processed1 = await Process(toProcess1, timeHandlerProcess1);
             var resProcessed1 = await UpdateDB(processed1, 1);
 
+            // ----------------------------------------------
             // Process2 - check in 5 hours 
             List<TokenInfo> toProcess2 = await GetRecordForProcessing2();
 

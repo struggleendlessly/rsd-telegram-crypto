@@ -106,7 +106,7 @@ namespace Shared.Filters
 
             res = await dBContext.
                 TokenInfos.
-                //Where(x => x.IsProcessed1 == false).
+                Where(x => x.IsProcessed1 == false).
                 Take(5).
                 ToListAsync();
 

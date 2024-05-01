@@ -67,7 +67,7 @@ namespace Shared.Telegram
                     offset_id: offset_id,
                     offset_date: default,
                     add_offset: 0,
-                    limit: 50,
+                    limit: 10,
                     max_id: 0,
                     min_id: min_id);
 
@@ -87,7 +87,7 @@ namespace Shared.Telegram
                 }
 
                 offset_id = messages.Messages[^1].ID;
-                await Task.Delay(5000);
+                await Task.Delay(10000);
             }
 
             return res;

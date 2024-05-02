@@ -29,6 +29,7 @@ namespace Shared.Filters
             var fromOnInHandlerProcess1 = new FromOnInHandler(baseScan);
             var checkAmountOfTarnsactionsHandlerProcess1 = new CheckAmountOfTarnsactionsHandler();
             var checkTotalSupplyHandlerProcess1 = new CheckTotalSupplyHandler(baseScan);
+            var checkContractSourceCodeHandlerProcess1 = new CheckContractSourceCodeHandler(baseScan);
 
             timeHandlerProcess1.
                 SetNext(checkTheNameOfTokenHandlerProcess1).
@@ -36,6 +37,7 @@ namespace Shared.Filters
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).
                 SetNext(checkTotalSupplyHandlerProcess1).
+                SetNext(checkContractSourceCodeHandlerProcess1).
                 SetNext(fromOnInHandlerProcess1).
                 SetNext(checkAmountOfTarnsactionsHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1_2);
@@ -120,7 +122,7 @@ namespace Shared.Filters
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
-                Take(2).
+                Take(1).
                 ToListAsync();
 
             return res;

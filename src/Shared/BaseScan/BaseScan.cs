@@ -86,6 +86,38 @@ namespace Shared.BaseScan
 
             return res;
         }
+        public async Task<ContractSourceCodeModel> GetContractSourceCode(string address)
+        {
+            ContractSourceCodeModel res = new();
+
+            var url = await UrlBuilderContractSourceCode(address);
+
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
+            {
+                HttpResponseMessage response = await sharedClient.GetAsync(url);
+
+                response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                res = await response.Content.ReadFromJsonAsync<ContractSourceCodeModel>();
+            }
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderContractSourceCode(string address)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=contract");
+            urlBuilder.Append("&action=getsourcecode");
+            urlBuilder.Append($"&address={address}");
+            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }
     }
 }
 

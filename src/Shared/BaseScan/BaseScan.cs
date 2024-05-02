@@ -34,7 +34,7 @@ namespace Shared.BaseScan
             return res;
         }
 
-        public async Task<string> UrlBuilderAddress(string address)
+        private async Task<string> UrlBuilderAddress(string address)
         {
             var res = string.Empty;
 
@@ -47,6 +47,39 @@ namespace Shared.BaseScan
             urlBuilder.Append("&page=1");
             urlBuilder.Append("&offset=100");
             urlBuilder.Append("&sort=asc");
+            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }
+
+        public async Task<TotalSupplyModel> GetTotalSupply(string address)
+        {
+            TotalSupplyModel res = new();
+
+            var url = await UrlBuilderTotalSupply(address);
+
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
+            {
+                HttpResponseMessage response = await sharedClient.GetAsync(url);
+
+                response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                res = await response.Content.ReadFromJsonAsync<TotalSupplyModel>();
+            }
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderTotalSupply(string address)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=stats");
+            urlBuilder.Append("&action=tokensupply");
+            urlBuilder.Append($"&contractaddress={address}");
             urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 
             res = urlBuilder.ToString();

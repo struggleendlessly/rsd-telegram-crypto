@@ -28,12 +28,14 @@ namespace Shared.Filters
             var removeLiquidityHandlerProcess1_2 = new RemoveLiquidityHandler();
             var fromOnInHandlerProcess1 = new FromOnInHandler(baseScan);
             var checkAmountOfTarnsactionsHandlerProcess1 = new CheckAmountOfTarnsactionsHandler();
+            var checkTotalSupplyHandlerProcess1 = new CheckTotalSupplyHandler(baseScan);
 
             timeHandlerProcess1.
                 SetNext(checkTheNameOfTokenHandlerProcess1).
                 SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).
+                SetNext(checkTotalSupplyHandlerProcess1).
                 SetNext(fromOnInHandlerProcess1).
                 SetNext(checkAmountOfTarnsactionsHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1_2);

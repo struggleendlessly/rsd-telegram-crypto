@@ -134,7 +134,7 @@ namespace Shared.Telegram
                 case "api_id": return optionsTelegram.api_id;
                 case "api_hash": return optionsTelegram.api_hash;
                 case "phone_number": return optionsTelegram.phone_number;
-                case "server_address": return "2>149.154.167.40:443";
+                case "server_address": return "2>149.154.167.50:443";
                 case "verification_code": Console.Write("Code: "); return Console.ReadLine();
                 case "session_pathname": return optionsTelegram.session_pathname;
                 default: return null;                  // let WTelegramClient decide the default config

@@ -21,6 +21,7 @@ namespace Shared.Filters
             List<TokenInfo> toProcess1 = await GetRecordForProcessing1();
 
             var timeHandlerProcess1 = new TimeOnInHandler();
+            var checkTheNameOfTokenHandlerProcess1 = new CheckTheNameOfTokenHandler();
             var timeOnContractCreatedHandlerProcess1 = new TimeOnContractCreatedHandler();
             var checkAmountOfContractsCreatedHandlerProcess1 = new CheckAmountOfContractsCreatedHandler();
             var removeLiquidityHandlerProcess1 = new RemoveLiquidityHandler();
@@ -29,6 +30,7 @@ namespace Shared.Filters
             var checkAmountOfTarnsactionsHandlerProcess1 = new CheckAmountOfTarnsactionsHandler();
 
             timeHandlerProcess1.
+                SetNext(checkTheNameOfTokenHandlerProcess1).
                 SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).

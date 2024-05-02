@@ -41,3 +41,16 @@ ExecStart=/home/azureuser/filter/WorkerServiceCryptoFilter
 Environment=DOTNET_ENVIRONMENT=Production
 [Install]
 WantedBy=multi-user.target
+
+
+  <ItemGroup>
+    <None Remove="WTelegram.session" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="WTelegram.session">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>

@@ -17,6 +17,27 @@ sudo chmod -R 777 /home/azureuser/filter
 
 
 sudo nano /etc/systemd/system/appbackground-filter.service
+
 sudo systemctl daemon-reload
+
 sudo systemctl start appbackground-telegram.service
+sudo systemctl stop appbackground-telegram.service
 sudo systemctl status appbackground-telegram.service
+
+sudo systemctl start appbackground-filter.service
+sudo systemctl stop appbackground-filter.service
+sudo systemctl status appbackground-filter.service
+
+[Unit]
+Description=filter 
+
+[Service]
+Type=notify
+WorkingDirectory=/home/azureuser/filter
+
+ExecStart=/home/azureuser/filter/WorkerServiceCryptoFilter
+
+
+Environment=DOTNET_ENVIRONMENT=Production
+[Install]
+WantedBy=multi-user.target

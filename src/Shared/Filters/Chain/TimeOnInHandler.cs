@@ -1,11 +1,18 @@
-﻿using Shared.Filters.Model;
+﻿using Microsoft.IdentityModel.Tokens;
+
+using Shared.Filters.Model;
 
 namespace Shared.Filters.Chain
 {
-    public class TimeHandler : AbstractHandler
+    /// <summary>
+    /// Check the time between IN and the next transaction
+    /// </summary>
+    public class TimeOnInHandler : AbstractHandler
     {
         public async override Task<AddressRequest> Handle(AddressRequest request)
         {
+            Console.WriteLine(GetType().Name);
+
             if (request.IsValid)
             {
                 request.IsValid = await IsValid(request);
@@ -21,7 +28,7 @@ namespace Shared.Filters.Chain
             var vals = request.AddressModel.result;
             var address = request.TokenInfo.AddressOwnersWallet;
 
-            var transInIndex = vals.FindIndex(x => x.to.Equals(address, StringComparison.InvariantCultureIgnoreCase) &&
+            var transInIndex = vals.FindIndex(x => x.contractAddress.IsNullOrEmpty() &&
                                                   !x.from.Equals(address, StringComparison.InvariantCultureIgnoreCase));
 
             if (transInIndex >= 0)

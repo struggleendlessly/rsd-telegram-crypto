@@ -2,6 +2,9 @@
 
 namespace Shared.Filters.Chain
 {
+    /// <summary>
+    /// Check if IN transaction exists and go to the FROM address and get data from BaseScan
+    /// </summary>
     public class FromOnInHandler : AbstractHandler
     {
         private readonly BaseScan.BaseScan baseScan;
@@ -11,6 +14,8 @@ namespace Shared.Filters.Chain
         }
         public async override Task<AddressRequest> Handle(AddressRequest request)
         {
+            Console.WriteLine(GetType().Name);
+
             if (request.IsValid)
             {
                 request.IsValid = await IsValid(request);

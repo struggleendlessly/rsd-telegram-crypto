@@ -1,11 +1,13 @@
-﻿using Shared.Filters.Model;
+﻿using Microsoft.IdentityModel.Tokens;
+
+using Shared.Filters.Model;
 
 namespace Shared.Filters.Chain
 {
     /// <summary>
-    /// Check if the amount of transactions is greater than 2
+    /// Check if the amount of Contracts created is less or equal  4
     /// </summary>
-    public class CheckAmountOfTarnsactionsHandler : AbstractHandler
+    public class CheckAmountOfContractsCreatedHandler : AbstractHandler
     {
         public async override Task<AddressRequest> Handle(AddressRequest request)
         {
@@ -25,7 +27,9 @@ namespace Shared.Filters.Chain
 
             var vals = request.AddressModel.result;
 
-            if (vals.Count >= 2)
+            var amountOfContractsCreated = vals.Count(x => !x.contractAddress.IsNullOrEmpty());
+
+            if (amountOfContractsCreated <= 4)
             {
                 res = true;
             }

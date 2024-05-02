@@ -2,10 +2,15 @@
 
 namespace Shared.Filters.Chain
 {
+    /// <summary>
+    /// Check if at least one removeLiquidity function is present
+    /// </summary>
     public class RemoveLiquidityHandler : AbstractHandler
     {
         public async override Task<AddressRequest> Handle(AddressRequest request)
         {
+            Console.WriteLine(GetType().Name);
+
             if (request.IsValid)
             {
                 request.IsValid = await IsValid(request);

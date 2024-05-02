@@ -20,16 +20,21 @@ namespace Shared.Filters
         {
             List<TokenInfo> toProcess1 = await GetRecordForProcessing1();
 
-            var timeHandlerProcess1 = new TimeHandler();
-            var removeLiquidityHandler = new RemoveLiquidityHandler();
-            var fromOnInHandler = new FromOnInHandler(baseScan);
-            var checkAmountOfTarnsactionsHandler = new CheckAmountOfTarnsactionsHandler();
+            var timeHandlerProcess1 = new TimeOnInHandler();
+            var timeOnContractCreatedHandlerProcess1 = new TimeOnContractCreatedHandler();
+            var checkAmountOfContractsCreatedHandlerProcess1 = new CheckAmountOfContractsCreatedHandler();
+            var removeLiquidityHandlerProcess1 = new RemoveLiquidityHandler();
+            var removeLiquidityHandlerProcess1_2 = new RemoveLiquidityHandler();
+            var fromOnInHandlerProcess1 = new FromOnInHandler(baseScan);
+            var checkAmountOfTarnsactionsHandlerProcess1 = new CheckAmountOfTarnsactionsHandler();
 
             timeHandlerProcess1.
-                SetNext(removeLiquidityHandler).
-                SetNext(fromOnInHandler).
-                SetNext(checkAmountOfTarnsactionsHandler).
-                SetNext(removeLiquidityHandler);
+                SetNext(timeOnContractCreatedHandlerProcess1).
+                SetNext(checkAmountOfContractsCreatedHandlerProcess1).
+                SetNext(removeLiquidityHandlerProcess1).
+                SetNext(fromOnInHandlerProcess1).
+                SetNext(checkAmountOfTarnsactionsHandlerProcess1).
+                SetNext(removeLiquidityHandlerProcess1_2);
 
             var processed1 = await Process(toProcess1, timeHandlerProcess1);
             var resProcessed1 = await UpdateDB(processed1, 1);
@@ -37,12 +42,13 @@ namespace Shared.Filters
             // ----------------------------------------------
             // Process2 - check in 5 hours 
             List<TokenInfo> toProcess2 = await GetRecordForProcessing2();
-
+            var fromOnInHandlerProcess2 = new FromOnInHandler(baseScan);
             var removeLiquidityHandlerProcess2 = new RemoveLiquidityHandler();
+            var removeLiquidityHandlerProcess2_2 = new RemoveLiquidityHandler();
 
             removeLiquidityHandlerProcess2.
-                SetNext(fromOnInHandler).
-                SetNext(removeLiquidityHandler);
+                SetNext(fromOnInHandlerProcess2).
+                SetNext(removeLiquidityHandlerProcess2_2);
 
             var processed2 = await Process(toProcess2, removeLiquidityHandlerProcess2);
             var resProcessed2 = await UpdateDB(processed2, 2);
@@ -54,6 +60,8 @@ namespace Shared.Filters
 
             foreach (var item in toProcess)
             {
+                Console.WriteLine($"Processing {item.AddressOwnersWallet}");
+
                 var addressRequest = new AddressRequest();
                 addressRequest.TokenInfo = item;
                 addressRequest.AddressModel = await baseScan.GetInfoByAddress(item.AddressOwnersWallet);

@@ -43,17 +43,17 @@ namespace Shared.Filters
 
             // ----------------------------------------------
             // Process2 - check in 5 hours 
-            List<TokenInfo> toProcess2 = await GetRecordForProcessing2();
-            var fromOnInHandlerProcess2 = new FromOnInHandler(baseScan);
-            var removeLiquidityHandlerProcess2 = new RemoveLiquidityHandler();
-            var removeLiquidityHandlerProcess2_2 = new RemoveLiquidityHandler();
+            //List<TokenInfo> toProcess2 = await GetRecordForProcessing2();
+            //var fromOnInHandlerProcess2 = new FromOnInHandler(baseScan);
+            //var removeLiquidityHandlerProcess2 = new RemoveLiquidityHandler();
+            //var removeLiquidityHandlerProcess2_2 = new RemoveLiquidityHandler();
 
-            removeLiquidityHandlerProcess2.
-                SetNext(fromOnInHandlerProcess2).
-                SetNext(removeLiquidityHandlerProcess2_2);
+            //removeLiquidityHandlerProcess2.
+            //    SetNext(fromOnInHandlerProcess2).
+            //    SetNext(removeLiquidityHandlerProcess2_2);
 
-            var processed2 = await Process(toProcess2, removeLiquidityHandlerProcess2);
-            var resProcessed2 = await UpdateDB(processed2, 2);
+            //var processed2 = await Process(toProcess2, removeLiquidityHandlerProcess2);
+            //var resProcessed2 = await UpdateDB(processed2, 2);
         }
 
         public async Task<List<AddressRequest>> Process(List<TokenInfo> toProcess, AbstractHandler handler)

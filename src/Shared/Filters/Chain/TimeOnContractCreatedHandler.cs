@@ -30,7 +30,7 @@ namespace Shared.Filters.Chain
 
             var contractCreatedIndex = vals.FindIndex(x => !x.contractAddress.IsNullOrEmpty());
 
-            if (contractCreatedIndex >= 0)
+            if (contractCreatedIndex >= 0 && vals.Count > (contractCreatedIndex + 1))
             {
                 var timeDiffWithNextTrans = vals[contractCreatedIndex + 1].timeStamp - vals[contractCreatedIndex].timeStamp;
 

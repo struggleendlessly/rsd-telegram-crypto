@@ -9,6 +9,7 @@ dotnet ef database update --project Shared --startup-project WorkerServiceReadTe
 
 ssh -i "D:\downloads\cryptofilter_key.pem" azureuser@52.252.195.157
 sudo chmod -R 777 /home/azureuser/telegram
+sudo chmod -R 777 /home/azureuser/telegram_session
 scp -r "H:\rsd-telegram-crypto\src\WorkerServiceReadTelegram\bin\Release\net8.0\publish\linux-arm64" azureuser@52.252.195.157:/home/azureuser/telegram
 
 scp -r H:\rsd-telegram-crypto\src\WorkerServiceCryptoFilter\bin\Release\net8.0\publish\linux-arm64 azureuser@52.252.195.157:/home/azureuser/filter

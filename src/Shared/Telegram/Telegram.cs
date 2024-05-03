@@ -56,40 +56,40 @@ namespace Shared.Telegram
 
             var chats = await client.Messages_GetAllChats();
             int chatBaseNewTokenId = 1958915778;
-            InputPeer peerBaseNewToken = chats.chats[chatBaseNewTokenId];
-
+            //InputPeer peerBaseNewToken = chats.chats[chatBaseNewTokenId];
+            var peerBaseNewToken = new InputPeerChannel ( chatBaseNewTokenId, 3635553435702714717);
             List<TokenInfo> res = new();
 
             int offset_id = 0;
             //for (int offset_id = 0; ;)
             //{
-                var messages = await client.Messages_GetHistory(
-                    peer: peerBaseNewToken,
-                    offset_id: offset_id,
-                    offset_date: default,
-                    add_offset: 0,
-                    limit: optionsTelegram.api_limit,
-                    max_id: 0,
-                    min_id: min_id);
+            var messages = await client.Messages_GetHistory(
+                peer: peerBaseNewToken,
+                offset_id: offset_id,
+                offset_date: default,
+                add_offset: 0,
+                limit: optionsTelegram.api_limit,
+                max_id: 0,
+                min_id: min_id);
 
-                if (messages.Messages.Length == 0) return res;
+            if (messages.Messages.Length == 0) return res;
 
-                foreach (MessageBase msgBase in messages.Messages)
+            foreach (MessageBase msgBase in messages.Messages)
+            {
+                //var from = messages.UserOrChat(msgBase.From ?? msgBase.Peer); // from can be User/Chat/Channel
+                if (msgBase is Message msg)
                 {
-                    //var from = messages.UserOrChat(msgBase.From ?? msgBase.Peer); // from can be User/Chat/Channel
-                    if (msgBase is Message msg)
-                    {
-                        var tokenInfo = Map(msg, msgBase);
+                    var tokenInfo = Map(msg, msgBase);
 
-                        res.Add(tokenInfo);
-                        Console.WriteLine($"> {msg.message} {msg.media}");
-                        Console.WriteLine(Environment.NewLine);
-                    }
+                    res.Add(tokenInfo);
+                    Console.WriteLine($"> {msg.message} {msg.media}");
+                    Console.WriteLine(Environment.NewLine);
                 }
-
-                offset_id = messages.Messages[^1].ID;
                 await Task.Delay(optionsTelegram.api_delay_forech);
-           // }
+            }
+
+            offset_id = messages.Messages[^1].ID;
+            // }
 
             return res;
         }
@@ -134,7 +134,7 @@ namespace Shared.Telegram
                 case "api_id": return optionsTelegram.api_id;
                 case "api_hash": return optionsTelegram.api_hash;
                 case "phone_number": return optionsTelegram.phone_number;
-                case "server_address": return "2>149.154.167.50:443";
+                case "server_address": return optionsTelegram.server_address;
                 case "verification_code": Console.Write("Code: "); return Console.ReadLine();
                 case "session_pathname": return optionsTelegram.session_pathname;
                 default: return null;                  // let WTelegramClient decide the default config

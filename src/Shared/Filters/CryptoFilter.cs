@@ -123,6 +123,7 @@ namespace Shared.Filters
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
+                //Where(x => x.Id == 5360).
                 Take(1).
                 ToListAsync();
 

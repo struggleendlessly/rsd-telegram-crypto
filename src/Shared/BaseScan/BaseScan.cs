@@ -45,7 +45,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("&startblock=0");
             urlBuilder.Append("&endblock=99999999");
             urlBuilder.Append("&page=1");
-            urlBuilder.Append("&offset=100");
+            urlBuilder.Append("&offset=1000");
             urlBuilder.Append("&sort=asc");
             urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 

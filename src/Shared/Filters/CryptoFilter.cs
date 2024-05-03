@@ -33,8 +33,8 @@ namespace Shared.Filters
 
             timeHandlerProcess1.
                 SetNext(checkTheNameOfTokenHandlerProcess1).
-                SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
+                SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).
                 SetNext(checkTotalSupplyHandlerProcess1).
                 SetNext(checkContractSourceCodeHandlerProcess1).
@@ -89,6 +89,7 @@ namespace Shared.Filters
             {
                 var token = dBContext.TokenInfos.Where(x => x.Id == item.TokenInfo.Id).FirstOrDefault();
                 token.IsValid = item.IsValid;
+                token.ErrorType = item.TokenInfo.ErrorType;
                 token.TimeUpdated = DateTime.UtcNow;
 
                 switch (processStep)
@@ -123,7 +124,7 @@ namespace Shared.Filters
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
-                //Where(x => x.Id == 5360).
+                //Where(x => x.Id == 5449).
                 Take(1).
                 ToListAsync();
 

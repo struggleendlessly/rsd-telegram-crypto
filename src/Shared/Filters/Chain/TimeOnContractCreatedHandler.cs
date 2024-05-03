@@ -11,8 +11,6 @@ namespace Shared.Filters.Chain
     {
         public async override Task<AddressRequest> Handle(AddressRequest request)
         {
-            Console.WriteLine(GetType().Name);
-
             if (request.IsValid)
             {
                 request.IsValid = await IsValid(request);

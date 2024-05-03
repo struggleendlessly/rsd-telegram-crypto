@@ -18,6 +18,14 @@ namespace Shared.Filters.Chain
 
         public async virtual Task<AddressRequest> Handle(AddressRequest request)
         {
+            var hadlerName = GetType().Name;
+            Console.WriteLine(hadlerName);
+
+            if (!request.IsValid && string.IsNullOrEmpty(request.TokenInfo.ErrorType))
+            {
+                request.TokenInfo.ErrorType = hadlerName;
+            }
+
             if (_nextHandler != null)
             {
                 return await _nextHandler.Handle(request);

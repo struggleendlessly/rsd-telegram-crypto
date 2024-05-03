@@ -31,7 +31,7 @@ namespace Shared.Filters.Chain
             var transInIndex = vals.FindIndex(x => x.contractAddress.IsNullOrEmpty() &&
                                                   !x.from.Equals(address, StringComparison.InvariantCultureIgnoreCase));
 
-            if (transInIndex >= 0)
+            if (transInIndex >= 0 && vals.Count > (transInIndex + 1))
             {
                 var timeDiffWithNextTrans = vals[transInIndex + 1].timeStamp - vals[transInIndex].timeStamp;
 

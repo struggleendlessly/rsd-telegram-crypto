@@ -13,7 +13,7 @@
         public string UrlOwnersWallet { get; set; }
         public string UrlChart { get; set; }
 
-        public bool IsValid { get; set; } = true;
+        public bool IsValid { get; set; } = false;
         public bool IsProcessed1 { get; set; } = false;
         public bool IsProcessed2 { get; set; } = false;
 

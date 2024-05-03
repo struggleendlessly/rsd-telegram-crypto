@@ -70,6 +70,7 @@ namespace Shared.Filters
 
                 var addressRequest = new AddressRequest();
                 addressRequest.TokenInfo = item;
+                addressRequest.TokenInfo.IsValid = true;
                 addressRequest.AddressModel = await baseScan.GetInfoByAddress(item.AddressOwnersWallet);
 
                 var filtered = await handler.Handle(addressRequest);

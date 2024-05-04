@@ -24,7 +24,6 @@ namespace Shared.Filters
 
         public async Task Start()
         {
-            //await telegram.SendMessageToGroup("CryptoFilter started");
             List<TokenInfo> toProcess1 = await GetRecordForProcessing1();
 
             var timeHandlerProcess1 = new TimeOnInHandler();
@@ -51,6 +50,28 @@ namespace Shared.Filters
 
             var processed1 = await Process(toProcess1, timeHandlerProcess1);
             var resProcessed1 = await UpdateDB(processed1, 1);
+
+            foreach (var item in processed1)
+            {
+                if (item.IsValid)
+                {
+                    await telegram.SendMessageToGroup($"" +
+                        $"Found a valid token with info: " +
+
+                        $"{Environment.NewLine} " +
+                        $"DB id: {item.TokenInfo.Id} " +
+
+                        $"{Environment.NewLine} " +
+                        $"Owner: {item.TokenInfo.UrlOwnersWallet} " +
+
+                        $"{Environment.NewLine} " +
+                        $"Chart: {item.TokenInfo.UrlChart}" +
+
+                        $"{Environment.NewLine} " +
+                        $"Token: {item.TokenInfo.UrlToken}" +
+                        $"");
+                }
+            }   
 
             // ----------------------------------------------
             // Process2 - check in 5 hours 

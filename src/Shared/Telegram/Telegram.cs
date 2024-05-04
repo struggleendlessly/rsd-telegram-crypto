@@ -16,7 +16,9 @@ namespace Shared.Telegram
     {
         private readonly DBContext dBContext;
         private readonly OptionsTelegram optionsTelegram;
-        public Telegram(DBContext dBContext, IOptions<OptionsTelegram> optionsTelegram)
+        public Telegram(
+            DBContext dBContext, 
+            IOptions<OptionsTelegram> optionsTelegram)
         {
             this.dBContext = dBContext;
             this.optionsTelegram = optionsTelegram.Value;
@@ -31,15 +33,18 @@ namespace Shared.Telegram
         public async Task<bool> SendMessageToGroup(string text)
         {
             var res = false;
-            int chatBaseNewTokenId = 1958915778;
-            var apilToken = "6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE";
-            string urlString = $"https://api.telegram.org/bot{apilToken}/sendMessage?chat_id={chatBaseNewTokenId}&text={text}";
 
-
-            using (var webclient = new WebClient())
+            foreach (var chatId in optionsTelegram.chatIds)
             {
-                var response = await webclient.DownloadStringTaskAsync(urlString);
-                res = true;
+                string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/sendMessage?chat_id={chatId}&text={text}";
+
+                using (var webclient = new WebClient())
+                {
+                    var response = await webclient.DownloadStringTaskAsync(urlString);
+                    res = true;
+                }
+
+                await Task.Delay(optionsTelegram.api_delay_forech);
             }
 
             return res;

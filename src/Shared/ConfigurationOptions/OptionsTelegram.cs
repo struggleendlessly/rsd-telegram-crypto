@@ -11,5 +11,7 @@
         public int api_limit { get; set; }
         public int api_delay_worker { get; set; }
         public int api_delay_forech { get; set; }
+        public string bot_hash { get; set; } = "";
+        public List<string> chatIds { get; set; } = new();
     }
 }

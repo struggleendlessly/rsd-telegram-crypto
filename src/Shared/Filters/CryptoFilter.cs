@@ -3,6 +3,7 @@
 using Shared.DB;
 using Shared.Filters.Chain;
 using Shared.Filters.Model;
+using Shared.Telegram;
 
 namespace Shared.Filters
 {
@@ -10,14 +11,20 @@ namespace Shared.Filters
     {
         private readonly DBContext dBContext;
         private readonly BaseScan.BaseScan baseScan;
-        public CryptoFilter(DBContext dBContext, BaseScan.BaseScan baseScan)
+        private readonly Telegram.Telegram telegram;
+        public CryptoFilter(
+            DBContext dBContext, 
+            BaseScan.BaseScan baseScan,
+            Telegram.Telegram telegram)
         {
             this.dBContext = dBContext;
             this.baseScan = baseScan;
+            this.telegram = telegram;
         }
 
         public async Task Start()
         {
+            //await telegram.SendMessageToGroup("CryptoFilter started");
             List<TokenInfo> toProcess1 = await GetRecordForProcessing1();
 
             var timeHandlerProcess1 = new TimeOnInHandler();

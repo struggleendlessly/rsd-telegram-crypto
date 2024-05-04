@@ -4,7 +4,11 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 
+using System.Net;
+
 using TL;
+
+using WTelegram;
 
 namespace Shared.Telegram
 {
@@ -24,6 +28,22 @@ namespace Shared.Telegram
             var savedToDB = await SaveToDB(newTelegramMessages);
         }
 
+        public async Task<bool> SendMessageToGroup(string text)
+        {
+            var res = false;
+            int chatBaseNewTokenId = 1958915778;
+            var apilToken = "6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE";
+            string urlString = $"https://api.telegram.org/bot{apilToken}/sendMessage?chat_id={chatBaseNewTokenId}&text={text}";
+
+
+            using (var webclient = new WebClient())
+            {
+                var response = await webclient.DownloadStringTaskAsync(urlString);
+                res = true;
+            }
+
+            return res;
+        }
         private async Task<int> GetLatestTelegramMessageId()
         {
             var res = 0;
@@ -57,7 +77,7 @@ namespace Shared.Telegram
             var chats = await client.Messages_GetAllChats();
             int chatBaseNewTokenId = 1958915778;
             //InputPeer peerBaseNewToken = chats.chats[chatBaseNewTokenId];
-            var peerBaseNewToken = new InputPeerChannel ( chatBaseNewTokenId, 3635553435702714717);
+            var peerBaseNewToken = new InputPeerChannel ( chatBaseNewTokenId, 2415663995664135723);
             List<TokenInfo> res = new();
 
             int offset_id = 0;

@@ -71,6 +71,7 @@ namespace Shared.Filters
                 var addressRequest = new AddressRequest();
                 addressRequest.TokenInfo = item;
                 addressRequest.TokenInfo.IsValid = true;
+                addressRequest.TokenInfo.ErrorType = "";
                 addressRequest.AddressModel = await baseScan.GetInfoByAddress(item.AddressOwnersWallet);
 
                 var filtered = await handler.Handle(addressRequest);
@@ -124,7 +125,7 @@ namespace Shared.Filters
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
-                //Where(x => x.Id == 5449).
+                //Where(x => x.Id == 5715).
                 Take(1).
                 ToListAsync();
 

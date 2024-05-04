@@ -24,7 +24,7 @@ namespace Shared.Filters.Chain
         }
         private async Task<bool> IsValid(AddressRequest request)
         {
-            var res = false;
+            var res = true;
 
             var vals = request.AddressModel.result;
             var address = request.TokenInfo.AddressOwnersWallet;
@@ -35,11 +35,7 @@ namespace Shared.Filters.Chain
             if (transInIndex >= 0)
             {
                 var fromAdress = vals[transInIndex].from;
-                request.AddressModel = await baseScan.GetInfoByAddress(fromAdress);         
-            }
-            else
-            {
-                res = true;
+                request.AddressModel = await baseScan.GetInfoByAddress(fromAdress);
             }
 
             return res;

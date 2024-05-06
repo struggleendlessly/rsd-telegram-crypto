@@ -121,8 +121,8 @@ namespace Shared.BaseScan
             res = urlBuilder.ToString();
 
             return res;
-        }    
-        
+        }
+
         public async Task<BlockByNumberModel> GetBlockByNumber(string blockNumbderX16)
         {
             BlockByNumberModel res = new();
@@ -150,6 +150,45 @@ namespace Shared.BaseScan
             urlBuilder.Append("&action=eth_getBlockByNumber");
             urlBuilder.Append($"&tag=0x{blockNumbderX16}");
             urlBuilder.Append($"&boolean=true");
+            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }
+
+        public async Task<NormalTransactions> GetListOfNormalTransactions(string ownerAddress)
+        {
+            NormalTransactions res = new();
+
+            var url = await UrlBuilderGetListOfNormalTransactions(ownerAddress);
+
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
+            {
+                HttpResponseMessage response = await sharedClient.GetAsync(url);
+
+                response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                res = await response.Content.ReadFromJsonAsync<NormalTransactions>();
+            }
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderGetListOfNormalTransactions(string ownerAddress)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=account");
+            urlBuilder.Append("&action=txlist");
+            urlBuilder.Append($"&address={ownerAddress}");
+            urlBuilder.Append($"&startblock=0");
+            urlBuilder.Append($"&endblock=99999999");
+            urlBuilder.Append($"&startblock=0");
+            urlBuilder.Append("&page=1");
+            urlBuilder.Append("&offset=1500");
+            urlBuilder.Append("&sort=asc");
             urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 
             res = urlBuilder.ToString();

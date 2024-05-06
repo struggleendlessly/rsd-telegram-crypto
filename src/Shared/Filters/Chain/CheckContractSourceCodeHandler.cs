@@ -30,7 +30,7 @@ namespace Shared.Filters.Chain
         {
             var res = false;
 
-            var contractAddress = request.TokenInfo.HashToken;
+            var contractAddress = request.TokenInfo.HashContractTransaction;
             var contractSourceCode = await baseScan.GetContractSourceCode(contractAddress);
 
             if (!contractSourceCode.result[0].SourceCode.IsNullOrEmpty())

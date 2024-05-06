@@ -37,7 +37,30 @@ namespace Shared.BaseScan
             }
             else
             {
+                foreach (var item in contracts)
+                {
+                    var listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from);
+                    var tokenAddress = await FindTokenAddress(listOfNormalTransactions);
+                    item.contractAddress = tokenAddress;
+                }
+
                 res = await SaveNewContractsToDB(contracts);
+            }
+
+            return res;
+        }
+
+        private async Task<string> FindTokenAddress(NormalTransactions listOfNormalTransactions)
+        {
+            var res = "";
+
+            foreach (var item in listOfNormalTransactions.result)
+            {
+                if (!string.IsNullOrEmpty(item.contractAddress))
+                {
+                    res = item.contractAddress;
+                    break;
+                }
             }
 
             return res;
@@ -79,12 +102,17 @@ namespace Shared.BaseScan
             foreach (var item in collection)
             {
                 var t = new TokenInfo();
-                t.HashToken = item.hash;
+
+                t.HashContractTransaction = item.hash;
+                t.AddressToken = item.contractAddress;
                 t.AddressOwnersWallet = item.from;
+
                 t.BlockNumber = Convert.ToInt32(item.blockNumber, 16);
 
-                //t.UrlToken = $"{optionsBaseScan.UrlDexscreenerComBase}{t.HashToken}";
+                t.UrlToken = $"{optionsBaseScan.UrlBasescanOrgToken}{t.AddressToken}";
                 t.UrlOwnersWallet = $"{optionsBaseScan.UrlBasescanOrgAddress}{t.AddressOwnersWallet}";
+                t.UrlChart = $"{optionsBaseScan.UrlDexscreenerComBase}{t.AddressToken}";
+
                 t.TimeAdded = DateTime.UtcNow;
                 t.TimeUpdated = DateTime.UtcNow;
 

@@ -67,7 +67,7 @@ namespace Shared.Filters
                         $"Chart: {item.TokenInfo.UrlChart}" +
 
                         $"{Environment.NewLine} " +
-                        $"Token Hash: {item.TokenInfo.HashToken}" +
+                        $"Token Hash: {item.TokenInfo.HashContractTransaction}" +
                         $"");
                 }
             }   

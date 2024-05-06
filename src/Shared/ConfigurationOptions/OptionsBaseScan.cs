@@ -6,6 +6,7 @@
         public string baseUrl { get; set; }
         public string apiKeyToken { get; set; }
         public string UrlBasescanOrgAddress { get; set; }
+        public string UrlBasescanOrgToken { get; set; }
         public string UrlDexscreenerComBase { get; set; }
     }
 }

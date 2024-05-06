@@ -61,6 +61,7 @@
             public string maxPriorityFeePerGas { get; set; }
             public object[] accessList { get; set; }
             public string yParity { get; set; }
+            public string contractAddress { get; set; }
         }
     }
 }

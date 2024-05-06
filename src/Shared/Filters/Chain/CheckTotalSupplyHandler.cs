@@ -28,7 +28,7 @@ namespace Shared.Filters.Chain
         {
             var res = false;
 
-            var contractAddress = request.TokenInfo.HashToken;
+            var contractAddress = request.TokenInfo.HashContractTransaction;
             var tatalSupply = await baseScan.GetTotalSupply(contractAddress);
             var tatalSupplyAmountString = "";
 

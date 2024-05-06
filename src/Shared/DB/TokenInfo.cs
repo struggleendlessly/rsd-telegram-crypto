@@ -4,7 +4,8 @@
     {
         public int Id { get; set; }
 
-        public string HashToken { get; set; } = "";
+        public string HashContractTransaction { get; set; } = "";
+        public string AddressToken { get; set; } = "";
         public string AddressOwnersWallet { get; set; } = "";
 
         public string UrlToken { get; set; } = "";

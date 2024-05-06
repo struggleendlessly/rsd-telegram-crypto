@@ -23,17 +23,17 @@ namespace Shared.Filters.Chain
         {
             var res = false;
 
-            var message = request.TokenInfo.TelegramMessage;
-            var splited = message.Split(Environment.NewLine.ToCharArray())[2];//.Replace("Token: ");
+            //var message = request.TokenInfo.TelegramMessage;
+            //var splited = message.Split(Environment.NewLine.ToCharArray())[2];//.Replace("Token: ");
 
-            var tokenName = splited.Replace("Token: ", "").Replace("👾", "").Trim();
+            //var tokenName = splited.Replace("Token: ", "").Replace("👾", "").Trim();
 
-            if (!tokenName.Contains(".") &&
-                !tokenName.Contains("test", StringComparison.InvariantCultureIgnoreCase) &&
-                !tokenName.Contains("()"))
-            {
-                res = true;
-            }
+            //if (!tokenName.Contains(".") &&
+            //    !tokenName.Contains("test", StringComparison.InvariantCultureIgnoreCase) &&
+            //    !tokenName.Contains("()"))
+            //{
+            //    res = true;
+            //}
 
             return res;
         }

@@ -4,10 +4,8 @@
     {
         public int Id { get; set; }
 
-        public string AddressToken { get; set; } = "";
+        public string HashToken { get; set; } = "";
         public string AddressOwnersWallet { get; set; } = "";
-        public int TelegramMessageId { get; set; }
-        public string TelegramMessage { get; set; } = "";
 
         public string UrlToken { get; set; } = "";
         public string UrlOwnersWallet { get; set; } = "";

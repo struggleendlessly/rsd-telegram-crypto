@@ -3,7 +3,6 @@
 using Shared.DB;
 using Shared.Filters.Chain;
 using Shared.Filters.Model;
-using Shared.Telegram;
 
 namespace Shared.Filters
 {
@@ -38,7 +37,7 @@ namespace Shared.Filters
             var checkContractSourceCodeHandlerProcess1 = new CheckContractSourceCodeHandler(baseScan);
 
             timeHandlerProcess1.
-                SetNext(checkTheNameOfTokenHandlerProcess1).
+                //SetNext(checkTheNameOfTokenHandlerProcess1).
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
                 SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).

@@ -79,11 +79,11 @@ namespace Shared.BaseScan
             foreach (var item in collection)
             {
                 var t = new TokenInfo();
-                t.AddressToken = item.hash;
+                t.HashToken = item.hash;
                 t.AddressOwnersWallet = item.from;
                 t.BlockNumber = Convert.ToInt32(item.blockNumber, 16);
 
-                t.UrlChart = $"{optionsBaseScan.UrlDexscreenerComBase}{t.AddressToken}";
+                t.UrlChart = $"{optionsBaseScan.UrlDexscreenerComBase}{t.HashToken}";
                 t.UrlChart = $"{optionsBaseScan.UrlBasescanOrgAddress}{t.AddressOwnersWallet}";
                 t.TimeAdded = DateTime.UtcNow;
                 t.TimeUpdated = DateTime.UtcNow;

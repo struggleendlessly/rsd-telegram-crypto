@@ -83,8 +83,8 @@ namespace Shared.BaseScan
                 t.AddressOwnersWallet = item.from;
                 t.BlockNumber = Convert.ToInt32(item.blockNumber, 16);
 
-                t.UrlChart = $"{optionsBaseScan.UrlDexscreenerComBase}{t.HashToken}";
-                t.UrlChart = $"{optionsBaseScan.UrlBasescanOrgAddress}{t.AddressOwnersWallet}";
+                //t.UrlToken = $"{optionsBaseScan.UrlDexscreenerComBase}{t.HashToken}";
+                t.UrlOwnersWallet = $"{optionsBaseScan.UrlBasescanOrgAddress}{t.AddressOwnersWallet}";
                 t.TimeAdded = DateTime.UtcNow;
                 t.TimeUpdated = DateTime.UtcNow;
 

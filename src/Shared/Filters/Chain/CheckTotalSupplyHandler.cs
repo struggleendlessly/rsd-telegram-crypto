@@ -32,17 +32,22 @@ namespace Shared.Filters.Chain
             var tatalSupply = await baseScan.GetTotalSupply(contractAddress);
             var tatalSupplyAmountString = "";
 
-            if (tatalSupply.result.Length > 18)
-            {
-                tatalSupplyAmountString = tatalSupply.result.Remove(tatalSupply.result.Length - 18);
-            }
-
-            var isParced = ulong.TryParse(tatalSupplyAmountString, out ulong tatalSupplyAmountNumber);
-
-            if (isParced == true && tatalSupplyAmountNumber >= 1_000_000)
+            if (tatalSupply.result.Length > 1)
             {
                 res = true;
             }
+
+            //if (tatalSupply.result.Length > 18)
+            //{
+            //    tatalSupplyAmountString = tatalSupply.result.Remove(tatalSupply.result.Length - 18);
+            //}
+
+            //var isParced = ulong.TryParse(tatalSupplyAmountString, out ulong tatalSupplyAmountNumber);
+
+            //if (isParced == true && tatalSupplyAmountNumber >= 1_000_000)
+            //{
+            //    res = true;
+            //}
 
             return res;
         }

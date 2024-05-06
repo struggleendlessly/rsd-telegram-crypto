@@ -115,7 +115,7 @@ namespace Shared.BaseScan
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.Append("api/?module=contract");
             urlBuilder.Append("&action=getsourcecode");
-            urlBuilder.Append($"&address=0x{address}");
+            urlBuilder.Append($"&address={address}");
             urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 
             res = urlBuilder.ToString();

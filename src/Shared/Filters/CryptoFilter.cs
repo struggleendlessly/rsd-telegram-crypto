@@ -41,8 +41,8 @@ namespace Shared.Filters
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
                 SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).
-                //SetNext(checkTotalSupplyHandlerProcess1).
-                SetNext(checkContractSourceCodeHandlerProcess1).
+                SetNext(checkTotalSupplyHandlerProcess1).
+                //SetNext(checkContractSourceCodeHandlerProcess1).
                 SetNext(fromOnInHandlerProcess1).
                 SetNext(checkAmountOfTarnsactionsHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1_2);
@@ -67,7 +67,7 @@ namespace Shared.Filters
                         $"Chart: {item.TokenInfo.UrlChart}" +
 
                         $"{Environment.NewLine} " +
-                        $"Token: {item.TokenInfo.UrlToken}" +
+                        $"Token Hash: {item.TokenInfo.HashToken}" +
                         $"");
                 }
             }   
@@ -152,6 +152,7 @@ namespace Shared.Filters
             res = await dBContext.
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
+                Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
                 //Where(x => x.Id == 5715).
                 Take(1).
                 ToListAsync();

@@ -85,6 +85,8 @@ namespace Shared.BaseScan
 
                 t.UrlChart = $"{optionsBaseScan.UrlDexscreenerComBase}{t.AddressToken}";
                 t.UrlChart = $"{optionsBaseScan.UrlBasescanOrgAddress}{t.AddressOwnersWallet}";
+                t.TimeAdded = DateTime.UtcNow;
+                t.TimeUpdated = DateTime.UtcNow;
 
                 ti.Add(t);
             }

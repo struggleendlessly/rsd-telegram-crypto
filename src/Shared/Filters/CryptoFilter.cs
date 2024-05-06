@@ -61,6 +61,9 @@ namespace Shared.Filters
                         $"DB id: {item.TokenInfo.Id} " +
 
                         $"{Environment.NewLine} " +
+                        $"Block : {item.TokenInfo.BlockNumber} " +
+
+                        $"{Environment.NewLine} " +
                         $"Owner url: {item.TokenInfo.UrlOwnersWallet} " +
 
                         $"{Environment.NewLine} " +

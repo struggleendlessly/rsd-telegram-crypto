@@ -10,7 +10,7 @@ namespace Shared.BaseScan
     public class BaseScanContractScraper
     {
         private readonly DBContext dBContext;
-        private readonly BaseScan.BaseScanApiClient baseScan;
+        private readonly BaseScanApiClient baseScan;
         private readonly OptionsBaseScan optionsBaseScan;
         public BaseScanContractScraper(
             IOptions<OptionsBaseScan> optionsBaseScan,
@@ -27,19 +27,27 @@ namespace Shared.BaseScan
             var res = 0;
 
             var lastBlockNumber = await GetLastProcessedBlockFromDB();
-            var transIntheBlock = await baseScan.GetBlockByNumber(lastBlockNumber);
+            var lastBlockNumber16 = (lastBlockNumber + 1).ToString("X");
+            var transIntheBlock = await baseScan.GetBlockByNumber(lastBlockNumber16);
             var contracts = await FindContracts(transIntheBlock);
-            res = await SaveNewContractsToDB(contracts);
+
+            if (contracts.Count == 0)
+            {
+                res = await UpdateLastBlockWhenNoContractsToDB(lastBlockNumber);
+            }
+            else
+            {
+                res = await SaveNewContractsToDB(contracts);
+            }
 
             return res;
         }
 
-        private async Task<string> GetLastProcessedBlockFromDB()
+        private async Task<int> GetLastProcessedBlockFromDB()
         {
-            var res = string.Empty;
+            var res = 0;
 
-            var lastBlockNumber = await dBContext.TokenInfos.MaxAsync(x => x.BlockNumber);
-            res = lastBlockNumber.ToString("X");
+            res = await dBContext.TokenInfos.MaxAsync(x => x.BlockNumber);
 
             return res;
         }
@@ -50,7 +58,8 @@ namespace Shared.BaseScan
 
             foreach (var item in collection.result.transactions)
             {
-                if (string.IsNullOrEmpty(item.to))
+                if (string.IsNullOrEmpty(item.to) &&
+                    item.input.Contains("0x60806040"))
                 {
                     res.Add(item);
                 }
@@ -70,7 +79,7 @@ namespace Shared.BaseScan
                 var t = new TokenInfo();
                 t.AddressToken = item.hash;
                 t.AddressOwnersWallet = item.from;
-                t.BlockNumber = int.Parse(item.blockNumber, System.Globalization.NumberStyles.HexNumber);
+                t.BlockNumber = Convert.ToInt32(item.blockNumber, 16);
 
                 t.UrlChart = $"{optionsBaseScan.UrlDexscreenerComBase}{t.AddressToken}";
                 t.UrlChart = $"{optionsBaseScan.UrlBasescanOrgAddress}{t.AddressOwnersWallet}";
@@ -79,6 +88,22 @@ namespace Shared.BaseScan
             }
 
             await dBContext.TokenInfos.AddRangeAsync(ti);
+            res = await dBContext.SaveChangesAsync();
+
+            return res;
+        }
+
+        private async Task<int> UpdateLastBlockWhenNoContractsToDB(int lastBlockNumber)
+        {
+            var res = 0;
+
+            var t = await dBContext.TokenInfos.Where(x => x.BlockNumber == lastBlockNumber).FirstOrDefaultAsync();
+
+            if (t is not null)
+            {
+                t.BlockNumber = (lastBlockNumber + 1);
+            }
+
             res = await dBContext.SaveChangesAsync();
 
             return res;

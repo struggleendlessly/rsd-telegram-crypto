@@ -148,7 +148,7 @@ namespace Shared.BaseScan
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.Append("api/?module=proxy");
             urlBuilder.Append("&action=eth_getBlockByNumber");
-            urlBuilder.Append($"&tag={blockNumbderX16}");
+            urlBuilder.Append($"&tag=0x{blockNumbderX16}");
             urlBuilder.Append($"&boolean=true");
             urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 

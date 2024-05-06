@@ -9,8 +9,8 @@ namespace Shared.Filters.Chain
     /// </summary>
     public class CheckContractSourceCodeHandler : AbstractHandler
     {
-        private readonly BaseScan.BaseScan baseScan;
-        public CheckContractSourceCodeHandler(BaseScan.BaseScan baseScan)
+        private readonly BaseScan.BaseScanApiClient baseScan;
+        public CheckContractSourceCodeHandler(BaseScan.BaseScanApiClient baseScan)
         {
             this.baseScan = baseScan;
         }

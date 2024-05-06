@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 
+using Shared.BaseScan;
 using Shared.ConfigurationOptions;
 using Shared.Telegram;
 
@@ -7,18 +8,16 @@ namespace WorkerServiceReadTelegram
 {
     public class Worker : BackgroundService
     {
+
         private readonly ILogger<Worker> _logger;
-        private readonly Telegram telegram;
-        private readonly OptionsTelegram optionsTelegram;
+        private readonly BaseScanContractScraper baseScanContractScraper;
 
         public Worker(
             ILogger<Worker> logger, 
-            Telegram telegram, 
-            IOptions<OptionsTelegram> optionsTelegram)
+            BaseScanContractScraper baseScanContractScraper)
         {
             _logger = logger;
-            this.telegram = telegram;
-            this.optionsTelegram = optionsTelegram.Value;
+            this.baseScanContractScraper = baseScanContractScraper;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,8 +29,8 @@ namespace WorkerServiceReadTelegram
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await telegram.Start();
-                await Task.Delay(optionsTelegram.api_delay_worker, stoppingToken);
+                await baseScanContractScraper.Start();
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

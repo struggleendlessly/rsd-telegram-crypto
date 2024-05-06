@@ -1,17 +1,21 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure;
+
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Options;
 
 using Shared.BaseScan.Model;
 using Shared.ConfigurationOptions;
 
+using System;
 using System.Net.Http.Json;
 using System.Text;
 
 namespace Shared.BaseScan
 {
-    public class BaseScan
+    public class BaseScanApiClient
     {
         private readonly OptionsBaseScan optionsBaseScan;
-        public BaseScan(IOptions<OptionsBaseScan> optionsBaseScan)
+        public BaseScanApiClient(IOptions<OptionsBaseScan> optionsBaseScan)
         {
             this.optionsBaseScan = optionsBaseScan.Value;
         }
@@ -111,7 +115,41 @@ namespace Shared.BaseScan
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.Append("api/?module=contract");
             urlBuilder.Append("&action=getsourcecode");
-            urlBuilder.Append($"&address={address}");
+            urlBuilder.Append($"&address=0x{address}");
+            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }    
+        
+        public async Task<BlockByNumberModel> GetBlockByNumber(string blockNumbderX16)
+        {
+            BlockByNumberModel res = new();
+
+            var url = await UrlBuilderGetBlockByNumber(blockNumbderX16);
+
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
+            {
+                HttpResponseMessage response = await sharedClient.GetAsync(url);
+
+                response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                res = await response.Content.ReadFromJsonAsync<BlockByNumberModel>();
+            }
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderGetBlockByNumber(string blockNumbderX16)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=proxy");
+            urlBuilder.Append("&action=eth_getBlockByNumber");
+            urlBuilder.Append($"&tag={blockNumbderX16}");
+            urlBuilder.Append($"&boolean=true");
             urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
 
             res = urlBuilder.ToString();

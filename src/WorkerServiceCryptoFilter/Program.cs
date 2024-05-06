@@ -19,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<DBContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
 
 builder.Services.AddSingleton<Telegram>();
-builder.Services.AddSingleton<BaseScan>();
+builder.Services.AddSingleton<BaseScanApiClient>();
 builder.Services.AddSingleton<CryptoFilter>();
 
 var host = builder.Build();

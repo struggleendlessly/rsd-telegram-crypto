@@ -79,10 +79,11 @@ namespace Shared.Telegram
             using var client = new WTelegram.Client(Config);
             var myself = await client.LoginUserIfNeeded();
 
-            var chats = await client.Messages_GetAllChats();
+            //var chats = await client.Messages_GetAllChats();
             int chatBaseNewTokenId = 1958915778;
+            long chatBaseNewTokenHash = -2517611446279212776;
             //InputPeer peerBaseNewToken = chats.chats[chatBaseNewTokenId];
-            var peerBaseNewToken = new InputPeerChannel ( chatBaseNewTokenId, 2415663995664135723);
+            var peerBaseNewToken = new InputPeerChannel ( chatBaseNewTokenId, chatBaseNewTokenHash);
             List<TokenInfo> res = new();
 
             int offset_id = 0;

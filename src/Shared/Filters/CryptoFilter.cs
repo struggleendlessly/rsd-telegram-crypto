@@ -10,11 +10,11 @@ namespace Shared.Filters
     public class CryptoFilter
     {
         private readonly DBContext dBContext;
-        private readonly BaseScan.BaseScan baseScan;
+        private readonly BaseScan.BaseScanApiClient baseScan;
         private readonly Telegram.Telegram telegram;
         public CryptoFilter(
             DBContext dBContext, 
-            BaseScan.BaseScan baseScan,
+            BaseScan.BaseScanApiClient baseScan,
             Telegram.Telegram telegram)
         {
             this.dBContext = dBContext;
@@ -42,7 +42,7 @@ namespace Shared.Filters
                 SetNext(checkAmountOfContractsCreatedHandlerProcess1).
                 SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).
-                SetNext(checkTotalSupplyHandlerProcess1).
+                //SetNext(checkTotalSupplyHandlerProcess1).
                 SetNext(checkContractSourceCodeHandlerProcess1).
                 SetNext(fromOnInHandlerProcess1).
                 SetNext(checkAmountOfTarnsactionsHandlerProcess1).

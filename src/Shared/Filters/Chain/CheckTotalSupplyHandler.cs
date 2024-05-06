@@ -9,8 +9,8 @@ namespace Shared.Filters.Chain
     /// </summary>
     public class CheckTotalSupplyHandler : AbstractHandler
     {
-        private readonly BaseScan.BaseScan baseScan;
-        public CheckTotalSupplyHandler(BaseScan.BaseScan baseScan)
+        private readonly BaseScan.BaseScanApiClient baseScan;
+        public CheckTotalSupplyHandler(BaseScan.BaseScanApiClient baseScan)
         {
             this.baseScan = baseScan;
         }

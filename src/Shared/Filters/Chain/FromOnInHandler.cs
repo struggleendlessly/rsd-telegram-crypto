@@ -7,8 +7,8 @@ namespace Shared.Filters.Chain
     /// </summary>
     public class FromOnInHandler : AbstractHandler
     {
-        private readonly BaseScan.BaseScan baseScan;
-        public FromOnInHandler(BaseScan.BaseScan baseScan)
+        private readonly BaseScan.BaseScanApiClient baseScan;
+        public FromOnInHandler(BaseScan.BaseScanApiClient baseScan)
         {
             this.baseScan = baseScan;
         }

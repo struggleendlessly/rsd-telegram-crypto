@@ -18,6 +18,8 @@
         public string ErrorType { get; set; } = "";
         public bool IsProcessed2 { get; set; } = false;
 
+        public int BlockNumber { get; set; }
+
         public DateTime TimeAdded { get; set; }
         public DateTime TimeUpdated { get; set; }
 

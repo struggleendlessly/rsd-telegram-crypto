@@ -59,7 +59,9 @@ namespace Shared.BaseScan
             foreach (var item in collection.result.transactions)
             {
                 if (string.IsNullOrEmpty(item.to) &&
-                    item.input.Contains("0x60806040"))
+                    item.input.Contains("0x60806040") &&
+                    item.input.Length > 3000
+                    )
                 {
                     res.Add(item);
                 }

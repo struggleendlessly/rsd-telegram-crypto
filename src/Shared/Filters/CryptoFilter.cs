@@ -61,13 +61,13 @@ namespace Shared.Filters
                         $"DB id: {item.TokenInfo.Id} " +
 
                         $"{Environment.NewLine} " +
-                        $"Owner: {item.TokenInfo.UrlOwnersWallet} " +
+                        $"Owner url: {item.TokenInfo.UrlOwnersWallet} " +
 
                         $"{Environment.NewLine} " +
-                        $"Chart: {item.TokenInfo.UrlChart}" +
+                        $"Token url: {item.TokenInfo.UrlToken}" +
 
                         $"{Environment.NewLine} " +
-                        $"Token Hash: {item.TokenInfo.HashContractTransaction}" +
+                        $"Chart url: {item.TokenInfo.UrlChart}" +
                         $"");
                 }
             }   

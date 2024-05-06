@@ -42,7 +42,7 @@ namespace Shared.Filters
                 SetNext(timeOnContractCreatedHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1).
                 SetNext(checkTotalSupplyHandlerProcess1).
-                //SetNext(checkContractSourceCodeHandlerProcess1).
+                SetNext(checkContractSourceCodeHandlerProcess1).
                 SetNext(fromOnInHandlerProcess1).
                 SetNext(checkAmountOfTarnsactionsHandlerProcess1).
                 SetNext(removeLiquidityHandlerProcess1_2);

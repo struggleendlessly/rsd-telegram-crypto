@@ -26,7 +26,7 @@ namespace WorkerServiceRead
                 }
 
                 await baseScanContractScraper.Start();
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(500, stoppingToken);
             }
         }
     }

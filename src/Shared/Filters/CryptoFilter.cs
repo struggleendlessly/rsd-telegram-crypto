@@ -23,31 +23,33 @@ namespace Shared.Filters
 
         public async Task Start()
         {
-            List<TokenInfo> toProcess1 = await GetRecordForProcessing1();
+            List<TokenInfo> to_Process1 = await GetRecordForProcessing1();
 
-            var timeHandlerProcess1 = new TimeOnInHandler();
-            var checkTheNameOfTokenHandlerProcess1 = new CheckTheNameOfTokenHandler();
-            var timeOnContractCreatedHandlerProcess1 = new TimeOnContractCreatedHandler();
-            var checkAmountOfContractsCreatedHandlerProcess1 = new CheckAmountOfContractsCreatedHandler();
-            var removeLiquidityHandlerProcess1 = new RemoveLiquidityHandler();
-            var removeLiquidityHandlerProcess1_2 = new RemoveLiquidityHandler();
-            var fromOnInHandlerProcess1 = new FromOnInHandler(baseScan);
-            var checkAmountOfTarnsactionsHandlerProcess1 = new CheckAmountOfTarnsactionsHandler();
-            var checkTotalSupplyHandlerProcess1 = new CheckTotalSupplyHandler(baseScan);
-            var checkContractSourceCodeHandlerProcess1 = new CheckContractSourceCodeHandler(baseScan);
+            var timeHandler_Process1 = new TimeOnInHandler();
+            var checkEmptyTokenAddressHandler_Process1 = new CheckEmptyTokenAddressHandler();
+            var checkTheNameOfTokenHandler_Process1 = new CheckTheNameOfTokenHandler();
+            var timeOnContractCreatedHandler_Process1 = new TimeOnContractCreatedHandler();
+            var checkAmountOfContractsCreatedHandler_Process1 = new CheckAmountOfContractsCreatedHandler();
+            var removeLiquidityHandler_Process1 = new RemoveLiquidityHandler();
+            var removeLiquidityHandler_Process1_2 = new RemoveLiquidityHandler();
+            var fromOnInHandler_Process1 = new FromOnInHandler(baseScan);
+            var checkAmountOfTarnsactionsHandler_Process1 = new CheckAmountOfTarnsactionsHandler();
+            var checkTotalSupplyHandler_Process1 = new CheckTotalSupplyHandler(baseScan);
+            var checkContractSourceCodeHandler_Process1 = new CheckContractSourceCodeHandler(baseScan);
 
-            timeHandlerProcess1.
-                //SetNext(checkTheNameOfTokenHandlerProcess1).
-                SetNext(checkAmountOfContractsCreatedHandlerProcess1).
-                SetNext(timeOnContractCreatedHandlerProcess1).
-                SetNext(removeLiquidityHandlerProcess1).
-                SetNext(checkTotalSupplyHandlerProcess1).
-                SetNext(checkContractSourceCodeHandlerProcess1).
-                SetNext(fromOnInHandlerProcess1).
-                SetNext(checkAmountOfTarnsactionsHandlerProcess1).
-                SetNext(removeLiquidityHandlerProcess1_2);
+            timeHandler_Process1.
+                //SetNext(checkTheNameOfTokenHandler_Process1).
+                SetNext(checkEmptyTokenAddressHandler_Process1).
+                SetNext(checkAmountOfContractsCreatedHandler_Process1).
+                SetNext(timeOnContractCreatedHandler_Process1).
+                SetNext(removeLiquidityHandler_Process1).
+                SetNext(checkTotalSupplyHandler_Process1).
+                SetNext(checkContractSourceCodeHandler_Process1).
+                SetNext(fromOnInHandler_Process1).
+                SetNext(checkAmountOfTarnsactionsHandler_Process1).
+                SetNext(removeLiquidityHandler_Process1_2);
 
-            var processed1 = await Process(toProcess1, timeHandlerProcess1);
+            var processed1 = await Process(to_Process1, timeHandler_Process1);
             var resProcessed1 = await UpdateDB(processed1, 1);
 
             foreach (var item in processed1)

@@ -15,11 +15,26 @@ namespace Shared.BaseScan
     public class BaseScanApiClient
     {
         private readonly OptionsBaseScan optionsBaseScan;
+        private string apiKeyToken;
+
         public BaseScanApiClient(IOptions<OptionsBaseScan> optionsBaseScan)
         {
             this.optionsBaseScan = optionsBaseScan.Value;
+            SetApiKeyToken();
         }
+        public void SetApiKeyToken(int apiKeyTokenNumber = 0)
+        {
+            switch (apiKeyTokenNumber)
+            {
+                case 1:
+                    apiKeyToken = optionsBaseScan.apiKeyToken1;
+                    break;
 
+                default:
+                    apiKeyToken = optionsBaseScan.apiKeyToken;
+                    break;
+            }
+        }
         public async Task<AddressModel> GetInfoByAddress(string address)
         {
             AddressModel res = new();
@@ -51,7 +66,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("&page=1");
             urlBuilder.Append("&offset=1000");
             urlBuilder.Append("&sort=asc");
-            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();
 
@@ -84,7 +99,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("api/?module=stats");
             urlBuilder.Append("&action=tokensupply");
             urlBuilder.Append($"&contractaddress={address}");
-            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();
 
@@ -116,7 +131,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("api/?module=contract");
             urlBuilder.Append("&action=getsourcecode");
             urlBuilder.Append($"&address={address}");
-            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();
 
@@ -150,7 +165,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("&action=eth_getBlockByNumber");
             urlBuilder.Append($"&tag=0x{blockNumbderX16}");
             urlBuilder.Append($"&boolean=true");
-            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();
 
@@ -189,7 +204,7 @@ namespace Shared.BaseScan
             urlBuilder.Append("&page=1");
             urlBuilder.Append("&offset=1500");
             urlBuilder.Append("&sort=asc");
-            urlBuilder.Append($"&apikey={optionsBaseScan.apiKeyToken}");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();
 

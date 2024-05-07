@@ -1,10 +1,6 @@
-using Microsoft.Extensions.Options;
-
 using Shared.BaseScan;
-using Shared.ConfigurationOptions;
-using Shared.Telegram;
 
-namespace WorkerServiceReadTelegram
+namespace WorkerServiceRead
 {
     public class Worker : BackgroundService
     {

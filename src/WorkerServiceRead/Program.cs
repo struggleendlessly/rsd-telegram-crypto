@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Shared.BaseScan;
 using Shared.ConfigurationOptions;
 using Shared.DB;
-using Shared.Telegram;
 
-using WorkerServiceReadTelegram;
+using WorkerServiceRead;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSystemd();

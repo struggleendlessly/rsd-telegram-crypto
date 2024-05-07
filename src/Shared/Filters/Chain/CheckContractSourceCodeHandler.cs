@@ -34,12 +34,6 @@ namespace Shared.Filters.Chain
 
             var contractAddress = request.TokenInfo.AddressToken;
 
-            if (string.IsNullOrEmpty(contractAddress))
-            {
-                res = true;
-                return res;
-            }
-
             var contractSourceCode = await baseScan.GetContractSourceCode(contractAddress);
 
             if (!contractSourceCode.result[0].SourceCode.IsNullOrEmpty())

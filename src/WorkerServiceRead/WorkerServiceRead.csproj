@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-WorkerServiceReadTelegram-44bf03d7-bd8e-4221-926b-db512a8d505a</UserSecretsId>
+    <UserSecretsId>dotnet-WorkerServiceRead-44bf03d7-bd8e-4221-926b-db512a8d505a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

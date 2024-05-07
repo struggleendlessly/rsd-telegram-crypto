@@ -20,6 +20,7 @@ namespace Shared.BaseScan
             this.optionsBaseScan = optionsBaseScan.Value;
             this.dBContext = dBContext;
             this.baseScan = baseScan;
+            baseScan.SetApiKeyToken(1);
         }
 
         public async Task<int> Start()

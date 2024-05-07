@@ -30,6 +30,12 @@ namespace Shared.BaseScan
             var lastBlockNumber = await GetLastProcessedBlockFromDB();
             var lastBlockNumber16 = (lastBlockNumber + 1).ToString("X");
             var transIntheBlock = await baseScan.GetBlockByNumber(lastBlockNumber16);
+
+            if (transIntheBlock.result is null)
+            {
+                return res;
+            }
+
             var contracts = await FindContracts(transIntheBlock);
 
             if (contracts.Count == 0)

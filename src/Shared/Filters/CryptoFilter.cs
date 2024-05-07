@@ -56,6 +56,9 @@ namespace Shared.Filters
             {
                 if (item.IsValid)
                 {
+                    var lastBlockNumberX16 = await baseScan.GetLastBlockByNumber();
+                    var lastBlockNumberX10 = Convert.ToInt32(lastBlockNumberX16.result, 16);
+
                     await telegram.SendMessageToGroup($"" +
                         $"Found a valid token with info: " +
 
@@ -63,7 +66,10 @@ namespace Shared.Filters
                         $"DB id: {item.TokenInfo.Id} " +
 
                         $"{Environment.NewLine} " +
-                        $"Block : {item.TokenInfo.BlockNumber} " +
+                        $"Block current: {item.TokenInfo.BlockNumber} " +
+
+                        $"{Environment.NewLine} " +
+                        $"Block last: {lastBlockNumberX10} " +
 
                         $"{Environment.NewLine} " +
                         $"Owner url: {item.TokenInfo.UrlOwnersWallet} " +

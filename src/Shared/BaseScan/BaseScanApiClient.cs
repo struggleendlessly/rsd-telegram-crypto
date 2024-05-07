@@ -172,6 +172,38 @@ namespace Shared.BaseScan
             return res;
         }
 
+        public async Task<LastBlockNumberModel> GetLastBlockByNumber()
+        {
+            LastBlockNumberModel res = new();
+
+            var url = await UrlBuilderGetLastBlockByNumber();
+
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
+            {
+                HttpResponseMessage response = await sharedClient.GetAsync(url);
+
+                response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                res = await response.Content.ReadFromJsonAsync<LastBlockNumberModel>();
+            }
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderGetLastBlockByNumber()
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=proxy");
+            urlBuilder.Append("&action=eth_blockNumber");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }
+
         public async Task<NormalTransactions> GetListOfNormalTransactions(string ownerAddress)
         {
             NormalTransactions res = new();

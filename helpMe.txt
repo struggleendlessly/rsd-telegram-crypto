@@ -8,8 +8,8 @@ dotnet ef database update --project Shared --startup-project WorkerServiceReadTe
 
 
 ssh -i "D:\downloads\cryptofilter_key.pem" azureuser@52.252.195.157
-sudo chmod -R 777 /home/azureuser/telegram
-sudo chmod -R 777 /home/azureuser/telegram_session
+sudo chmod -R 777 /home/azureuser/reader
+
 scp -r "H:\rsd-telegram-crypto\src\WorkerServiceReadTelegram\bin\Release\net8.0\publish\linux-arm64" azureuser@52.252.195.157:/home/azureuser/telegram
 
 scp -r H:\rsd-telegram-crypto\src\WorkerServiceCryptoFilter\bin\Release\net8.0\publish\linux-arm64 azureuser@52.252.195.157:/home/azureuser/filter
@@ -18,12 +18,13 @@ sudo chmod -R 777 /home/azureuser/filter
 
 
 sudo nano /etc/systemd/system/appbackground-filter.service
+sudo nano /etc/systemd/system/appbackground-reader.service
 
 sudo systemctl daemon-reload
 
-sudo systemctl start appbackground-telegram.service
-sudo systemctl stop appbackground-telegram.service
-sudo systemctl status appbackground-telegram.service
+sudo systemctl start appbackground-reader.service
+sudo systemctl stop appbackground-reader.service
+sudo systemctl status appbackground-reader.service
 
 sudo systemctl start appbackground-filter.service
 sudo systemctl stop appbackground-filter.service
@@ -34,9 +35,9 @@ Description=filter
 
 [Service]
 Type=notify
-WorkingDirectory=/home/azureuser/filter
+WorkingDirectory=/home/azureuser/reader
 
-ExecStart=/home/azureuser/filter/WorkerServiceCryptoFilter
+ExecStart=/home/azureuser/reader/WorkerServiceRead
 
 
 Environment=DOTNET_ENVIRONMENT=Production

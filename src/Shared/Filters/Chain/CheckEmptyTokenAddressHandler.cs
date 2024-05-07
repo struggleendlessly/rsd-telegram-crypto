@@ -26,7 +26,7 @@ namespace Shared.Filters.Chain
 
             var contractAddress = request.TokenInfo.AddressToken;
 
-            if (string.IsNullOrEmpty(contractAddress))
+            if (!string.IsNullOrEmpty(contractAddress))
             {
                 res = true;
             }

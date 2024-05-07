@@ -12,7 +12,7 @@ namespace Shared.Filters
         private readonly BaseScan.BaseScanApiClient baseScan;
         private readonly Telegram.Telegram telegram;
         public CryptoFilter(
-            DBContext dBContext, 
+            DBContext dBContext,
             BaseScan.BaseScanApiClient baseScan,
             Telegram.Telegram telegram)
         {
@@ -79,9 +79,13 @@ namespace Shared.Filters
 
                         $"{Environment.NewLine} " +
                         $"Chart url: {item.TokenInfo.UrlChart}" +
+
+                        $"{Environment.NewLine} " +
+                        $"Token address: {item.TokenInfo.AddressToken}" +
+
                         $"");
                 }
-            }   
+            }
 
             // ----------------------------------------------
             // Process2 - check in 5 hours 

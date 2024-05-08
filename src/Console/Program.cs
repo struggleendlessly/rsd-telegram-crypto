@@ -3,6 +3,8 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Net;
 
 var text = """
+    TEST MESSAGE!!!
+
     `0xbf769155ff776a717fb96616a567bb898b21bee6`
 
     DB: `11178` | `14163880` | `14190231` | 26351 
@@ -11,7 +13,7 @@ var text = """
     
     """;
 
-string urlString = $"https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?chat_id=471986840&text={text}&parse_mode=markdown";
+string urlString = $"https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?message_thread_id=136&chat_id=-1002144699173&text={text}&parse_mode=markdown";
 
 using (var webclient = new WebClient())
 {

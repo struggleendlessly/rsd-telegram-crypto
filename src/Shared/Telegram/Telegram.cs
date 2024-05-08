@@ -17,7 +17,7 @@ namespace Shared.Telegram
         private readonly DBContext dBContext;
         private readonly OptionsTelegram optionsTelegram;
         public Telegram(
-            DBContext dBContext, 
+            DBContext dBContext,
             IOptions<OptionsTelegram> optionsTelegram)
         {
             this.dBContext = dBContext;
@@ -32,18 +32,21 @@ namespace Shared.Telegram
         {
             var res = false;
 
-            foreach (var chatId in optionsTelegram.chatIds)
+            string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/" +
+                $"sendMessage?" +
+                $"message_thread_id={optionsTelegram.message_thread_id_mainfilters}&" +
+                $"chat_id={optionsTelegram.chat_id_coins}&" +
+                $"text={text}&" +
+                $"parse_mode=MarkDown";
+
+            using (var webclient = new WebClient())
             {
-                string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/sendMessage?chat_id={chatId}&text={text}&parse_mode=MarkDown";
-
-                using (var webclient = new WebClient())
-                {
-                    var response = await webclient.DownloadStringTaskAsync(urlString);
-                    res = true;
-                }
-
-                await Task.Delay(optionsTelegram.api_delay_forech);
+                var response = await webclient.DownloadStringTaskAsync(urlString);
+                res = true;
             }
+
+            await Task.Delay(optionsTelegram.api_delay_forech);
+
 
             return res;
         }

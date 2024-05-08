@@ -3,15 +3,11 @@
     public class OptionsTelegram
     {
         public static string SectionName { get; } = "Telegram";
-        public string api_id { get; set; } = "";
-        public string api_hash { get; set; } = "";
-        public string phone_number { get; set; } = "";
-        public string session_pathname { get; set; } = "";
-        public string server_address { get; set; } = "";
         public int api_limit { get; set; }
         public int api_delay_worker { get; set; }
         public int api_delay_forech { get; set; }
         public string bot_hash { get; set; } = "";
-        public List<string> chatIds { get; set; } = new();
+        public string chat_id_coins { get; set; } ="";
+        public string message_thread_id_mainfilters { get; set; } ="";
     }
 }

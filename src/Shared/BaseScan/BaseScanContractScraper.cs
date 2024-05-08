@@ -75,6 +75,11 @@ namespace Shared.BaseScan
         {
             var res = "";
 
+            if (listOfNormalTransactions.result is null)
+            {
+                return res;
+            }
+
             foreach (var item in listOfNormalTransactions.result)
             {
                 if (item.hash == transHash &&

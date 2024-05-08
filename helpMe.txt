@@ -57,5 +57,7 @@ WantedBy=multi-user.target
 
   <ItemGroup>
 
+  https://api.basescan.org/api?module=proxy&action=eth_blockNumber&apikey=YourApiKeyToken
+
   https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/getUpdates
   https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?chat_id=6536840836&text=eeeee

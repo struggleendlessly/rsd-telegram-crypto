@@ -111,6 +111,17 @@ namespace Shared.BaseScan
 
             foreach (var item in collection)
             {
+                var countOfRecordsWithOwnerAddress =
+                    await dBContext.
+                    TokenInfos.
+                    Where(x => x.AddressOwnersWallet == item.from).
+                    CountAsync();
+
+                if (countOfRecordsWithOwnerAddress >= 3)
+                {
+                    continue;
+                }
+
                 var t = new TokenInfo();
 
                 t.HashContractTransaction = item.hash;

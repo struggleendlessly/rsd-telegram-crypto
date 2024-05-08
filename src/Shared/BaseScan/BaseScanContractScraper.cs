@@ -47,7 +47,7 @@ namespace Shared.BaseScan
                 foreach (var item in contracts)
                 {
                     var listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from);
-                    var tokenAddress = await FindTokenAddress(listOfNormalTransactions);
+                    var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
                     item.contractAddress = tokenAddress;
                 }
 
@@ -57,13 +57,16 @@ namespace Shared.BaseScan
             return res;
         }
 
-        private async Task<string> FindTokenAddress(NormalTransactions listOfNormalTransactions)
+        private async Task<string> FindTokenAddress(
+            NormalTransactions listOfNormalTransactions,
+            string transHash)
         {
             var res = "";
 
             foreach (var item in listOfNormalTransactions.result)
             {
-                if (!string.IsNullOrEmpty(item.contractAddress))
+                if (item.hash == transHash &&
+                    !string.IsNullOrEmpty(item.contractAddress))
                 {
                     res = item.contractAddress;
                     break;

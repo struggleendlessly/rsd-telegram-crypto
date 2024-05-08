@@ -58,32 +58,24 @@ namespace Shared.Filters
                 {
                     var lastBlockNumberX16 = await baseScan.GetLastBlockByNumber();
                     var lastBlockNumberX10 = Convert.ToInt32(lastBlockNumberX16.result, 16);
+                    
+                    var text =
+                        $"" +
+                        $"`{item.TokenInfo.AddressToken}`" +
 
-                    await telegram.SendMessageToGroup($"" +
-                        $"Found a valid token with info: " +
+                        $"{Environment.NewLine} {Environment.NewLine}" +
+                        $"DB: `{item.TokenInfo.Id}` | " +
+                        $"`{item.TokenInfo.BlockNumber}` | " +
+                        $"`{lastBlockNumberX10}` | " +
+                        $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} " +
 
-                        $"{Environment.NewLine} " +
-                        $"DB id: {item.TokenInfo.Id} " +
+                        $"{Environment.NewLine} {Environment.NewLine} " +
+                        $"[Owner]({item.TokenInfo.UrlOwnersWallet}) | " +
+                        $"[Token]({item.TokenInfo.UrlToken}) | " +
+                        $"[DexScreener]({item.TokenInfo.UrlChart})" +
+                        $"";
 
-                        $"{Environment.NewLine} " +
-                        $"Block current: {item.TokenInfo.BlockNumber} " +
-
-                        $"{Environment.NewLine} " +
-                        $"Block last: {lastBlockNumberX10} " +
-
-                        $"{Environment.NewLine} " +
-                        $"Owner url: {item.TokenInfo.UrlOwnersWallet} " +
-
-                        $"{Environment.NewLine} " +
-                        $"Token url: {item.TokenInfo.UrlToken}" +
-
-                        $"{Environment.NewLine} " +
-                        $"Chart url: {item.TokenInfo.UrlChart}" +
-
-                        $"{Environment.NewLine} " +
-                        $"Token address: {item.TokenInfo.AddressToken}" +
-
-                        $"");
+                    await telegram.SendMessageToGroup(text);
                 }
             }
 
@@ -166,9 +158,9 @@ namespace Shared.Filters
 
             res = await dBContext.
                 TokenInfos.
-                Where(x => x.IsProcessed1 == false).
-                Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
-                //Where(x => x.Id == 5715).
+                //Where(x => x.IsProcessed1 == false).
+                //Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
+                Where(x => x.Id == 11178).
                 Take(1).
                 ToListAsync();
 

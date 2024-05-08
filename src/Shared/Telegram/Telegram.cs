@@ -34,7 +34,7 @@ namespace Shared.Telegram
 
             foreach (var chatId in optionsTelegram.chatIds)
             {
-                string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/sendMessage?chat_id={chatId}&text={text}";
+                string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/sendMessage?chat_id={chatId}&text={text}&parse_mode=MarkDown";
 
                 using (var webclient = new WebClient())
                 {

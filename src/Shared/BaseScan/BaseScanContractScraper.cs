@@ -38,11 +38,8 @@ namespace Shared.BaseScan
 
             var contracts = await FindContracts(transIntheBlock);
 
-            if (contracts.Count == 0)
-            {
-                res = await UpdateLastBlockWhenNoContractsToDB(lastBlockNumber);
-            }
-            else
+
+            if (contracts.Count > 0)
             {
                 foreach (var item in contracts)
                 {
@@ -52,6 +49,11 @@ namespace Shared.BaseScan
                 }
 
                 res = await SaveNewContractsToDB(contracts);
+            }
+
+            if (contracts.Count == 0 || res == 0)
+            {
+                res = await UpdateLastBlockWhenNoContractsToDB(lastBlockNumber);
             }
 
             return res;

@@ -43,9 +43,17 @@ namespace Shared.BaseScan
             {
                 foreach (var item in contracts)
                 {
-                    var listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from);
-                    var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
-                    item.contractAddress = tokenAddress;
+                    NormalTransactions listOfNormalTransactions = new();
+                    int page = 1;
+
+                    while (listOfNormalTransactions.status.Equals("1") && string.IsNullOrEmpty(item.contractAddress))
+                    {
+                        listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from, page);
+                        var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
+                        item.contractAddress = tokenAddress;
+
+                        page++;
+                    }
                 }
 
                 res = await SaveNewContractsToDB(contracts);

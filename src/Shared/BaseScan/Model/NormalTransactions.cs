@@ -2,7 +2,7 @@
 {
     public class NormalTransactions
     {
-        public string status { get; set; }
+        public string status { get; set; } = "1";
         public string message { get; set; }
         public Result[] result { get; set; }
 

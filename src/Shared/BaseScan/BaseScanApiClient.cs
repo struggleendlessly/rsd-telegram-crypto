@@ -204,11 +204,11 @@ namespace Shared.BaseScan
             return res;
         }
 
-        public async Task<NormalTransactions> GetListOfNormalTransactions(string ownerAddress)
+        public async Task<NormalTransactions> GetListOfNormalTransactions(string ownerAddress, int page = 1)
         {
             NormalTransactions res = new();
 
-            var url = await UrlBuilderGetListOfNormalTransactions(ownerAddress);
+            var url = await UrlBuilderGetListOfNormalTransactions(ownerAddress, page);
 
             using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
             {
@@ -222,7 +222,7 @@ namespace Shared.BaseScan
             return res;
         }
 
-        private async Task<string> UrlBuilderGetListOfNormalTransactions(string ownerAddress)
+        private async Task<string> UrlBuilderGetListOfNormalTransactions(string ownerAddress, int page = 1)
         {
             var res = string.Empty;
 
@@ -233,7 +233,7 @@ namespace Shared.BaseScan
             urlBuilder.Append($"&startblock=0");
             urlBuilder.Append($"&endblock=99999999");
             urlBuilder.Append($"&startblock=0");
-            urlBuilder.Append("&page=1");
+            urlBuilder.Append($"&page={page}");
             urlBuilder.Append("&offset=1500");
             urlBuilder.Append("&sort=asc");
             urlBuilder.Append($"&apikey={apiKeyToken}");

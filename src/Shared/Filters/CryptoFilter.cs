@@ -158,9 +158,9 @@ namespace Shared.Filters
 
             res = await dBContext.
                 TokenInfos.
-                //Where(x => x.IsProcessed1 == false).
-                //Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
-                Where(x => x.Id == 11178).
+                Where(x => x.IsProcessed1 == false).
+                Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
+                //Where(x => x.Id == 11178).
                 Take(1).
                 ToListAsync();
 

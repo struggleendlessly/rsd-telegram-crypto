@@ -53,6 +53,8 @@ namespace Shared.BaseScan
                         item.contractAddress = tokenAddress;
 
                         page++;
+
+                        await Task.Delay(200);
                     }
                 }
 

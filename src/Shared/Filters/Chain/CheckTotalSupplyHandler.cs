@@ -32,7 +32,7 @@ namespace Shared.Filters.Chain
             var tatalSupply = await baseScan.GetTotalSupply(contractAddress);
             var tatalSupplyAmountString = "";
 
-            if (tatalSupply.result.Length > 1)
+            if (tatalSupply.result.Length > 3)
             {
                 res = true;
             }

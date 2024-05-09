@@ -3,6 +3,8 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 
+using Polly;
+
 using Shared.BaseScan.Model;
 using Shared.ConfigurationOptions;
 
@@ -16,6 +18,11 @@ namespace Shared.BaseScan
     {
         private readonly OptionsBaseScan optionsBaseScan;
         private string apiKeyToken;
+
+        private readonly IAsyncPolicy<HttpResponseMessage> retryPolicy =
+            Policy.HandleResult<HttpResponseMessage>(r => r.StatusCode is >= System.Net.HttpStatusCode.InternalServerError)
+            .Or<Exception>()
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
         public BaseScanApiClient(IOptions<OptionsBaseScan> optionsBaseScan)
         {
@@ -35,20 +42,31 @@ namespace Shared.BaseScan
                     break;
             }
         }
+        private async Task<T> RequestApi<T>(string address) where T : new()
+        {
+            T res = new();
+
+            var url = address;
+
+            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
+            {
+                HttpResponseMessage response = await retryPolicy.ExecuteAsync(() => sharedClient.GetAsync(url));
+
+                response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                res = await response.Content.ReadFromJsonAsync<T>();
+            }
+
+            return res;
+        }
+
         public async Task<AddressModel> GetInfoByAddress(string address)
         {
             AddressModel res = new();
 
             var url = await UrlBuilderAddress(address);
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
-            {
-                HttpResponseMessage response = await sharedClient.GetAsync(url);
-
-                response.EnsureSuccessStatusCode().WriteRequestToConsole();
-
-                res = await response.Content.ReadFromJsonAsync<AddressModel>();
-            }
+            res = await RequestApi<AddressModel>(url);
 
             return res;
         }
@@ -79,14 +97,7 @@ namespace Shared.BaseScan
 
             var url = await UrlBuilderTotalSupply(address);
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
-            {
-                HttpResponseMessage response = await sharedClient.GetAsync(url);
-
-                response.EnsureSuccessStatusCode().WriteRequestToConsole();
-
-                res = await response.Content.ReadFromJsonAsync<TotalSupplyModel>();
-            }
+            res = await RequestApi<TotalSupplyModel>(url);
 
             return res;
         }
@@ -111,15 +122,7 @@ namespace Shared.BaseScan
 
             var url = await UrlBuilderContractSourceCode(address);
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
-            {
-                HttpResponseMessage response = await sharedClient.GetAsync(url);
-
-                response.EnsureSuccessStatusCode().WriteRequestToConsole();
-
-                res = await response.Content.ReadFromJsonAsync<ContractSourceCodeModel>();
-            }
-
+            res = await RequestApi<ContractSourceCodeModel>(url);
             return res;
         }
 
@@ -144,14 +147,7 @@ namespace Shared.BaseScan
 
             var url = await UrlBuilderGetBlockByNumber(blockNumbderX16);
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
-            {
-                HttpResponseMessage response = await sharedClient.GetAsync(url);
-
-                response.EnsureSuccessStatusCode().WriteRequestToConsole();
-
-                res = await response.Content.ReadFromJsonAsync<BlockByNumberModel>();
-            }
+            res = await RequestApi<BlockByNumberModel>(url);
 
             return res;
         }
@@ -178,14 +174,7 @@ namespace Shared.BaseScan
 
             var url = await UrlBuilderGetLastBlockByNumber();
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
-            {
-                HttpResponseMessage response = await sharedClient.GetAsync(url);
-
-                response.EnsureSuccessStatusCode().WriteRequestToConsole();
-
-                res = await response.Content.ReadFromJsonAsync<LastBlockNumberModel>();
-            }
+            res = await RequestApi<LastBlockNumberModel>(url);
 
             return res;
         }
@@ -210,14 +199,7 @@ namespace Shared.BaseScan
 
             var url = await UrlBuilderGetListOfNormalTransactions(ownerAddress, page);
 
-            using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
-            {
-                HttpResponseMessage response = await sharedClient.GetAsync(url);
-
-                response.EnsureSuccessStatusCode().WriteRequestToConsole();
-
-                res = await response.Content.ReadFromJsonAsync<NormalTransactions>();
-            }
+            res = await RequestApi<NormalTransactions>(url);
 
             return res;
         }

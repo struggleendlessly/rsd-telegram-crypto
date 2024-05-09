@@ -1,16 +1,24 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+
+using Shared.DB;
 
 namespace Shared.HealthCheck
 {
     public class HealthCheck
     {
+        private readonly DBContext dBContext;
         private readonly IMemoryCache memoryCache;
         private readonly Telegram.Telegram telegram;
         private readonly string caheKey = "HealthCheck_15";
-        public HealthCheck(IMemoryCache memoryCache, Telegram.Telegram telegram)
+        public HealthCheck(
+            IMemoryCache memoryCache,
+            Telegram.Telegram telegram,
+            DBContext dBContext)
         {
             this.memoryCache = memoryCache;
             this.telegram = telegram;
+            this.dBContext = dBContext;
             telegram.SetGroup(1);
         }
 
@@ -21,7 +29,21 @@ namespace Shared.HealthCheck
 
             if (!isMessageSentToBot && sholdSendMessage)
             {
-                var text = "HealthCheck: " + name;
+                var today = DateTime.UtcNow.Date;
+                var dbTotalCount = await dBContext.TokenInfos.Where(x => x.TimeAdded > today).CountAsync();
+                var dbIsValidCount = await dBContext.TokenInfos.Where(x => x.IsValid == true && x.TimeAdded > today).CountAsync();
+
+                var text =
+                    name +
+
+                    $"{Environment.NewLine} {Environment.NewLine}" +
+                    $"DB items today: `{dbTotalCount}` " +
+
+                    $"{Environment.NewLine} {Environment.NewLine}" +
+                    $"DB isValid today: `{dbIsValidCount}` " +
+
+                    $"";
+
                 await telegram.SendMessageToGroup(text);
                 SetCache();
             }

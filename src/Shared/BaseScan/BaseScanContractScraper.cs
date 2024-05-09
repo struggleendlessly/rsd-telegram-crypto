@@ -44,15 +44,12 @@ namespace Shared.BaseScan
                 foreach (var item in contracts)
                 {
                     NormalTransactions listOfNormalTransactions = new();
-                    int page = 1;
 
                     for (int i = 0; i < 3; i++)
                     {
-                        listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from, page);
+                        listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from);
                         var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
                         item.contractAddress = tokenAddress;
-
-                        page++;
 
                         if (!string.IsNullOrEmpty(item.contractAddress) || listOfNormalTransactions?.result?.Count() == 1500)
                         {

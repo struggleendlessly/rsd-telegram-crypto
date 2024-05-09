@@ -35,8 +35,9 @@ namespace Shared.HealthCheck
 
                 var text =
                     name +
+                    $"{Environment.NewLine} {Environment.NewLine}" +
                     $"DB items today: `{dbTotalCount}` " +
-                    //$"{Environment.NewLine} {Environment.NewLine}" +
+                    $"{Environment.NewLine} {Environment.NewLine}" +
                     $"DB isValid today: `{dbIsValidCount}` " +
                     $"";
 

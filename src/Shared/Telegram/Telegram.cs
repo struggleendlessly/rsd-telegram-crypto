@@ -37,7 +37,8 @@ namespace Shared.Telegram
                 $"message_thread_id={optionsTelegram.message_thread_id_mainfilters}&" +
                 $"chat_id={optionsTelegram.chat_id_coins}&" +
                 $"text={text}&" +
-                $"parse_mode=MarkDown";
+                $"parse_mode=MarkDown&" +
+                $"disable_web_page_preview=true";
 
             using (var webclient = new WebClient())
             {

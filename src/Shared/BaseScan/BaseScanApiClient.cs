@@ -42,7 +42,8 @@ namespace Shared.BaseScan
                     break;
             }
         }
-        private async Task<T> RequestApi<T>(string address) where T : new()
+        private async Task<T> RequestApi<T>(string address) 
+            where T : new()
         {
             T res = new();
 

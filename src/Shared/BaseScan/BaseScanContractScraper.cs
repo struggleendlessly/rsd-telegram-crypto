@@ -51,7 +51,7 @@ namespace Shared.BaseScan
                         listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from, page);
                         var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
                         item.contractAddress = tokenAddress;
-                        listOfNormalTransactions = null;
+
                         page++;
 
                         if (!string.IsNullOrEmpty(item.contractAddress) || listOfNormalTransactions?.result?.Count() == 1500)
@@ -78,7 +78,7 @@ namespace Shared.BaseScan
             var res = 0;
 
             res = await dBContext.TokenInfos.MaxAsync(x => x.BlockNumber);
-            //res = 14244333;
+            //res = 14246802;
 
             return res;
         }

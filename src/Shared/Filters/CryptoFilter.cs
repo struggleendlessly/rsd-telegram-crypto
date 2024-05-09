@@ -39,10 +39,10 @@ namespace Shared.Filters
 
             timeHandler_Process1.
                 //SetNext(checkTheNameOfTokenHandler_Process1).
-                SetNext(checkEmptyTokenAddressHandler_Process1).
                 SetNext(checkAmountOfContractsCreatedHandler_Process1).
-                SetNext(timeOnContractCreatedHandler_Process1).
                 SetNext(removeLiquidityHandler_Process1).
+                SetNext(checkEmptyTokenAddressHandler_Process1).
+                SetNext(timeOnContractCreatedHandler_Process1).
                 SetNext(checkTotalSupplyHandler_Process1).
                 SetNext(checkContractSourceCodeHandler_Process1).
                 SetNext(fromOnInHandler_Process1).

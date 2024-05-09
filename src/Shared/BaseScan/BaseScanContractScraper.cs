@@ -46,7 +46,7 @@ namespace Shared.BaseScan
                     NormalTransactions listOfNormalTransactions = new();
                     int page = 1;
 
-                    while (listOfNormalTransactions.status.Equals("1") && string.IsNullOrEmpty(item.contractAddress))
+                    for (int i = 0; i < 3; i++)
                     {
                         listOfNormalTransactions = await baseScan.GetListOfNormalTransactions(item.from, page);
                         var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
@@ -54,7 +54,12 @@ namespace Shared.BaseScan
 
                         page++;
 
-                        await Task.Delay(200);
+                        if (!string.IsNullOrEmpty(item.contractAddress) || listOfNormalTransactions.result.Count() == 1500)
+                        {
+                            break;
+                        }
+
+                        await Task.Delay(1000);
                     }
                 }
 
@@ -65,6 +70,15 @@ namespace Shared.BaseScan
             {
                 res = await UpdateLastBlockWhenNoContractsToDB(lastBlockNumber);
             }
+
+            return res;
+        }
+        private async Task<int> GetLastProcessedBlockFromDB()
+        {
+            var res = 0;
+
+            res = await dBContext.TokenInfos.MaxAsync(x => x.BlockNumber);
+            //res = 14244333;
 
             return res;
         }
@@ -93,14 +107,6 @@ namespace Shared.BaseScan
             return res;
         }
 
-        private async Task<int> GetLastProcessedBlockFromDB()
-        {
-            var res = 0;
-
-            res = await dBContext.TokenInfos.MaxAsync(x => x.BlockNumber);
-
-            return res;
-        }
 
         private async Task<List<BlockByNumberModel.Transaction>> FindContracts(BlockByNumberModel collection)
         {

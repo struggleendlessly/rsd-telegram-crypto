@@ -10,15 +10,20 @@ namespace Shared.HealthCheck
         private readonly DBContext dBContext;
         private readonly IMemoryCache memoryCache;
         private readonly Telegram.Telegram telegram;
+        private readonly BaseScan.BaseScanApiClient baseScan;
+
         private readonly string caheKey = "HealthCheck_15";
         public HealthCheck(
             IMemoryCache memoryCache,
             Telegram.Telegram telegram,
-            DBContext dBContext)
+            DBContext dBContext,
+            BaseScan.BaseScanApiClient baseScan)
         {
             this.memoryCache = memoryCache;
             this.telegram = telegram;
             this.dBContext = dBContext;
+            this.baseScan = baseScan;
+
             telegram.SetGroup(1);
         }
 
@@ -32,6 +37,10 @@ namespace Shared.HealthCheck
                 var today = DateTime.UtcNow.Date;
                 var dbTotalCount = await dBContext.TokenInfos.Where(x => x.TimeAdded > today).CountAsync();
                 var dbIsValidCount = await dBContext.TokenInfos.Where(x => x.IsValid == true && x.TimeAdded > today).CountAsync();
+                var blockInProgress = await dBContext.TokenInfos.MaxAsync(x => x.BlockNumber);
+                var lastBlockNumberX16 = await baseScan.GetLastBlockByNumber();
+                var lastBlockNumberX10 = Convert.ToInt32(lastBlockNumberX16.result, 16);
+                var blockDiff = lastBlockNumberX10 - blockInProgress;
 
                 var text =
                     name +
@@ -39,6 +48,12 @@ namespace Shared.HealthCheck
                     $"DB items today: `{dbTotalCount}` " +
                     $"{Environment.NewLine} {Environment.NewLine}" +
                     $"DB isValid today: `{dbIsValidCount}` " +
+                    $"{Environment.NewLine} {Environment.NewLine}" +
+                    $"block in progress: `{blockInProgress}` " +
+                    $"{Environment.NewLine} {Environment.NewLine}" +
+                    $"last block: `{lastBlockNumberX10}` " +
+                    $"{Environment.NewLine} {Environment.NewLine}" +
+                    $"block diff: `{blockDiff}` " +
                     $"";
 
                 await telegram.SendMessageToGroup(text);

@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 using Shared.BaseScan;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 using Shared.Filters;
+using Shared.HealthCheck;
 using Shared.Telegram;
 
 using WorkerServiceCryptoFilter;
@@ -18,9 +20,11 @@ builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(Opt
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<DBContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
 
-builder.Services.AddSingleton<Telegram>();
-builder.Services.AddSingleton<BaseScanApiClient>();
+builder.Services.AddMemoryCache();
+builder.Services.AddTransient<Telegram>();
+builder.Services.AddSingleton<HealthCheck>();
 builder.Services.AddSingleton<CryptoFilter>();
+builder.Services.AddSingleton<BaseScanApiClient>();
 
 var host = builder.Build();
 host.Run();

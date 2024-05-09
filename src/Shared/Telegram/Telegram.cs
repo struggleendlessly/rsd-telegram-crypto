@@ -16,17 +16,29 @@ namespace Shared.Telegram
     {
         private readonly DBContext dBContext;
         private readonly OptionsTelegram optionsTelegram;
+        private string message_thread_id;
         public Telegram(
             DBContext dBContext,
             IOptions<OptionsTelegram> optionsTelegram)
         {
             this.dBContext = dBContext;
             this.optionsTelegram = optionsTelegram.Value;
+            SetGroup();
         }
-        public async Task Start()
+        public void SetGroup(int v = 0)
         {
-
+            switch (v)
+            {
+                case 1:
+                    message_thread_id = optionsTelegram.message_thread_id_healthCheck;
+                    break;
+                default:
+                    message_thread_id = optionsTelegram.message_thread_id_mainfilters;
+                    break;
+            }
         }
+
+
 
         public async Task<bool> SendMessageToGroup(string text)
         {
@@ -34,7 +46,7 @@ namespace Shared.Telegram
 
             string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/" +
                 $"sendMessage?" +
-                $"message_thread_id={optionsTelegram.message_thread_id_mainfilters}&" +
+                $"message_thread_id={message_thread_id}&" +
                 $"chat_id={optionsTelegram.chat_id_coins}&" +
                 $"text={text}&" +
                 $"parse_mode=MarkDown&" +

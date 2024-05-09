@@ -1,18 +1,21 @@
 using Shared.BaseScan;
+using Shared.HealthCheck;
 
 namespace WorkerServiceRead
 {
     public class Worker : BackgroundService
     {
-
         private readonly ILogger<Worker> _logger;
         private readonly BaseScanContractScraper baseScanContractScraper;
+        private readonly HealthCheck healthCheck;
 
         public Worker(
-            ILogger<Worker> logger, 
-            BaseScanContractScraper baseScanContractScraper)
+            ILogger<Worker> logger,
+            BaseScanContractScraper baseScanContractScraper,
+            HealthCheck healthCheck)
         {
             _logger = logger;
+            this.healthCheck = healthCheck;
             this.baseScanContractScraper = baseScanContractScraper;
         }
 
@@ -25,6 +28,7 @@ namespace WorkerServiceRead
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
+                await healthCheck.Start("Reader");
                 await baseScanContractScraper.Start();
                 await Task.Delay(500, stoppingToken);
             }

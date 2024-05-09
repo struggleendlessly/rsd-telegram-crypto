@@ -217,7 +217,7 @@ namespace Shared.BaseScan
             urlBuilder.Append($"&endblock=99999999");
             urlBuilder.Append($"&startblock=0");
             urlBuilder.Append($"&page={page}");
-            urlBuilder.Append("&offset=1500");
+            urlBuilder.Append("&offset=999");
             urlBuilder.Append("&sort=asc");
             urlBuilder.Append($"&apikey={apiKeyToken}");
 

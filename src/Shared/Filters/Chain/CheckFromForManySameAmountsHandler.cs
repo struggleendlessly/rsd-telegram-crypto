@@ -33,7 +33,7 @@ namespace Shared.Filters.Chain
                 Where(x => x.Count() >= 5).
                 ToList();
 
-            if (t.Count == 0)
+            if (t.Count == 0 || results.Count > 999)
             {
                 res = true;
             }

@@ -1,4 +1,5 @@
-﻿using Shared.Filters.Model;
+﻿using Shared.ConfigurationOptions;
+using Shared.Filters.Model;
 
 namespace Shared.Filters.Chain
 {
@@ -8,9 +9,13 @@ namespace Shared.Filters.Chain
     public class FromOnInHandler : AbstractHandler
     {
         private readonly BaseScan.BaseScanApiClient baseScan;
-        public FromOnInHandler(BaseScan.BaseScanApiClient baseScan)
+        private readonly OptionsBanAddresses optionsBanAddresses;
+        public FromOnInHandler(
+            BaseScan.BaseScanApiClient baseScan,
+            OptionsBanAddresses optionsBanAddresses)
         {
             this.baseScan = baseScan;
+            this.optionsBanAddresses = optionsBanAddresses;
         }
         public async override Task<AddressRequest> Handle(AddressRequest request)
         {
@@ -35,7 +40,15 @@ namespace Shared.Filters.Chain
             if (transInIndex >= 0)
             {
                 var fromAdress = vals[transInIndex].from;
-                request.AddressModel = await baseScan.GetInfoByAddress(fromAdress);
+
+                if (optionsBanAddresses.Addresses.Contains(fromAdress))
+                {
+                    res = false;
+                }
+                else
+                {
+                    request.AddressModel = await baseScan.GetInfoByAddress(fromAdress);
+                }
             }
 
             return res;

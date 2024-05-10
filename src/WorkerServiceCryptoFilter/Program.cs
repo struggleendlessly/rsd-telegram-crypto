@@ -14,6 +14,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSystemd();
 builder.Services.AddHostedService<Worker>();
 
+builder.Services.Configure<OptionsBanAddresses>(builder.Configuration.GetSection(OptionsBanAddresses.SectionName));
 builder.Services.Configure<OptionsBaseScan>(builder.Configuration.GetSection(OptionsBaseScan.SectionName));
 builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(OptionsTelegram.SectionName));
 

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
+using Shared.ConfigurationOptions;
 using Shared.DB;
 using Shared.Filters.Chain;
 using Shared.Filters.Model;
@@ -11,14 +13,17 @@ namespace Shared.Filters
         private readonly DBContext dBContext;
         private readonly BaseScan.BaseScanApiClient baseScan;
         private readonly Telegram.Telegram telegram;
+        private readonly OptionsBanAddresses optionsBanAddresses;
         public CryptoFilter(
             DBContext dBContext,
             BaseScan.BaseScanApiClient baseScan,
-            Telegram.Telegram telegram)
+            Telegram.Telegram telegram,
+            IOptions<OptionsBanAddresses> optionsBanAddresses)
         {
             this.dBContext = dBContext;
             this.baseScan = baseScan;
             this.telegram = telegram;
+            this.optionsBanAddresses = optionsBanAddresses.Value;
         }
 
         public async Task Start()
@@ -32,7 +37,7 @@ namespace Shared.Filters
             var checkAmountOfContractsCreatedHandler_Process1 = new CheckAmountOfContractsCreatedHandler();
             var removeLiquidityHandler_Process1 = new RemoveLiquidityHandler();
             var removeLiquidityHandler_Process1_2 = new RemoveLiquidityHandler();
-            var fromOnInHandler_Process1 = new FromOnInHandler(baseScan);
+            var fromOnInHandler_Process1 = new FromOnInHandler(baseScan, optionsBanAddresses);
             var checkAmountOfTarnsactionsHandler_Process1 = new CheckAmountOfTarnsactionsHandler();
             var checkTotalSupplyHandler_Process1 = new CheckTotalSupplyHandler(baseScan);
             var checkContractSourceCodeHandler_Process1 = new CheckContractSourceCodeHandler(baseScan);
@@ -58,7 +63,7 @@ namespace Shared.Filters
                 {
                     var lastBlockNumberX16 = await baseScan.GetLastBlockByNumber();
                     var lastBlockNumberX10 = Convert.ToInt32(lastBlockNumberX16.result, 16);
-                    
+
                     var text =
                         $"" +
                         $"`{item.TokenInfo.AddressToken}`" +

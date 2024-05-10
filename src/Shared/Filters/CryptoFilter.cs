@@ -41,6 +41,7 @@ namespace Shared.Filters
             var checkAmountOfTarnsactionsHandler_Process1 = new CheckAmountOfTarnsactionsHandler();
             var checkTotalSupplyHandler_Process1 = new CheckTotalSupplyHandler(baseScan);
             var checkContractSourceCodeHandler_Process1 = new CheckContractSourceCodeHandler(baseScan);
+            var checkFromForManySameAmountsHandler_Process1 = new CheckFromForManySameAmountsHandler();
 
             timeHandler_Process1.
                 //SetNext(checkTheNameOfTokenHandler_Process1).
@@ -52,6 +53,7 @@ namespace Shared.Filters
                 SetNext(checkContractSourceCodeHandler_Process1).
                 SetNext(fromOnInHandler_Process1).
                 SetNext(checkAmountOfTarnsactionsHandler_Process1).
+                SetNext(checkFromForManySameAmountsHandler_Process1).
                 SetNext(removeLiquidityHandler_Process1_2);
 
             var processed1 = await Process(to_Process1, timeHandler_Process1);
@@ -165,7 +167,7 @@ namespace Shared.Filters
                 TokenInfos.
                 Where(x => x.IsProcessed1 == false).
                 Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
-                //Where(x => x.Id == 11178).
+                //Where(x => x.Id == 17279).
                 Take(1).
                 ToListAsync();
 

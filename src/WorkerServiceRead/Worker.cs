@@ -30,7 +30,7 @@ namespace WorkerServiceRead
 
                 await healthCheck.Start("Reader");
                 await baseScanContractScraper.Start();
-                await Task.Delay(500, stoppingToken);
+                await Task.Delay(600, stoppingToken);
             }
         }
     }

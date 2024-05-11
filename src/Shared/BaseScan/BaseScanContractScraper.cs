@@ -51,7 +51,7 @@ namespace Shared.BaseScan
                         var tokenAddress = await FindTokenAddress(listOfNormalTransactions, item.hash);
                         item.contractAddress = tokenAddress;
 
-                        if (!string.IsNullOrEmpty(item.contractAddress) || listOfNormalTransactions?.result?.Count() == 1500)
+                        if (!string.IsNullOrEmpty(item.contractAddress) || listOfNormalTransactions?.result?.Count() == 999)
                         {
                             break;
                         }

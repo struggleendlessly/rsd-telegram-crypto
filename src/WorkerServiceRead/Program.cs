@@ -22,9 +22,9 @@ builder.Services.AddDbContext<DBContext>(options => options.UseSqlServer(connect
 
 builder.Services.AddMemoryCache();
 builder.Services.AddTransient<Telegram>();
-builder.Services.AddSingleton<HealthCheck>();
-builder.Services.AddSingleton<BaseScanApiClient>();
-builder.Services.AddSingleton<BaseScanContractScraper>();
+builder.Services.AddTransient<HealthCheck>();
+builder.Services.AddTransient<BaseScanApiClient>();
+builder.Services.AddTransient<BaseScanContractScraper>();
 
 var host = builder.Build();
 host.Run();

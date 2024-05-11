@@ -42,20 +42,40 @@ namespace Shared.BaseScan
                     break;
             }
         }
-        private async Task<T> RequestApi<T>(string address) 
+        private async Task<T> RequestApi<T>(string address)
             where T : new()
         {
             T res = new();
 
             var url = address;
+            int count = 0;
 
+        repeat:
             using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
             {
                 HttpResponseMessage response = await retryPolicy.ExecuteAsync(() => sharedClient.GetAsync(url));
 
                 response.EnsureSuccessStatusCode().WriteRequestToConsole();
 
-                res = await response.Content.ReadFromJsonAsync<T>();
+                try
+                {
+                    res = await response.Content.ReadFromJsonAsync<T>();
+                }
+                catch (Exception ex)
+                {
+                    if (count < 3)
+                    {
+                        count++;
+                        await Task.Delay(1000);
+                        goto repeat;
+                    }
+                    else
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine(json);
+                        throw;
+                    }
+                }
             }
 
             return res;

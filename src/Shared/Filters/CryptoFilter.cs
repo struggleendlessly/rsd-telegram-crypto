@@ -28,6 +28,17 @@ namespace Shared.Filters
 
         public async Task Start()
         {
+            await Process1();
+            await Process2();
+        }
+
+        public async Task Process2()
+        {
+
+        }
+
+        private async Task Process1()
+        {
             List<TokenInfo> to_Process1 = await GetRecordForProcessing1();
 
             var timeHandler_Process1 = new TimeOnInHandler();
@@ -85,20 +96,6 @@ namespace Shared.Filters
                     await telegram.SendMessageToGroup(text);
                 }
             }
-
-            // ----------------------------------------------
-            // Process2 - check in 5 hours 
-            //List<TokenInfo> toProcess2 = await GetRecordForProcessing2();
-            //var fromOnInHandlerProcess2 = new FromOnInHandler(baseScan);
-            //var removeLiquidityHandlerProcess2 = new RemoveLiquidityHandler();
-            //var removeLiquidityHandlerProcess2_2 = new RemoveLiquidityHandler();
-
-            //removeLiquidityHandlerProcess2.
-            //    SetNext(fromOnInHandlerProcess2).
-            //    SetNext(removeLiquidityHandlerProcess2_2);
-
-            //var processed2 = await Process(toProcess2, removeLiquidityHandlerProcess2);
-            //var resProcessed2 = await UpdateDB(processed2, 2);
         }
 
         public async Task<List<AddressRequest>> Process(List<TokenInfo> toProcess, AbstractHandler handler)
@@ -139,12 +136,6 @@ namespace Shared.Filters
                     case 1:
                         {
                             token.IsProcessed1 = true;
-
-                            if (!item.IsValid)
-                            {
-                                token.IsProcessed2 = true;
-                            }
-
                             break;
                         }
                     case 2:

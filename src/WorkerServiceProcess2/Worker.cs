@@ -38,7 +38,7 @@ namespace WorkerServiceProcess2
 
                 }
 
-                await Task.Delay(180000, stoppingToken);
+                await Task.Delay(1800000, stoppingToken);
             }
         }
     }

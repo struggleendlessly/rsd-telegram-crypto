@@ -1,0 +1,39 @@
+[Unit]
+Description=process2 
+
+[Service]
+Type=notify
+WorkingDirectory=/home/strug/process2
+
+ExecStart=/home/strug/process2/WorkerServiceProcess2
+
+
+Environment=DOTNET_ENVIRONMENT=Production
+[Install]
+WantedBy=multi-user.target
+
+////////////////////////////////////////////////////////
+
+sudo systemctl daemon-reload
+
+sudo nano /etc/systemd/system/appbackground-filter.service
+sudo nano /etc/systemd/system/appbackground-reader.service
+sudo nano /etc/systemd/system/appbackground-process2.service
+
+sudo systemctl start appbackground-reader.service
+sudo systemctl stop appbackground-reader.service
+sudo systemctl status appbackground-reader.service
+
+sudo systemctl start appbackground-filter.service
+sudo systemctl stop appbackground-filter.service
+sudo systemctl status appbackground-filter.service
+
+sudo systemctl start appbackground-process2.service
+sudo systemctl stop appbackground-process2.service
+sudo systemctl status appbackground-process2.service
+
+////////////////////////////////////////////////////////
+
+sudo chmod -R 777 /home/strug/process2
+sudo chmod -R 777 /home/strug/reader
+sudo chmod -R 777 /home/strug/reader

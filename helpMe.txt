@@ -1,49 +1,19 @@
 https://docs.basescan.org/api-endpoints/accounts#get-a-list-of-normal-transactions-by-address
 https://dev.to/uthmanrahimi/deploy-net-core-worker-service-on-linux-1mjc
 
+////////////////////////////////////////////////////////
+
 PS H:\rsd-telegram-crypto\src> 
 
 dotnet ef migrations add In15 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
 dotnet ef database update --project Shared --startup-project WorkerServiceRead
 
+////////////////////////////////////////////////////////
 
 ssh -i "D:\downloads\cryptofilter_key.pem" azureuser@52.252.195.157
-sudo chmod -R 777 /home/azureuser/reader
-
 scp -r "H:\rsd-telegram-crypto\src\WorkerServiceReadTelegram\bin\Release\net8.0\publish\linux-arm64" azureuser@52.252.195.157:/home/azureuser/telegram
 
-scp -r H:\rsd-telegram-crypto\src\WorkerServiceCryptoFilter\bin\Release\net8.0\publish\linux-arm64 azureuser@52.252.195.157:/home/azureuser/filter
-sudo chmod -R 777 /home/azureuser/filter
-/home/azureuser/filter
-
-
-sudo nano /etc/systemd/system/appbackground-filter.service
-sudo nano /etc/systemd/system/appbackground-reader.service
-
-sudo systemctl daemon-reload
-
-sudo systemctl start appbackground-reader.service
-sudo systemctl stop appbackground-reader.service
-sudo systemctl status appbackground-reader.service
-
-sudo systemctl start appbackground-filter.service
-sudo systemctl stop appbackground-filter.service
-sudo systemctl status appbackground-filter.service
-
-[Unit]
-Description=filter 
-
-[Service]
-Type=notify
-WorkingDirectory=/home/azureuser/reader
-
-ExecStart=/home/azureuser/reader/WorkerServiceRead
-
-
-Environment=DOTNET_ENVIRONMENT=Production
-[Install]
-WantedBy=multi-user.target
-
+////////////////////////////////////////////////////////
 
   <ItemGroup>
     <None Remove="WTelegram.session" />
@@ -57,7 +27,9 @@ WantedBy=multi-user.target
 
   <ItemGroup>
 
-  https://api.basescan.org/api?module=proxy&action=eth_blockNumber&apikey=YourApiKeyToken
+////////////////////////////////////////////////////////
 
-  https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/getUpdates
-  https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?chat_id=6536840836&text=eeeee
+https://api.basescan.org/api?module=proxy&action=eth_blockNumber&apikey=YourApiKeyToken
+
+https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/getUpdates
+https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?chat_id=6536840836&text=eeeee

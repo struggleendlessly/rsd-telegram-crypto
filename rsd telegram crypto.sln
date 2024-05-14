@@ -5,6 +5,7 @@ VisualStudioVersion = 17.10.34804.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3F0CB670-3CE6-4BDA-99E9-65CCFEA79BFE}"
 	ProjectSection(SolutionItems) = preProject
+		daemons.txt = daemons.txt
 		helpMe.txt = helpMe.txt
 	EndProjectSection
 EndProject

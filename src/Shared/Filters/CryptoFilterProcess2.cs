@@ -52,6 +52,11 @@ namespace Shared.Filters
 
                     if (item.isContractVerified)
                     {
+                        if (item.TokenInfo.TellMessageIdBotVerified != 0)
+                        {
+                            continue;
+                        }
+
                         var telMessageId = await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_botVerified);
                         item.TokenInfo.TellMessageIdBotVerified = telMessageId;
 
@@ -62,6 +67,11 @@ namespace Shared.Filters
                     }
                     else
                     {
+                        if (item.TokenInfo.TellMessageIdNotVerified != 0)
+                        {
+                            continue;
+                        }
+
                         var telMessageId = await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_unVerified);
                         item.TokenInfo.TellMessageIdNotVerified = telMessageId;
                     }

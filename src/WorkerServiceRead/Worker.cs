@@ -28,7 +28,8 @@ namespace WorkerServiceRead
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await healthCheck.Start("Reader");
+                await healthCheck.StartWithInfo("Reader");
+
                 try
                 {
                     await baseScanContractScraper.Start();
@@ -38,7 +39,7 @@ namespace WorkerServiceRead
 
                 }
 
-                await Task.Delay(600, stoppingToken);
+                await Task.Delay(500, stoppingToken);
             }
         }
     }

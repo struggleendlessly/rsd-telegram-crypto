@@ -28,7 +28,7 @@ namespace WorkerServiceCryptoFilter
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await healthCheck.Start("CryptoFilter");
+                await healthCheck.StartNoInfo("CryptoFilter");
 
                 try
                 {

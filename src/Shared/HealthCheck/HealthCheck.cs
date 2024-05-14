@@ -32,7 +32,7 @@ namespace Shared.HealthCheck
             telegram.SetGroup(1);
         }
 
-        public async Task Start(string name)
+        public async Task StartWithInfo(string name)
         {
             var isMessageSentToBot = GetCache();
             var sholdSendMessage = DateTime.UtcNow.Minute % 10 == 0;
@@ -60,6 +60,20 @@ namespace Shared.HealthCheck
                     $"{Environment.NewLine} {Environment.NewLine}" +
                     $"block diff: `{blockDiff}` " +
                     $"";
+
+                await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_healthCheck);
+                SetCache();
+            }
+        }
+
+        public async Task StartNoInfo(string name)
+        {
+            var isMessageSentToBot = GetCache();
+            var sholdSendMessage = DateTime.UtcNow.Minute % 10 == 0;
+
+            if (!isMessageSentToBot && sholdSendMessage)
+            {
+                var text = name;
 
                 await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_healthCheck);
                 SetCache();

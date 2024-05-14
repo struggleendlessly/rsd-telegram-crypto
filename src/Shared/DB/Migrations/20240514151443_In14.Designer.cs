@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shared.DB;
 
@@ -11,9 +12,11 @@ using Shared.DB;
 namespace Shared.DB.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20240514151443_In14")]
+    partial class In14
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,14 +61,17 @@ namespace Shared.DB.Migrations
                     b.Property<bool>("IsValid")
                         .HasColumnType("bit");
 
-                    b.Property<int>("TellMessageIdBotVerified")
-                        .HasColumnType("int");
+                    b.Property<string>("TellMessageIdBotVerified")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TellMessageIdIsValid")
-                        .HasColumnType("int");
+                    b.Property<string>("TellMessageIdIsValid")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TellMessageIdNotVerified")
-                        .HasColumnType("int");
+                    b.Property<string>("TellMessageIdNotVerified")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("TimeAdded")
                         .HasColumnType("datetime2");

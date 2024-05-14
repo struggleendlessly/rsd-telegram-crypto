@@ -8,5 +8,6 @@ namespace Shared.Filters.Model
         public AddressModel AddressModel { get; set; }
         public TokenInfo TokenInfo { get; set; }
         public bool IsValid { get; set; } = true;
+        public bool isContractVerified { get; set; } = false;
     }
 }

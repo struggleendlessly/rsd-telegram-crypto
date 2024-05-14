@@ -7,7 +7,7 @@ using Shared.Filters;
 using Shared.HealthCheck;
 using Shared.Telegram;
 
-using WorkerServiceCryptoFilter;
+using WorkerServiceProcess2;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSystemd();
@@ -23,7 +23,7 @@ builder.Services.AddDbContext<DBContext>(options => options.UseSqlServer(connect
 builder.Services.AddMemoryCache();
 builder.Services.AddTransient<Telegram>();
 builder.Services.AddTransient<HealthCheck>();
-builder.Services.AddTransient<CryptoFilterProcess1>();
+builder.Services.AddTransient<CryptoFilterProcess2>();
 builder.Services.AddTransient<BaseScanApiClient>();
 
 var host = builder.Build();

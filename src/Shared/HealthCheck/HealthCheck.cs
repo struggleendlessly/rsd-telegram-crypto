@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
+using Shared.ConfigurationOptions;
 using Shared.DB;
 
 namespace Shared.HealthCheck
@@ -11,18 +13,21 @@ namespace Shared.HealthCheck
         private readonly IMemoryCache memoryCache;
         private readonly Telegram.Telegram telegram;
         private readonly BaseScan.BaseScanApiClient baseScan;
+        private readonly OptionsTelegram optionsTelegram;
 
         private readonly string caheKey = "HealthCheck_15";
         public HealthCheck(
             IMemoryCache memoryCache,
             Telegram.Telegram telegram,
             DBContext dBContext,
-            BaseScan.BaseScanApiClient baseScan)
+            BaseScan.BaseScanApiClient baseScan,
+            IOptions<OptionsTelegram> optionsTelegram)
         {
             this.memoryCache = memoryCache;
             this.telegram = telegram;
             this.dBContext = dBContext;
             this.baseScan = baseScan;
+            this.optionsTelegram = optionsTelegram.Value;
 
             telegram.SetGroup(1);
         }
@@ -56,7 +61,7 @@ namespace Shared.HealthCheck
                     $"block diff: `{blockDiff}` " +
                     $"";
 
-                await telegram.SendMessageToGroup(text);
+                await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_healthCheck);
                 SetCache();
             }
         }

@@ -10,5 +10,7 @@
         public string chat_id_coins { get; set; } = "";
         public string message_thread_id_mainfilters { get; set; } = "";
         public string message_thread_id_healthCheck { get; set; } = "";
+        public string message_thread_id_botVerified { get; set; } = "";
+        public string message_thread_id_unVerified { get; set; } = "";
     }
 }

@@ -3,8 +3,8 @@ https://dev.to/uthmanrahimi/deploy-net-core-worker-service-on-linux-1mjc
 
 PS H:\rsd-telegram-crypto\src> 
 
-dotnet ef migrations add In5 -o DB/Migrations --project Shared --startup-project WorkerServiceReadTelegram
-dotnet ef database update --project Shared --startup-project WorkerServiceReadTelegram
+dotnet ef migrations add In15 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
+dotnet ef database update --project Shared --startup-project WorkerServiceRead
 
 
 ssh -i "D:\downloads\cryptofilter_key.pem" azureuser@52.252.195.157

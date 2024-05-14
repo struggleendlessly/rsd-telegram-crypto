@@ -8,15 +8,17 @@ using Shared.Filters.Model;
 
 namespace Shared.Filters
 {
-    public class CryptoFilter
+    public class CryptoFilterProcess1
     {
         private readonly DBContext dBContext;
         private readonly BaseScan.BaseScanApiClient baseScan;
         private readonly Telegram.Telegram telegram;
         private readonly OptionsBanAddresses optionsBanAddresses;
-        public CryptoFilter(
+        private readonly OptionsTelegram optionsTelegram;
+        public CryptoFilterProcess1(
             DBContext dBContext,
             BaseScan.BaseScanApiClient baseScan,
+            IOptions<OptionsTelegram> optionsTelegram,
             Telegram.Telegram telegram,
             IOptions<OptionsBanAddresses> optionsBanAddresses)
         {
@@ -24,17 +26,12 @@ namespace Shared.Filters
             this.baseScan = baseScan;
             this.telegram = telegram;
             this.optionsBanAddresses = optionsBanAddresses.Value;
+            this.optionsTelegram = optionsTelegram.Value;
         }
 
         public async Task Start()
         {
             await Process1();
-            await Process2();
-        }
-
-        public async Task Process2()
-        {
-
         }
 
         private async Task Process1()
@@ -93,9 +90,35 @@ namespace Shared.Filters
                         $"[DexScreener]({item.TokenInfo.UrlChart})" +
                         $"";
 
-                    await telegram.SendMessageToGroup(text);
+                    var telMessageId = await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_mainfilters);
+                    item.TokenInfo.TellMessageIdIsValid = telMessageId;
                 }
             }
+
+            var mesIdupdated = UpdateDBTelMessageId(processed1);
+        }
+
+        public async Task<List<AddressRequest>> Process2(List<TokenInfo> toProcess, AbstractHandler handler)
+        {
+            List<AddressRequest> res = new();
+
+            foreach (var item in toProcess)
+            {
+                Console.WriteLine($"Processing {item.AddressOwnersWallet}");
+
+                var addressRequest = new AddressRequest();
+                addressRequest.TokenInfo = item;
+                addressRequest.TokenInfo.IsValid = true;
+                addressRequest.TokenInfo.ErrorType = "";
+                addressRequest.AddressModel = await baseScan.GetInfoByAddress(item.AddressOwnersWallet);
+
+                var filtered = await handler.Handle(addressRequest);
+                res.Add(filtered);
+
+                await Task.Delay(250);
+            }
+
+            return res;
         }
 
         public async Task<List<AddressRequest>> Process(List<TokenInfo> toProcess, AbstractHandler handler)
@@ -118,7 +141,6 @@ namespace Shared.Filters
 
             return res;
         }
-
 
         private async Task<int> UpdateDB(List<AddressRequest> collection, int processStep)
         {
@@ -150,6 +172,22 @@ namespace Shared.Filters
 
             return res;
         }
+
+        private async Task<int> UpdateDBTelMessageId(List<AddressRequest> collection)
+        {
+            var res = 0;
+
+            foreach (var item in collection)
+            {
+                var token = dBContext.TokenInfos.Where(x => x.Id == item.TokenInfo.Id).FirstOrDefault();
+                token.TellMessageIdIsValid = item.TokenInfo.TellMessageIdIsValid;
+            }
+
+            res = await dBContext.SaveChangesAsync();
+
+            return res;
+        }
+
         private async Task<List<TokenInfo>> GetRecordForProcessing1()
         {
             List<TokenInfo> res = new();
@@ -160,20 +198,6 @@ namespace Shared.Filters
                 Where(x => x.TimeAdded < DateTime.UtcNow.AddMinutes(-2)).
                 //Where(x => x.Id == 17279).
                 Take(1).
-                ToListAsync();
-
-            return res;
-        }
-
-        private async Task<List<TokenInfo>> GetRecordForProcessing2()
-        {
-            List<TokenInfo> res = new();
-
-            res = await dBContext.
-                TokenInfos.
-                Where(x => x.IsProcessed2 == false && x.IsValid == true).
-                Where(x => x.TimeUpdated > DateTime.UtcNow.AddHours(-5)).
-                Take(2).
                 ToListAsync();
 
             return res;

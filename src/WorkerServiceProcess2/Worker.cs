@@ -1,21 +1,20 @@
-using Shared.BaseScan;
 using Shared.Filters;
 using Shared.HealthCheck;
 
-namespace WorkerServiceCryptoFilter
+namespace WorkerServiceProcess2
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly CryptoFilterProcess1 CryptoFilterProcess1;
+        private readonly CryptoFilterProcess2 CryptoFilterProcess2;
         private readonly HealthCheck healthCheck;
         public Worker(
             ILogger<Worker> logger,
-            CryptoFilterProcess1 cryptoFilter,
+            CryptoFilterProcess2 cryptoFilter,
             HealthCheck healthCheck)
         {
             _logger = logger;
-            this.CryptoFilterProcess1 = cryptoFilter;
+            this.CryptoFilterProcess2 = cryptoFilter;
             this.healthCheck = healthCheck;
         }
 
@@ -28,18 +27,18 @@ namespace WorkerServiceCryptoFilter
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await healthCheck.Start("CryptoFilter");
+                await healthCheck.Start("Process2");
 
                 try
                 {
-                    await CryptoFilterProcess1.Start();
+                    await CryptoFilterProcess2.Start();
                 }
                 catch (Exception ex)
                 {
 
                 }
 
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(180000, stoppingToken);
             }
         }
     }

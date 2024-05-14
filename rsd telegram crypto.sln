@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "src\BlazorApp\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceRead", "src\WorkerServiceRead\WorkerServiceRead.csproj", "{AE760688-BAFC-40D3-9A07-1C3EE5A62B5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "src\Console\Console.csproj", "{ED9B0E9F-A59A-49C9-A976-9918A5B950B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "src\Console\Console.csproj", "{ED9B0E9F-A59A-49C9-A976-9918A5B950B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerServiceProcess2", "src\WorkerServiceProcess2\WorkerServiceProcess2.csproj", "{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{ED9B0E9F-A59A-49C9-A976-9918A5B950B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED9B0E9F-A59A-49C9-A976-9918A5B950B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED9B0E9F-A59A-49C9-A976-9918A5B950B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -37,6 +37,10 @@ namespace Shared.BaseScan
                     apiKeyToken = optionsBaseScan.apiKeyToken1;
                     break;
 
+                case 2:
+                    apiKeyToken = optionsBaseScan.apiKeyToken2;
+                    break;
+
                 default:
                     apiKeyToken = optionsBaseScan.apiKeyToken;
                     break;

@@ -11,6 +11,9 @@
         public string UrlToken { get; set; } = "";
         public string UrlOwnersWallet { get; set; } = "";
         public string UrlChart { get; set; } = "";
+        public int TellMessageIdIsValid { get; set; } = 0;
+        public int TellMessageIdBotVerified { get; set; } = 0;
+        public int TellMessageIdNotVerified { get; set; } = 0;
 
         public bool IsValid { get; set; } = false;
         public bool IsProcessed1 { get; set; } = false;

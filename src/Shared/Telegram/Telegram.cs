@@ -1,10 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
 using Shared.DB;
+using Shared.Telegram.Models;
 
 using System.Net;
+using System.Text.Json;
 
 using TL;
 
@@ -40,13 +44,13 @@ namespace Shared.Telegram
 
 
 
-        public async Task<bool> SendMessageToGroup(string text)
+        public async Task<int> SendMessageToGroup(string text, string threadId)
         {
-            var res = false;
+            var res = 0;
 
             string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/" +
                 $"sendMessage?" +
-                $"message_thread_id={message_thread_id}&" +
+                $"message_thread_id={threadId}&" +
                 $"chat_id={optionsTelegram.chat_id_coins}&" +
                 $"text={text}&" +
                 $"parse_mode=MarkDown&" +
@@ -55,11 +59,36 @@ namespace Shared.Telegram
             using (var webclient = new WebClient())
             {
                 var response = await webclient.DownloadStringTaskAsync(urlString);
-                res = true;
+
+                var t = JsonSerializer.Deserialize<MessageSend>(response);
+                res = t.result.message_id;
             }
 
             await Task.Delay(optionsTelegram.api_delay_forech);
 
+
+            return res;
+        }
+
+        public async Task<int> DeleteMessageInGroup(int messageId)
+        {
+            var res = 0;
+
+            string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/" +
+                $"deleteMessage?" +
+                $"message_thread_id={message_thread_id}&" +
+                $"chat_id={optionsTelegram.chat_id_coins}&" +
+                $"message_id={messageId}&";
+
+            using (var webclient = new WebClient())
+            {
+                var response = await webclient.DownloadStringTaskAsync(urlString);
+
+                var t = JsonSerializer.Deserialize<MessageSend>(response);
+                res = t.result.message_id;
+            }
+
+            await Task.Delay(optionsTelegram.api_delay_forech);
 
             return res;
         }

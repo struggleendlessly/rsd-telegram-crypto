@@ -5,8 +5,6 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 
-using static System.Net.Mime.MediaTypeNames;
-
 namespace Shared.HealthCheck
 {
     public class HealthCheck
@@ -50,16 +48,11 @@ namespace Shared.HealthCheck
                 var blockDiff = lastBlockNumberX10 - blockInProgress;
 
                 var text =
-                    name +
-                    $"{Environment.NewLine} {Environment.NewLine}" +
-                    $"DB items today: `{dbTotalCount}` " +
-                    $"{Environment.NewLine} {Environment.NewLine}" +
-                    $"DB isValid today: `{dbIsValidCount}` " +
-                    $"{Environment.NewLine} {Environment.NewLine}" +
-                    $"block in progress: `{blockInProgress}` " +
-                    $"{Environment.NewLine} {Environment.NewLine}" +
-                    $"last block: `{lastBlockNumberX10}` " +
-                    $"{Environment.NewLine} {Environment.NewLine}" +
+                    $"-- {name} -- \n" +
+                    $"DB items today: `{dbTotalCount}` \n" +
+                    $"DB isValid today: `{dbIsValidCount}` \n" +
+                    $"block in progress: `{blockInProgress}` \n" +
+                    $"last block: `{lastBlockNumberX10}` \n" +
                     $"block diff: `{blockDiff}` " +
                     $"";
 

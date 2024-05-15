@@ -63,7 +63,7 @@ namespace Shared.HealthCheck
 
         public async Task StartNoInfo(string name, bool sendNow = false)
         {
-            var text = name;
+            var text = $"-- {name} -- ";
 
             if (sendNow)
             {

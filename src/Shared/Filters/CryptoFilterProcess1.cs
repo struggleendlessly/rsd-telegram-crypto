@@ -76,13 +76,11 @@ namespace Shared.Filters
 
                     var text =
                         $"" +
-                        $"`{item.TokenInfo.AddressToken}`" +
+                        $"`{item.TokenInfo.AddressToken}` \n" +
 
-                        $"{Environment.NewLine} {Environment.NewLine}" +
                         $"DB: `{item.TokenInfo.Id}` | " +
-                        $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} 🆗" +
+                        $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} 🆗 \n" +
 
-                        $"{Environment.NewLine} {Environment.NewLine} " +
                         $"[Owner]({item.TokenInfo.UrlOwnersWallet}) | " +
                         $"[Token]({item.TokenInfo.UrlToken}) | " +
                         $"[DexScreener]({item.TokenInfo.UrlChart})" +

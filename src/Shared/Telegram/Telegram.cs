@@ -70,22 +70,26 @@ namespace Shared.Telegram
             return res;
         }
 
-        public async Task<int> DeleteMessageInGroup(int messageId)
+        public async Task<int> DeleteMessageInGroup(int messageId, string threadId)
         {
             var res = 0;
 
             string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/" +
                 $"deleteMessage?" +
-                $"message_thread_id={message_thread_id}&" +
+                $"message_thread_id={threadId}&" +
                 $"chat_id={optionsTelegram.chat_id_coins}&" +
-                $"message_id={messageId}&";
+                $"message_id={messageId}";
 
             using (var webclient = new WebClient())
             {
-                var response = await webclient.DownloadStringTaskAsync(urlString);
+                try
+                {
+                    var response = await webclient.DownloadStringTaskAsync(urlString);
+                }
+                catch (Exception ex)
+                {
 
-                var t = JsonSerializer.Deserialize<MessageSend>(response);
-                res = t.result.message_id;
+                }
             }
 
             await Task.Delay(optionsTelegram.api_delay_forech);

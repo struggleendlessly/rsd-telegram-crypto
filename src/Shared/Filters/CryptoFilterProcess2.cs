@@ -62,7 +62,7 @@ namespace Shared.Filters
 
                         if (item.TokenInfo.TellMessageIdNotVerified != 0)
                         {
-                            telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdNotVerified);
+                            telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdNotVerified, optionsTelegram.message_thread_id_unVerified);
                         }
                     }
                     else
@@ -80,11 +80,11 @@ namespace Shared.Filters
                 }
                 else
                 {
-                    var telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdIsValid);
+                    var telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdIsValid, optionsTelegram.message_thread_id_mainfilters);
 
                     if (item.TokenInfo.TellMessageIdNotVerified != 0)
                     {
-                        telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdNotVerified);
+                        telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdNotVerified, optionsTelegram.message_thread_id_unVerified);
                     }
                 }
             }
@@ -213,7 +213,7 @@ namespace Shared.Filters
                 TokenInfos.
                 Where(x => x.IsValid == true && !string.IsNullOrEmpty(x.AddressToken) && x.TellMessageIdBotVerified == 0).
                 Where(x => x.TimeUpdated > DateTime.UtcNow.AddHours(-48)).
-                //Where(x => x.Id == 17279).
+                //Where(x => x.Id == 33855).
                 //Take(2).
                 ToListAsync();
 

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace Shared.HealthCheck
 {
     public class HealthCheck
@@ -66,15 +68,21 @@ namespace Shared.HealthCheck
             }
         }
 
-        public async Task StartNoInfo(string name)
+        public async Task StartNoInfo(string name, bool sendNow = false)
         {
+            var text = name;
+
+            if (sendNow)
+            {
+                await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_healthCheck);
+                return;
+            }
+
             var isMessageSentToBot = GetCache();
             var sholdSendMessage = DateTime.UtcNow.Minute % 10 == 0;
 
             if (!isMessageSentToBot && sholdSendMessage)
             {
-                var text = name;
-
                 await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_healthCheck);
                 SetCache();
             }

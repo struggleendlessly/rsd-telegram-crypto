@@ -2,7 +2,9 @@
 
 using Shared.Filters.Model;
 
+using System.Diagnostics.Contracts;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Shared.Filters.Chain
 {
@@ -41,19 +43,28 @@ namespace Shared.Filters.Chain
             {
                 isContractVerified = true;
 
+                var soursceCode = contractSourceCode.result[0].SourceCode;
+
                 var addBotContains =
-                        contractSourceCode.
-                        result[0].
-                        SourceCode.
+                        soursceCode.
                         Contains("addbot", StringComparison.InvariantCultureIgnoreCase);
 
                 var addB0tContains =
-                        contractSourceCode.
-                        result[0].
-                        SourceCode.
+                        soursceCode.
                         Contains("addb0t", StringComparison.InvariantCultureIgnoreCase);
 
-                if (addBotContains || addB0tContains)
+                var swapTokensForEthContains =
+                        soursceCode.
+                        Contains("swapTokensForEth", StringComparison.InvariantCultureIgnoreCase);
+
+                string patternInit = @"\bfunction init\b";
+                bool initContains = Regex.IsMatch(soursceCode, patternInit, RegexOptions.IgnoreCase);
+
+                if (
+                    addBotContains ||
+                    addB0tContains ||
+                    swapTokensForEthContains ||
+                    initContains)
                 {
                     isValid = false;
                 }

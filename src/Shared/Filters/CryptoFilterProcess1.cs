@@ -80,9 +80,7 @@ namespace Shared.Filters
 
                         $"{Environment.NewLine} {Environment.NewLine}" +
                         $"DB: `{item.TokenInfo.Id}` | " +
-                        $"`{item.TokenInfo.BlockNumber}` | " +
-                        $"`{lastBlockNumberX10}` | " +
-                        $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} " +
+                        $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} 🆗" +
 
                         $"{Environment.NewLine} {Environment.NewLine} " +
                         $"[Owner]({item.TokenInfo.UrlOwnersWallet}) | " +

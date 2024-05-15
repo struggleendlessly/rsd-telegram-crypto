@@ -48,14 +48,14 @@ namespace Shared.Filters
             {
                 if (item.IsValid)
                 {
-                    var text = await PrepareTextForTelegram(item.TokenInfo);
-
                     if (item.isContractVerified)
                     {
                         if (item.TokenInfo.TellMessageIdBotVerified != 0)
                         {
                             continue;
                         }
+
+                        var text = await PrepareTextForTelegram(item.TokenInfo, "✅");
 
                         var telMessageId = await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_botVerified);
                         item.TokenInfo.TellMessageIdBotVerified = telMessageId;
@@ -71,6 +71,8 @@ namespace Shared.Filters
                         {
                             continue;
                         }
+
+                        var text = await PrepareTextForTelegram(item.TokenInfo, "🚫");
 
                         var telMessageId = await telegram.SendMessageToGroup(text, optionsTelegram.message_thread_id_unVerified);
                         item.TokenInfo.TellMessageIdNotVerified = telMessageId;
@@ -90,7 +92,7 @@ namespace Shared.Filters
             var mesIdupdated = UpdateDBTelMessageId(processed);
         }
 
-        private async Task<string> PrepareTextForTelegram(TokenInfo tokenInfo)
+        private async Task<string> PrepareTextForTelegram(TokenInfo tokenInfo, string icon)
         {
             var res = "";
 
@@ -103,9 +105,7 @@ namespace Shared.Filters
 
                 $"{Environment.NewLine} {Environment.NewLine}" +
                 $"DB: `{tokenInfo.Id}` | " +
-                $"`{tokenInfo.BlockNumber}` | " +
-                $"`{lastBlockNumberX10}` | " +
-                $"{lastBlockNumberX10 - tokenInfo.BlockNumber} " +
+                $"{lastBlockNumberX10 - tokenInfo.BlockNumber} {icon}" +
 
                 $"{Environment.NewLine} {Environment.NewLine} " +
                 $"[Owner]({tokenInfo.UrlOwnersWallet}) | " +

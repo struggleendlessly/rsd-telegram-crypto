@@ -9,7 +9,7 @@ var text = """
     TEST MESSAGE!!!123
 
     `0xbf769155ff776a717fb96616a567bb898b21bee6`
-
+    ❤️
     DB: `11178` | `14163880` | `14190231` | 26351 
 
     [Owner](https://basescan.org/address/0xc0feb38ca691a7ccd508832571dc26b51de500e3) | [Token](https://basescan.org/token/0xbf769155ff776a717fb96616a567bb898b21bee6) | [DexScreener](https://dexscreener.com/base/0xbf769155ff776a717fb96616a567bb898b21bee6)
@@ -22,7 +22,7 @@ using (var webclient = new WebClient())
 {
     try
     {
-        var response = await webclient.DownloadStringTaskAsync(ttt);
+        var response = await webclient.DownloadStringTaskAsync(urlString);
         var ee = JsonSerializer.Deserialize<MessageSend>(response);
     }
     catch (Exception ee)

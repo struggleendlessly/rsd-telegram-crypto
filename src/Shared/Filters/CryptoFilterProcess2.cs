@@ -101,13 +101,11 @@ namespace Shared.Filters
 
             res =
                 $"" +
-                $"`{tokenInfo.AddressToken}`" +
+                $"`{tokenInfo.AddressToken}` \n" +
 
-                $"{Environment.NewLine} {Environment.NewLine}" +
                 $"DB: `{tokenInfo.Id}` | " +
-                $"{lastBlockNumberX10 - tokenInfo.BlockNumber} {icon}" +
+                $"{lastBlockNumberX10 - tokenInfo.BlockNumber} {icon} \n" +
 
-                $"{Environment.NewLine} {Environment.NewLine} " +
                 $"[Owner]({tokenInfo.UrlOwnersWallet}) | " +
                 $"[Token]({tokenInfo.UrlToken}) | " +
                 $"[DexScreener]({tokenInfo.UrlChart})" +

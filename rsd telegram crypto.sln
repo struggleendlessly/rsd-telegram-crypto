@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		daemons.txt = daemons.txt
 		helpMe.txt = helpMe.txt
+		linux setup.txt = linux setup.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared.csproj", "{31F62D14-23AB-4D47-A6C6-81958DB02925}"
@@ -19,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceRead", "src\Wo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "src\Console\Console.csproj", "{ED9B0E9F-A59A-49C9-A976-9918A5B950B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerServiceProcess2", "src\WorkerServiceProcess2\WorkerServiceProcess2.csproj", "{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceProcess2", "src\WorkerServiceProcess2\WorkerServiceProcess2.csproj", "{D0E5B86A-4D9B-45D2-BC9E-D64E05707003}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

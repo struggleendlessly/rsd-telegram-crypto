@@ -60,13 +60,17 @@ namespace Shared.Filters.Chain
                 string patternInit = @"\bfunction init\b";
                 bool initContains = Regex.IsMatch(soursceCode, patternInit, RegexOptions.IgnoreCase);
 
-                if (
-                    addBotContains ||
+                if (addBotContains ||
                     addB0tContains ||
-                    swapTokensForEthContains ||
                     initContains)
                 {
                     isValid = false;
+                }
+
+                // swapTokensForEth should just left in isValid and not show in other chats 
+                if (swapTokensForEthContains)
+                {
+                    isContractVerified = false;
                 }
             }
 

@@ -4,6 +4,8 @@ using System.Net;
 using System.Text.Json;
 using Shared.Telegram.Models;
 using static System.Net.WebRequestMethods;
+
+await Program1.Main();
 //var text ="{\r\n  \"?isRandom\": \"true\",\r\n  \"count\": \"3\"\r\n}"
 //    "TEST MESSAGE!!!123 \n" +
 

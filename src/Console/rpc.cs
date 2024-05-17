@@ -31,8 +31,9 @@ public class JsonRpcClient
             """,
             id = requestId++
         };
+        var e = """{"id": 2, "jsonrpc": "2.0", "method": "eth_getLogs", "params": [{"address":"0x4200000000000000000000000000000000000006","fromBlock":"0xBC5C7B","toBlock":"0xBC5C7D","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"]}]}""";
         var tt = JsonSerializer.Serialize(jsonRequest);
-        var content = new StringContent(JsonSerializer.Serialize(jsonRequest), Encoding.UTF8, "application/json");
+        var content = new StringContent(e, Encoding.UTF8, "application/json");
         var response = await httpClient.PostAsync("", content);
 
         if (!response.IsSuccessStatusCode)
@@ -109,7 +110,7 @@ public class Program1
         try
         {
             var response = await rpcClient.SendRequest<object, object>("eth_getLogs", c);
-            Console.WriteLine(JsonSerializer.Serialize(params1));
+            Console.WriteLine(JsonSerializer.Serialize(response));
         }
         catch (Exception ex)
         {

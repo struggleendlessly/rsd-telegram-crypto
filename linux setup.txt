@@ -2,3 +2,5 @@ https://www.malibal.com/guides/how-to-open-ports-on-ubuntu/
 https://askubuntu.com/questions/1259860/on-ubuntu-20-04-how-do-you-open-a-port-in-the-firewall
 https://www.cyberciti.biz/faq/ufw-allow-incoming-ssh-connections-from-a-specific-ip-address-subnet-on-ubuntu-debian/
 https://ostechnix.com/how-to-write-log-files-in-ram-using-log2ram-in-linux/
+
+https://www.digitalocean.com/community/tutorials/how-to-use-journalctl-to-view-and-manipulate-systemd-logs

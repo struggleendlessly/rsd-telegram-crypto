@@ -9,15 +9,15 @@ sudo nano /etc/systemd/system/appbackground-reader.service
 sudo nano /etc/systemd/system/appbackground-process2.service
 
 sudo systemctl start appbackground-reader.service
-sudo systemctl stop appbackground-reader.service
-sudo systemctl status appbackground-reader.service
-
 sudo systemctl start appbackground-filter.service
-sudo systemctl stop appbackground-filter.service
-sudo systemctl status appbackground-filter.service
-
 sudo systemctl start appbackground-process2.service
+
+sudo systemctl stop appbackground-reader.service
+sudo systemctl stop appbackground-filter.service
 sudo systemctl stop appbackground-process2.service
+
+sudo systemctl status appbackground-filter.service
+sudo systemctl status appbackground-reader.service
 sudo systemctl status appbackground-process2.service
 
 
@@ -44,7 +44,8 @@ Type=notify
 WorkingDirectory=/home/strug/reader
 
 ExecStart=/home/strug/reader/WorkerServiceRead
-
+Restart=always
+RestartSec=3
 
 Environment=DOTNET_ENVIRONMENT=Production
 [Install]
@@ -60,7 +61,8 @@ Type=notify
 WorkingDirectory=/home/strug/filter
 
 ExecStart=/home/strug/filter/WorkerServiceCryptoFilter
-
+Restart=always
+RestartSec=3
 
 Environment=DOTNET_ENVIRONMENT=Production
 [Install]
@@ -76,7 +78,8 @@ Type=notify
 WorkingDirectory=/home/strug/process2
 
 ExecStart=/home/strug/process2/WorkerServiceProcess2
-
+Restart=always
+RestartSec=3
 
 Environment=DOTNET_ENVIRONMENT=Production
 [Install]

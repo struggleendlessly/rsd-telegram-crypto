@@ -57,7 +57,7 @@ namespace Shared.BaseScan
         repeat:
             using (HttpClient sharedClient = new() { BaseAddress = new Uri(optionsBaseScan.baseUrl) })
             {
-                sharedClient.Timeout = TimeSpan.FromSeconds(30);
+                sharedClient.Timeout = TimeSpan.FromSeconds(60);
                 HttpResponseMessage response = await retryPolicy.ExecuteAsync(() => sharedClient.GetAsync(url));
 
                 response.EnsureSuccessStatusCode().WriteRequestToConsole();

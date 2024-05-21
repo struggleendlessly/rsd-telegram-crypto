@@ -28,10 +28,10 @@ namespace WorkerServiceRead
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await healthCheck.StartWithInfo("Reader");
 
                 try
                 {
+                    await healthCheck.StartWithInfo("Reader");
                     await baseScanContractScraper.Start();
                 }
                 catch (Exception ex)

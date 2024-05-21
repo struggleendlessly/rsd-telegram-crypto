@@ -27,10 +27,10 @@ namespace WorkerServiceProcess2
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await healthCheck.StartNoInfo("Process2", true);
 
                 try
                 {
+                    await healthCheck.StartNoInfo("Process2", true);
                     await CryptoFilterProcess2.Start();
                 }
                 catch (Exception ex)

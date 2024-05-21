@@ -28,10 +28,10 @@ namespace WorkerServiceCryptoFilter
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
 
-                await healthCheck.StartNoInfo("CryptoFilter");
 
                 try
                 {
+                    await healthCheck.StartNoInfo("CryptoFilter");
                     await CryptoFilterProcess1.Start();
                 }
                 catch (Exception ex)

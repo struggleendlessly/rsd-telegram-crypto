@@ -33,7 +33,7 @@ namespace Shared.Filters.Chain
             {
                 var timeDiffWithNextTrans = vals[transInIndex + 1].timeStamp - vals[transInIndex].timeStamp;
 
-                if (timeDiffWithNextTrans > 40)
+                if (timeDiffWithNextTrans > 120)
                 {
                     res = true;
                 }

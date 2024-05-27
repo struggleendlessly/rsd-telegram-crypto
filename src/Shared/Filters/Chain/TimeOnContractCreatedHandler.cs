@@ -32,7 +32,7 @@ namespace Shared.Filters.Chain
             {
                 var timeDiffWithNextTrans = vals[contractCreatedIndex + 1].timeStamp - vals[contractCreatedIndex].timeStamp;
 
-                if (timeDiffWithNextTrans > 120)
+                if (timeDiffWithNextTrans > 40)
                 {
                     res = true;
                 }

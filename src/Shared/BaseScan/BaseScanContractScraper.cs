@@ -137,7 +137,7 @@ namespace Shared.BaseScan
                     Where(x => x.AddressOwnersWallet == item.from).
                     CountAsync();
 
-                if (countOfRecordsWithOwnerAddress >= 3)
+                if (countOfRecordsWithOwnerAddress >= 5)
                 {
                     continue;
                 }

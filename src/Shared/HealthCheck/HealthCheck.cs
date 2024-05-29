@@ -35,7 +35,7 @@ namespace Shared.HealthCheck
         public async Task StartWithInfo(string name)
         {
             var isMessageSentToBot = GetCache();
-            var sholdSendMessage = DateTime.UtcNow.Minute % 10 == 0;
+            var sholdSendMessage = DateTime.UtcNow.Minute % 30 == 0;
 
             if (!isMessageSentToBot && sholdSendMessage)
             {
@@ -72,7 +72,7 @@ namespace Shared.HealthCheck
             }
 
             var isMessageSentToBot = GetCache();
-            var sholdSendMessage = DateTime.UtcNow.Minute % 10 == 0;
+            var sholdSendMessage = DateTime.UtcNow.Minute % 30 == 0;
 
             if (!isMessageSentToBot && sholdSendMessage)
             {

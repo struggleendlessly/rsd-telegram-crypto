@@ -56,7 +56,7 @@ namespace Shared.BaseScan
                             break;
                         }
 
-                        await Task.Delay(300);
+                        await Task.Delay(2000);
                     }
                 }
 

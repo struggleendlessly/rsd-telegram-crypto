@@ -1,4 +1,11 @@
+using Microsoft.ML;
+using Microsoft.ML.Data;
+
+using System.Data;
+
 using WorkerServiceAi.DB;
+
+using static Microsoft.ML.DataOperationsCatalog;
 
 namespace WorkerServiceAi
 {
@@ -6,26 +13,66 @@ namespace WorkerServiceAi
     {
         private readonly ILogger<Worker> _logger;
         private readonly DBContext dbContext;
-
+        private MLContext mlContext;
         public Worker(ILogger<Worker> logger,
             DBContext dbContext)
         {
             _logger = logger;
             this.dbContext = dbContext;
+            mlContext = new MLContext(seed: 0);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var a = dbContext.Learn22.ToList();
+            var a = new Classification();
+            var dataSet = dbContext.Learn22.ToList();
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
-            }
+
+            IDataView data = mlContext.Data.LoadFromEnumerable(dataSet);
+
+            TrainTestData dataSplit = mlContext.Data.TrainTestSplit(data, testFraction: 0.2);
+            IDataView trainData = dataSplit.TrainSet;
+            IDataView testData = dataSplit.TestSet;
+
+            var pipeline = ProcessData();
+
+            var trainingPipeline = BuildAndTrainModel(pipeline);
+
+            var trainedModel = trainingPipeline.Fit(trainData);
+            var predEngine = mlContext.Model.CreatePredictionEngine<Learn22, IssuePrediction>(trainedModel);
+
+            //while (!stoppingToken.IsCancellationRequested)
+            //{
+            //    if (_logger.IsEnabled(LogLevel.Information))
+            //    {
+            //        _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            //    }
+            //    await Task.Delay(1000, stoppingToken);
+            //}
+        }
+
+        public class IssuePrediction
+        {
+            [ColumnName("PredictedLabel")]
+            public string? isGood;
+        }
+
+        IEstimator<ITransformer> ProcessData()
+        {
+            var pipeline = mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "isGood", outputColumnName: "Label")
+                .Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "contractCode", outputColumnName: "contractCodeFeaturized"))
+                .Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "contractByteCode", outputColumnName: "contractByteCodeFeaturized"))
+                .Append(mlContext.Transforms.Concatenate("Features", "contractCodeFeaturized", "contractByteCodeFeaturized"));
+
+            return pipeline;
+        }
+
+        IEstimator<ITransformer> BuildAndTrainModel(IEstimator<ITransformer> pipeline)
+        {
+            var trainingPipeline = pipeline.Append(mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy("Label", "Features"))
+               .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+            return trainingPipeline;
         }
     }
 }

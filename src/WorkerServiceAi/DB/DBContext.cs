@@ -14,6 +14,6 @@ namespace WorkerServiceAi.DB
         }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder options)
-        //    => options.UseSqlServer($"Server=ArianaGrande,1433;Initial Catalog=ai;Persist Security Info=False;User ID=sa;Password=1waq!WAQ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        //    => options.UseSqlServer($"Server=ARIANAGRANDE;Database=ai;Persist Security Info=False;User ID=sa;Password=1waq!WAQ1waq!WAQ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=3;");
     }
 }

@@ -5,8 +5,16 @@
     "Version": 1,
     "ColumnProperties": [
       {
-        "ColumnName": "col0",
+        "ColumnName": "isGood",
         "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Boolean",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "contract",
+        "ColumnPurpose": "Feature",
         "ColumnDataFormat": "String",
         "IsCategorical": false,
         "Type": "Column",
@@ -14,22 +22,206 @@
       }
     ],
     "ConnectionString": "Data Source=arianagrande;Initial Catalog=ai;Integrated Security=True;Encrypt=False",
+    "CommandString": "SELECT [isGood], CAST([contract] as NVARCHAR(MAX)) FROM [dbo].[learn1]",
     "DatabaseName": "ai",
     "SelectedTableDbo": "dbo",
-    "TableName": "learn22"
+    "TableName": "learn1"
   },
   "Environment": {
     "Type": "LocalCPU",
     "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.87777777777777788,
+        "RuntimeInSeconds": 2.494,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "InputColumnName": "contract",
+            "OutputColumnName": "contract"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "contract"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "isGood",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "isGood",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.87777777777777788,
+        "RuntimeInSeconds": 2.474,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "InputColumnName": "contract",
+            "OutputColumnName": "contract"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "contract"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 6,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "isGood",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "isGood",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.87777777777777788,
+        "RuntimeInSeconds": 2.492,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "InputColumnName": "contract",
+            "OutputColumnName": "contract"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "contract"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "isGood",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "isGood",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.87777777777777788,
+        "RuntimeInSeconds": 2.911,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "InputColumnName": "contract",
+            "OutputColumnName": "contract"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "contract"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "isGood",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "isGood",
+            "ScoreColumnName": "Score"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestBinary",
+        "Score": 0.87777777777777788,
+        "RuntimeInSeconds": 2.683,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "e0": {
+            "InputColumnName": "contract",
+            "OutputColumnName": "contract"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "contract"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e6": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "isGood",
+            "FeatureColumnName": "Features"
+          },
+          "e7": {
+            "LabelColumnName": "isGood",
+            "ScoreColumnName": "Score"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "FeaturizeText",
+      "e1": "Concatenate",
+      "e2": "FastTreeBinary",
+      "e3": "LightGbmBinary",
+      "e4": "LbfgsLogisticRegressionBinary",
+      "e5": "SdcaLogisticRegressionBinary",
+      "e6": "FastForestBinary",
+      "e7": "Naive"
+    },
+    "Schema": "e0 * e1 * (e2 + e3 + e4 + e5 + e6 * e7)",
+    "MetricName": "Accuracy",
+    "ModelFilePath": "H:\\rsd-telegram-crypto\\src\\WorkerServiceAi\\MLModel1.mlnet"
   },
   "Type": "TrainingConfig",
   "Version": 5,
   "TrainingOption": {
     "Version": 2,
     "Subsampling": false,
+    "Tuner": "eci-cfo",
     "Type": "ClassificationTrainingOption",
     "TrainingTime": 60,
-    "LabelColumn": "col0",
+    "OptimizeMetric": "Accuracy",
+    "LabelColumn": "isGood",
+    "AvailableTrainers": [
+      "SDCA",
+      "LBFGS",
+      "LGBM",
+      "FASTTREE",
+      "FASTFOREST"
+    ],
     "ValidationOption": {
       "Version": 0,
       "Type": "CrossValidationValidationOption",

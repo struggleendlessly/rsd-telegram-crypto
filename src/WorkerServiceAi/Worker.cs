@@ -13,33 +13,38 @@ namespace WorkerServiceAi
     {
         private readonly ILogger<Worker> _logger;
         private readonly DBContext dbContext;
+        private readonly ClassificationBaseScan classification;
         private MLContext mlContext;
         public Worker(ILogger<Worker> logger,
-            DBContext dbContext)
+            DBContext dbContext,
+            ClassificationBaseScan classification)
         {
             _logger = logger;
             this.dbContext = dbContext;
             mlContext = new MLContext(seed: 0);
+            this.classification = classification;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var a = new Classification();
-            var dataSet = dbContext.Learn22.ToList();
+            var ee = ";";
+            classification.Start();
+            //var a = new Classification();
+            //var dataSet = dbContext.Learn22.ToList();
 
 
-            IDataView data = mlContext.Data.LoadFromEnumerable(dataSet);
+            //IDataView data = mlContext.Data.LoadFromEnumerable(dataSet);
 
-            TrainTestData dataSplit = mlContext.Data.TrainTestSplit(data, testFraction: 0.2);
-            IDataView trainData = dataSplit.TrainSet;
-            IDataView testData = dataSplit.TestSet;
+            //TrainTestData dataSplit = mlContext.Data.TrainTestSplit(data, testFraction: 0.2);
+            //IDataView trainData = dataSplit.TrainSet;
+            //IDataView testData = dataSplit.TestSet;
 
-            var pipeline = ProcessData();
+            //var pipeline = ProcessData();
 
-            var trainingPipeline = BuildAndTrainModel(pipeline);
+            //var trainingPipeline = BuildAndTrainModel(pipeline);
 
-            var trainedModel = trainingPipeline.Fit(trainData);
-            var predEngine = mlContext.Model.CreatePredictionEngine<Learn22, IssuePrediction>(trainedModel);
+            //var trainedModel = trainingPipeline.Fit(trainData);
+            //var predEngine = mlContext.Model.CreatePredictionEngine<Learn22, IssuePrediction>(trainedModel);
 
             //while (!stoppingToken.IsCancellationRequested)
             //{

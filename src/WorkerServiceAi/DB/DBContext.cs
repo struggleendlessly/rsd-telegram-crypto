@@ -5,6 +5,7 @@ namespace WorkerServiceAi.DB
     public class DBContext : DbContext
     {
         public DbSet<Learn22> Learn22 { get; set; }
+        public DbSet<Learn22_testData> Learn22_testData { get; set; }
 
         public string DbPath { get; }
 

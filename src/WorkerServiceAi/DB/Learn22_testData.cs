@@ -1,6 +1,6 @@
 ﻿namespace WorkerServiceAi.DB
 {
-    public class Learn22 : Learn22Base
+    public class Learn22_testData : Learn22Base
     {
     }
 }

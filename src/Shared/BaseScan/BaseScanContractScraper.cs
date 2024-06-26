@@ -78,9 +78,17 @@ namespace Shared.BaseScan
         }
         private async Task<Model.TokenInfo> GetFromPaidApi(string contractAddress)
         {
-            Model.TokenInfo res = new();
+            Model.TokenInfo res = new() { status = "0", message = "NOTOK" };
 
-            res = await baseScanPayedSubscription.GetTokenInfo(contractAddress);
+            try
+            {
+                res = await baseScanPayedSubscription.GetTokenInfo(contractAddress);
+
+            }
+            catch (Exception ex)
+            {
+
+            }
 
             return res;
         }

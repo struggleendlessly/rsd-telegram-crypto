@@ -225,7 +225,7 @@ namespace Shared.Filters
                 TokenInfos.
                 Where(x => x.IsValid == true && !string.IsNullOrEmpty(x.AddressToken) && x.TellMessageIdBotVerified == 0).
                 Where(x => x.TimeUpdated > DateTime.UtcNow.AddHours(-48)).
-                Where(x => x.Id == 139574).
+                //Where(x => x.Id == 139574).
                 //Take(2).
                 ToListAsync();
 

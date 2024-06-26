@@ -68,6 +68,8 @@ namespace Shared.Filters
                         {
                             telMessageId = await telegram.DeleteMessageInGroup(item.TokenInfo.TellMessageIdNotVerified, optionsTelegram.message_thread_id_unVerified);
                         }
+
+                        var a = await baseScanContractScraper.SaveContractSourceCodeToDB(item.TokenInfo.AddressToken);
                     }
                     else
                     {
@@ -223,7 +225,7 @@ namespace Shared.Filters
                 TokenInfos.
                 Where(x => x.IsValid == true && !string.IsNullOrEmpty(x.AddressToken) && x.TellMessageIdBotVerified == 0).
                 Where(x => x.TimeUpdated > DateTime.UtcNow.AddHours(-48)).
-                //Where(x => x.Id == 33855).
+                Where(x => x.Id == 139574).
                 //Take(2).
                 ToListAsync();
 

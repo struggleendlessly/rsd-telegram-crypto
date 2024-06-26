@@ -5,7 +5,7 @@ namespace Shared.DB
     public class DBContext : DbContext
     {
         public DbSet<TokenInfo> TokenInfos { get; set; }
-        //public DbSet<TokenInfoUrl> TokenInfoUrls { get; set; }
+        public DbSet<ContractSourceCode> ContractSourceCodes { get; set; }
 
         public string DbPath { get; }
 

@@ -6,6 +6,8 @@ using Shared.BaseScan.Model;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 
+using TL;
+
 namespace Shared.BaseScan
 {
     public class BaseScanContractScraper
@@ -89,6 +91,48 @@ namespace Shared.BaseScan
             catch (Exception ex)
             {
 
+            }
+
+            return res;
+        }
+
+        public async Task<int> SaveContractSourceCodeToDB(string contractAddress)
+        {
+            var res = 0;
+
+            var contractSourceCodeDB = dBContext.ContractSourceCodes.Where(x => x.AddressToken == contractAddress).FirstOrDefault();
+
+            if (contractSourceCodeDB is not null)
+            {
+                return res;
+            }
+            else
+            {
+                var contractSourceCodeAPI = await baseScan.GetContractSourceCode(contractAddress);
+
+                if (contractSourceCodeAPI.status.Equals("1"))
+                {
+                    var contractSourceCodeAPIRes = contractSourceCodeAPI.result[0];
+                    contractSourceCodeDB = new();
+
+                    contractSourceCodeDB.SourceCode = contractSourceCodeAPIRes.SourceCode;
+                    contractSourceCodeDB.SwarmSource = contractSourceCodeAPIRes.SwarmSource;
+                    contractSourceCodeDB.ABI = contractSourceCodeAPIRes.ABI;
+                    contractSourceCodeDB.AddressToken = contractAddress;
+                    contractSourceCodeDB.CompilerVersion = contractSourceCodeAPIRes.CompilerVersion;
+                    contractSourceCodeDB.ContractName = contractSourceCodeAPIRes.ContractName;
+                    contractSourceCodeDB.ConstructorArguments = contractSourceCodeAPIRes.ConstructorArguments;
+                    contractSourceCodeDB.EVMVersion = contractSourceCodeAPIRes.EVMVersion;
+                    contractSourceCodeDB.Implementation = contractSourceCodeAPIRes.Implementation;
+                    contractSourceCodeDB.LicenseType = contractSourceCodeAPIRes.LicenseType;
+                    contractSourceCodeDB.Library = contractSourceCodeAPIRes.Library;
+                    contractSourceCodeDB.OptimizationUsed = contractSourceCodeAPIRes.OptimizationUsed;
+                    contractSourceCodeDB.Proxy = contractSourceCodeAPIRes.Proxy;
+                    contractSourceCodeDB.Runs = contractSourceCodeAPIRes.Runs;
+
+                    dBContext.ContractSourceCodes.Add(contractSourceCodeDB);
+                    await dBContext.SaveChangesAsync();
+                }
             }
 
             return res;

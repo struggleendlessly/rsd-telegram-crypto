@@ -8,6 +8,7 @@
         public string AddressToken { get; set; } = "";
         public string NameToken { get; set; } = "";
         public string AddressOwnersWallet { get; set; } = "";
+        public int ContractByteCodeLength { get; set; }
 
         public string UrlToken { get; set; } = "";
         public string UrlOwnersWallet { get; set; } = "";

@@ -29,25 +29,29 @@ namespace Shared.Filters.Chain
             var res = false;
 
             var contractAddress = request.TokenInfo.AddressToken;
-            var tatalSupply = await baseScan.GetTotalSupply(contractAddress);
+            var tatalSupply = request.TokenInfo.totalSupply;
+            var divisor = 0;           
+
             var tatalSupplyAmountString = "";
 
-            if (tatalSupply.result.Length > 3)
+            if (string.IsNullOrEmpty(tatalSupply))
             {
                 res = true;
             }
 
-            //if (tatalSupply.result.Length > 18)
-            //{
-            //    tatalSupplyAmountString = tatalSupply.result.Remove(tatalSupply.result.Length - 18);
-            //}
+            var isParcedDivisor = int.TryParse(request.TokenInfo.divisor, out divisor);
 
-            //var isParced = ulong.TryParse(tatalSupplyAmountString, out ulong tatalSupplyAmountNumber);
+            if (isParcedDivisor == true && tatalSupply.Length > divisor)
+            {
+                tatalSupplyAmountString = tatalSupply.Remove(tatalSupply.Length - divisor);
+            }
 
-            //if (isParced == true && tatalSupplyAmountNumber >= 1_000_000)
-            //{
-            //    res = true;
-            //}
+            var isParcedSupply = ulong.TryParse(tatalSupplyAmountString, out ulong tatalSupplyAmountNumber);
+
+            if (isParcedSupply == true && tatalSupplyAmountNumber >= 1_000_000)
+            {
+                res = true;
+            }
 
             return res;
         }

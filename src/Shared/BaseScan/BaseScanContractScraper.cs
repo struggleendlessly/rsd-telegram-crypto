@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 using Shared.BaseScan.Model;
 using Shared.ConfigurationOptions;
@@ -145,6 +146,42 @@ namespace Shared.BaseScan
 
             return res;
         }
+        public async Task UpdateDBWithPaidApiTokenInfo(DB.TokenInfo tokenInfo)
+        {
+            if (!string.IsNullOrEmpty(tokenInfo.AddressToken))
+            {
+                var additional = await GetFromPaidApi(tokenInfo.AddressToken);
+
+                if (additional.status.Equals("1") && additional.result is not null && additional.result.Count() == 1)
+                {
+                    var t = tokenInfo;
+
+                    var additionalResult = additional.result[0];
+                    t.NameToken = additionalResult.tokenName;
+                    t.symbol = additionalResult.symbol;
+                    t.divisor = additionalResult.divisor;
+                    t.tokenType = additionalResult.tokenType;
+                    t.totalSupply = additionalResult.totalSupply;
+                    t.blueCheckmark = additionalResult.blueCheckmark;
+                    t.description = additionalResult.description;
+                    t.website = additionalResult.website;
+                    t.email = additionalResult.email;
+                    t.blog = additionalResult.blog;
+                    t.reddit = additionalResult.reddit;
+                    t.slack = additionalResult.slack;
+                    t.facebook = additionalResult.facebook;
+                    t.twitter = additionalResult.twitter;
+                    t.bitcointalk = additionalResult.bitcointalk;
+                    t.github = additionalResult.github;
+                    t.telegram = additionalResult.telegram;
+                    t.linkedin = additionalResult.linkedin;
+                    t.discord = additionalResult.discord;
+                    t.wechat = additionalResult.wechat;
+                    t.whitepaper = additionalResult.whitepaper;
+                    t.tokenPriceUSD = additionalResult.tokenPriceUSD;
+                }
+            }
+        }
 
         private async Task<int> SaveNewContractsToDB(List<BlockByNumberModel.Transaction> collection)
         {
@@ -180,38 +217,7 @@ namespace Shared.BaseScan
                 t.TimeAdded = DateTime.UtcNow;
                 t.TimeUpdated = DateTime.UtcNow;
 
-                if (!string.IsNullOrEmpty(item.contractAddress))
-                {
-                    var additional = await GetFromPaidApi(item.contractAddress);
-
-                    if (additional.status.Equals("1") && additional.result is not null && additional.result.Count() == 1)
-                    {
-                        var additionalResult = additional.result[0];
-                        t.NameToken = additionalResult.tokenName;
-                        t.symbol = additionalResult.symbol;
-                        t.divisor = additionalResult.divisor;
-                        t.tokenType = additionalResult.tokenType;
-                        t.totalSupply = additionalResult.totalSupply;
-                        t.blueCheckmark = additionalResult.blueCheckmark;
-                        t.description = additionalResult.description;
-                        t.website = additionalResult.website;
-                        t.email = additionalResult.email;
-                        t.blog = additionalResult.blog;
-                        t.reddit = additionalResult.reddit;
-                        t.slack = additionalResult.slack;
-                        t.facebook = additionalResult.facebook;
-                        t.twitter = additionalResult.twitter;
-                        t.bitcointalk = additionalResult.bitcointalk;
-                        t.github = additionalResult.github;
-                        t.telegram = additionalResult.telegram;
-                        t.linkedin = additionalResult.linkedin;
-                        t.discord = additionalResult.discord;
-                        t.wechat = additionalResult.wechat;
-                        t.whitepaper = additionalResult.whitepaper;
-                        t.tokenPriceUSD = additionalResult.tokenPriceUSD;
-
-                    }
-                }
+                await UpdateDBWithPaidApiTokenInfo(t);
 
                 ti.Add(t);
             }

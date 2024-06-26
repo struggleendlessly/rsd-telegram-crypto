@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+using Shared.BaseScan;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 using Shared.Filters.Chain;
@@ -15,18 +16,21 @@ namespace Shared.Filters
         private readonly Telegram.Telegram telegram;
         private readonly OptionsBanAddresses optionsBanAddresses;
         private readonly OptionsTelegram optionsTelegram;
+        private readonly BaseScanContractScraper baseScanContractScraper;
         public CryptoFilterProcess2(
             DBContext dBContext,
             BaseScan.BaseScanApiClient baseScan,
             IOptions<OptionsTelegram> optionsTelegram,
             Telegram.Telegram telegram,
-            IOptions<OptionsBanAddresses> optionsBanAddresses)
+            IOptions<OptionsBanAddresses> optionsBanAddresses,
+            BaseScanContractScraper baseScanContractScraper)
         {
             this.dBContext = dBContext;
             this.baseScan = baseScan;
             this.telegram = telegram;
             this.optionsBanAddresses = optionsBanAddresses.Value;
             this.optionsTelegram = optionsTelegram.Value;
+            this.baseScanContractScraper = baseScanContractScraper;
 
             baseScan.SetApiKeyToken(2);
         }
@@ -107,6 +111,9 @@ namespace Shared.Filters
                 $"DB: `{tokenInfo.Id}` | " +
                 $"{lastBlockNumberX10 - tokenInfo.BlockNumber} {icon} \n" +
 
+                $"Supply: `{tokenInfo.totalSupply}` | " +
+                $"Divisor: `{tokenInfo.divisor}` | \n" +
+
                 $"[Owner]({tokenInfo.UrlOwnersWallet}) | " +
                 $"[Token]({tokenInfo.UrlToken}) | " +
                 $"[DexScreener]({tokenInfo.UrlChart})" +
@@ -169,6 +176,8 @@ namespace Shared.Filters
                 token.IsValid = item.IsValid;
                 token.ErrorType = item.TokenInfo.ErrorType;
                 token.TimeUpdated = DateTime.UtcNow;
+
+                await baseScanContractScraper.UpdateDBWithPaidApiTokenInfo(token);
 
                 switch (processStep)
                 {

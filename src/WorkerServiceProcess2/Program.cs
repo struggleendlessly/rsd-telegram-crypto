@@ -25,6 +25,7 @@ builder.Services.AddTransient<Telegram>();
 builder.Services.AddTransient<HealthCheck>();
 builder.Services.AddTransient<CryptoFilterProcess2>();
 builder.Services.AddTransient<BaseScanApiClient>();
+builder.Services.AddTransient<BaseScanContractScraper>();
 
 var host = builder.Build();
 host.Run();

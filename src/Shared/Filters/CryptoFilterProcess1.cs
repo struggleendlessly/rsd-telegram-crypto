@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+using Shared.BaseScan.Model;
 using Shared.ConfigurationOptions;
 using Shared.DB;
 using Shared.Filters.Chain;
@@ -36,7 +37,7 @@ namespace Shared.Filters
 
         private async Task Process1()
         {
-            List<TokenInfo> to_Process1 = await GetRecordForProcessing1();
+            List<DB.TokenInfo> to_Process1 = await GetRecordForProcessing1();
 
             var timeHandler_Process1 = new TimeOnInHandler();
             var checkEmptyTokenAddressHandler_Process1 = new CheckEmptyTokenAddressHandler();
@@ -82,6 +83,9 @@ namespace Shared.Filters
                         $"DB: `{item.TokenInfo.Id}` | " +
                         $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} 🆗 \n" +
 
+                        $"Supply: `{item.TokenInfo.totalSupply}` | " +
+                        $"Divisor: `{item.TokenInfo.divisor}` | \n" +
+
                         $"[Owner]({item.TokenInfo.UrlOwnersWallet}) | " +
                         $"[Token]({item.TokenInfo.UrlToken}) | " +
                         $"[DexScreener]({item.TokenInfo.UrlChart})" +
@@ -95,7 +99,7 @@ namespace Shared.Filters
             var mesIdupdated = UpdateDBTelMessageId(processed1);
         }
 
-        public async Task<List<AddressRequest>> Process2(List<TokenInfo> toProcess, AbstractHandler handler)
+        public async Task<List<AddressRequest>> Process2(List<DB.TokenInfo> toProcess, AbstractHandler handler)
         {
             List<AddressRequest> res = new();
 
@@ -118,7 +122,7 @@ namespace Shared.Filters
             return res;
         }
 
-        public async Task<List<AddressRequest>> Process(List<TokenInfo> toProcess, AbstractHandler handler)
+        public async Task<List<AddressRequest>> Process(List<DB.TokenInfo> toProcess, AbstractHandler handler)
         {
             List<AddressRequest> res = new();
 
@@ -185,9 +189,9 @@ namespace Shared.Filters
             return res;
         }
 
-        private async Task<List<TokenInfo>> GetRecordForProcessing1()
+        private async Task<List<DB.TokenInfo>> GetRecordForProcessing1()
         {
-            List<TokenInfo> res = new();
+            List<DB.TokenInfo> res = new();
 
             res = await dBContext.
                 TokenInfos.

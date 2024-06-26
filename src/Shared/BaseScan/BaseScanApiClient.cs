@@ -1,14 +1,10 @@
-﻿using Azure;
-
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 
 using Polly;
 
 using Shared.BaseScan.Model;
 using Shared.ConfigurationOptions;
 
-using System;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -39,6 +35,10 @@ namespace Shared.BaseScan
 
                 case 2:
                     apiKeyToken = optionsBaseScan.apiKeyToken2;
+                    break;          
+                
+                case 3:
+                    apiKeyToken = optionsBaseScan.apiKeyTokenPayedSubscription;
                     break;
 
                 default:
@@ -117,6 +117,7 @@ namespace Shared.BaseScan
             return res;
         }
 
+        // ----------------- Total Supply -----------------
         public async Task<TotalSupplyModel> GetTotalSupply(string address)
         {
             TotalSupplyModel res = new();
@@ -142,6 +143,9 @@ namespace Shared.BaseScan
 
             return res;
         }
+
+        // ----------------- Contract Source Code -----------------
+
         public async Task<ContractSourceCodeModel> GetContractSourceCode(string address)
         {
             ContractSourceCodeModel res = new();
@@ -167,6 +171,7 @@ namespace Shared.BaseScan
             return res;
         }
 
+        // ----------------- Block By Number -----------------
         public async Task<BlockByNumberModel> GetBlockByNumber(string blockNumbderX16)
         {
             BlockByNumberModel res = new();
@@ -194,6 +199,8 @@ namespace Shared.BaseScan
             return res;
         }
 
+        // ----------------- Last Block Number -----------------
+
         public async Task<LastBlockNumberModel> GetLastBlockByNumber()
         {
             LastBlockNumberModel res = new();
@@ -218,6 +225,8 @@ namespace Shared.BaseScan
 
             return res;
         }
+
+        // ----------------- Normal Transactions -----------------
 
         public async Task<NormalTransactions> GetListOfNormalTransactions(string ownerAddress, int page = 1)
         {
@@ -244,6 +253,65 @@ namespace Shared.BaseScan
             urlBuilder.Append($"&page={page}");
             urlBuilder.Append("&offset=999");
             urlBuilder.Append("&sort=asc");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }
+
+        // ----------------- Token Info -----------------
+        // only available in paid api
+
+        public async Task<Model.TokenInfo> GetTokenInfo(string contractaddress)
+        {
+            Model.TokenInfo res = new();
+
+            var url = await UrlBuilderGetTokenInfo(contractaddress);
+
+            res = await RequestApi<Model.TokenInfo>(url);
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderGetTokenInfo(string contractaddress)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=token");
+            urlBuilder.Append("&action=tokeninfo");
+            urlBuilder.Append($"&contractaddress={contractaddress}");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
+        }
+
+        // ----------------- Historical ETH Balance -----------------
+        // could use payed and free api
+
+        public async Task<HistoricalETHBalance> GetHistoricalETHBalance(string ownerAddress)
+        {
+            HistoricalETHBalance res = new();
+
+            var url = await UrlBuilderGetHistoricalETHBalance(ownerAddress);
+
+            res = await RequestApi<HistoricalETHBalance>(url);
+
+            return res;
+        }
+
+        private async Task<string> UrlBuilderGetHistoricalETHBalance(string contractaddress)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=account");
+            urlBuilder.Append("&action=balance");
+            urlBuilder.Append($"&address={contractaddress}");
+            urlBuilder.Append("&tag=latest");
             urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();

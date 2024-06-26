@@ -11,16 +11,22 @@ namespace Shared.BaseScan
     {
         private readonly DBContext dBContext;
         private readonly BaseScanApiClient baseScan;
+        private readonly BaseScanApiClient baseScanPayedSubscription;
         private readonly OptionsBaseScan optionsBaseScan;
         public BaseScanContractScraper(
             IOptions<OptionsBaseScan> optionsBaseScan,
             DBContext dBContext,
-            BaseScanApiClient baseScan)
+            BaseScanApiClient baseScan,
+            BaseScanApiClient baseScanPayedSubscription)
         {
             this.optionsBaseScan = optionsBaseScan.Value;
             this.dBContext = dBContext;
+
             this.baseScan = baseScan;
             baseScan.SetApiKeyToken(1);
+
+            this.baseScanPayedSubscription = baseScanPayedSubscription;
+            baseScanPayedSubscription.SetApiKeyToken(3);
         }
 
         public async Task<int> Start()
@@ -70,6 +76,15 @@ namespace Shared.BaseScan
 
             return res;
         }
+        private async Task<Model.TokenInfo> GetFromPaidApi(string contractAddress)
+        {
+            Model.TokenInfo res = new();
+
+            res = await baseScanPayedSubscription.GetTokenInfo(contractAddress);
+
+            return res;
+        }
+
         private async Task<int> GetLastProcessedBlockFromDB()
         {
             var res = 0;
@@ -127,7 +142,7 @@ namespace Shared.BaseScan
         {
             var res = 0;
 
-            var ti = new List<TokenInfo>();
+            var ti = new List<DB.TokenInfo>();
 
             foreach (var item in collection)
             {
@@ -142,7 +157,7 @@ namespace Shared.BaseScan
                     continue;
                 }
 
-                var t = new TokenInfo();
+                var t = new DB.TokenInfo();
 
                 t.HashContractTransaction = item.hash;
                 t.AddressToken = item.contractAddress;
@@ -156,6 +171,39 @@ namespace Shared.BaseScan
 
                 t.TimeAdded = DateTime.UtcNow;
                 t.TimeUpdated = DateTime.UtcNow;
+
+                if (!string.IsNullOrEmpty(item.contractAddress))
+                {
+                    var additional = await GetFromPaidApi(item.contractAddress);
+
+                    if (additional.status.Equals("1") && additional.result is not null && additional.result.Count() == 1)
+                    {
+                        var additionalResult = additional.result[0];
+                        t.NameToken = additionalResult.tokenName;
+                        t.symbol = additionalResult.symbol;
+                        t.divisor = additionalResult.divisor;
+                        t.tokenType = additionalResult.tokenType;
+                        t.totalSupply = additionalResult.totalSupply;
+                        t.blueCheckmark = additionalResult.blueCheckmark;
+                        t.description = additionalResult.description;
+                        t.website = additionalResult.website;
+                        t.email = additionalResult.email;
+                        t.blog = additionalResult.blog;
+                        t.reddit = additionalResult.reddit;
+                        t.slack = additionalResult.slack;
+                        t.facebook = additionalResult.facebook;
+                        t.twitter = additionalResult.twitter;
+                        t.bitcointalk = additionalResult.bitcointalk;
+                        t.github = additionalResult.github;
+                        t.telegram = additionalResult.telegram;
+                        t.linkedin = additionalResult.linkedin;
+                        t.discord = additionalResult.discord;
+                        t.wechat = additionalResult.wechat;
+                        t.whitepaper = additionalResult.whitepaper;
+                        t.tokenPriceUSD = additionalResult.tokenPriceUSD;
+
+                    }
+                }
 
                 ti.Add(t);
             }

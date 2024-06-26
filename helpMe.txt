@@ -3,6 +3,8 @@ https://dev.to/uthmanrahimi/deploy-net-core-worker-service-on-linux-1mjc
 
 ////////////////////////////////////////////////////////
 
+dotnet tool update --global dotnet-ef
+
 PS H:\rsd-telegram-crypto\src> 
 
 dotnet ef migrations add In15 -o DB/Migrations --project Shared --startup-project WorkerServiceRead

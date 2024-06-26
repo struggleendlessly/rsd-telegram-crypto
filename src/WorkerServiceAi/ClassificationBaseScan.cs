@@ -116,7 +116,7 @@ namespace WorkerServiceAi
 
             // <SnippetTrainModel>
             _trainedModel = trainingPipeline.Fit(trainingDataView);
-            _trainedModel
+
             // Extract Model Parameters of re-trained model
             // { Microsoft.ML.Data.MulticlassPredictionTransformer<Microsoft.ML.Trainers.MaximumEntropyModelParameters>}
             //var originalModelParameters = ((ISingleFeaturePredictionTransformer<object>)_trainedModel).Model as MaximumEntropyModelParameters;

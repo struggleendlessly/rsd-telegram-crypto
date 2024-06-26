@@ -5,15 +5,7 @@
     "Version": 1,
     "ColumnProperties": [
       {
-        "ColumnName": "isGood",
-        "ColumnPurpose": "Label",
-        "ColumnDataFormat": "Boolean",
-        "IsCategorical": false,
-        "Type": "Column",
-        "Version": 5
-      },
-      {
-        "ColumnName": "contract",
+        "ColumnName": "col0",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "String",
         "IsCategorical": false,
@@ -25,7 +17,7 @@
     "CommandString": "SELECT [isGood], CAST([contract] as NVARCHAR(MAX)) FROM [dbo].[learn2]",
     "DatabaseName": "ai",
     "SelectedTableDbo": "dbo",
-    "TableName": "learn2"
+    "TableName": "learn22"
   },
   "Environment": {
     "Type": "LocalCPU",
@@ -214,7 +206,7 @@
     "Type": "ClassificationTrainingOption",
     "TrainingTime": 60,
     "OptimizeMetric": "Accuracy",
-    "LabelColumn": "isGood",
+    "LabelColumn": "col0",
     "AvailableTrainers": [
       "SDCA",
       "LBFGS",

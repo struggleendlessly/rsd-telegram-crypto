@@ -1,6 +1,9 @@
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
+using ML.learng2.WorkerServiceAi;
+using ML.WorkerServiceAi;
+
 using System.Data;
 
 using WorkerServiceAi.DB;
@@ -25,8 +28,14 @@ namespace WorkerServiceAi
             this.classification = classification;
         }
 
+        private static string _appPath => Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
+        private static string _modelPath => Path.Combine(_appPath, "..", "..", "..", "Models", "modelBaseScanLearn2.zip");
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            MLModel_learn2.Train(_modelPath);
+            MLModel_learn22.Train(_modelPath);
+
             var ee = ";";
             classification.Start();
             //var a = new Classification();

@@ -52,7 +52,7 @@ namespace Shared.Filters
             var checkFromForManySameAmountsHandler_Process1 = new CheckFromForManySameAmountsHandler();
 
             timeHandler_Process1.
-                //SetNext(checkTheNameOfTokenHandler_Process1).
+                SetNext(checkTheNameOfTokenHandler_Process1).
                 SetNext(checkAmountOfContractsCreatedHandler_Process1).
                 SetNext(removeLiquidityHandler_Process1).
                 SetNext(checkEmptyTokenAddressHandler_Process1).

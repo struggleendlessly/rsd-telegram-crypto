@@ -103,6 +103,7 @@ namespace Shared.Filters
                 $"" +
                 $"`{tokenInfo.AddressToken}` \n" +
 
+                $"Name: `{tokenInfo.NameToken}` | " +
                 $"DB: `{tokenInfo.Id}` | " +
                 $"{lastBlockNumberX10 - tokenInfo.BlockNumber} {icon} \n" +
 

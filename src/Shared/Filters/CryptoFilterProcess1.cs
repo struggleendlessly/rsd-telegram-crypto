@@ -78,6 +78,7 @@ namespace Shared.Filters
                         $"" +
                         $"`{item.TokenInfo.AddressToken}` \n" +
 
+                        $"Name: `{item.TokenInfo.NameToken}` | " +
                         $"DB: `{item.TokenInfo.Id}` | " +
                         $"{lastBlockNumberX10 - item.TokenInfo.BlockNumber} 🆗 \n" +
 

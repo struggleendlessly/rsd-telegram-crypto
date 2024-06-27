@@ -73,7 +73,7 @@ namespace GyosaScrapperFromTelegram
 
             foreach (var item in val)
             {
-                if (item.MarketCap > 82_000 &&
+                if (item.MarketCap < 82_000 &&
                     item.SuccessfulBribes > 21 &&
                     item.SuccessfulBribes > 21 &&
                     item.SuccessfulBribesETH > 0.91 &&

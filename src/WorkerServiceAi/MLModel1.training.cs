@@ -16,8 +16,8 @@ namespace WorkerServiceAi
 {
     public partial class MLModel1
     {
-        public const string RetrainConnectionString = @"Data Source=arianagrande;Initial Catalog=ai;Integrated Security=True;Encrypt=False";
-        public const string RetrainCommandString = @"SELECT [isGood], CAST([contract] as NVARCHAR(MAX)) FROM [dbo].[learn2]";
+        public const string RetrainConnectionString = @"Data Source=ARIANAGRANDE;Initial Catalog=ai;Integrated Security=True;Encrypt=False";
+        public const string RetrainCommandString = @"SELECT [isGood], CAST([contract] as NVARCHAR(MAX)) FROM [dbo].[learn1]";
 
         /// <summary>
         /// Train a new model with the provided dataset.

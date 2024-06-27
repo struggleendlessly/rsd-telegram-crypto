@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-GyosaScrapperFromTelegram-90e601fe-a34f-4297-9cc2-493f1f97f99b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="FilesToScrap\messages.html" />
+    <None Remove="FilesToScrap\messages2.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="FilesToScrap\messages.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,8 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="$(SolutionDir)FilesToScrap\**" CopyToOutputDirectory="Always" LinkBase="FilesToScrap\**" />
+
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="FilesToScrap\messages.html" />
     <None Remove="FilesToScrap\messages2.html" />
+    <None Remove="FilesToScrap\messages3.html" />
+    <None Remove="FilesToScrap\messages4.html" />
+    <None Remove="FilesToScrap\messages5.html" />
+    <None Remove="FilesToScrap\messages6.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,10 +28,26 @@
     <Content Include="FilesToScrap\messages2.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="FilesToScrap\messages3.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages4.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages5.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages6.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 </Project>

@@ -23,7 +23,7 @@ namespace WorkerServiceAi
         IDataView _testData;
         private readonly DBContext dbContext;
         private static MLContext _mlContext;
-        private static PredictionEngine<Learn22Base, IssuePredictionBaseScan> _predEngine;
+        private static PredictionEngine<ContractSourceCode, IssuePredictionBaseScan> _predEngine;
         private static ITransformer _trainedModel;
         static IDataView _trainingDataView;
         // </SnippetDeclareGlobalVariables>
@@ -144,18 +144,18 @@ namespace WorkerServiceAi
 
             // Create prediction engine related to the loaded trained model
             // <SnippetCreatePredictionEngine1>
-            _predEngine = _mlContext.Model.CreatePredictionEngine<Learn22Base, IssuePredictionBaseScan>(_trainedModel);
+            _predEngine = _mlContext.Model.CreatePredictionEngine<ContractSourceCode, IssuePredictionBaseScan>(_trainedModel);
             // </SnippetCreatePredictionEngine1>
             // <SnippetCreateTestIssue1>
 
             // </SnippetCreateTestIssue1>
-            Learn22Base dataSetTest = dbContext.Learn22_testData.ToList()[1];
-            // <SnippetPredict>
-            var prediction = _predEngine.Predict(dataSetTest);
+            //ContractSourceCode dataSetTest = dbContext.Learn22_testData.ToList()[1];
+            //// <SnippetPredict>
+            //var prediction = _predEngine.Predict(dataSetTest);
             // </SnippetPredict>
 
             // <SnippetOutputPrediction>
-            Console.WriteLine($"=============== Single Prediction just-trained-model - Result: {prediction.isGood} ===============");
+            //Console.WriteLine($"=============== Single Prediction just-trained-model - Result: {prediction.isGood} ===============");
             // </SnippetOutputPrediction>
 
             // <SnippetReturnModel>

@@ -38,11 +38,11 @@
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastForestBinary",
-        "Score": 0.87777777777777788,
-        "RuntimeInSeconds": 2.423,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.91111111111111109,
+        "RuntimeInSeconds": 2.018,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "InputColumnName": "contract",
             "OutputColumnName": "contract"
@@ -53,27 +53,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e6": {
-            "NumberOfTrees": 4,
-            "NumberOfLeaves": 4,
-            "FeatureFraction": 1.0,
+          "e2": {
+            "NumberOfLeaves": 8,
+            "MinimumExampleCountPerLeaf": 16,
+            "NumberOfTrees": 5,
+            "MaximumBinCountPerFeature": 284,
+            "FeatureFraction": 0.95919184505735777,
+            "LearningRate": 0.735554114997206,
             "LabelColumnName": "isGood",
-            "FeatureColumnName": "Features"
-          },
-          "e7": {
-            "LabelColumnName": "isGood",
-            "ScoreColumnName": "Score"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastForestBinary",
-        "Score": 0.87777777777777788,
-        "RuntimeInSeconds": 2.364,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.91111111111111109,
+        "RuntimeInSeconds": 2.006,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "InputColumnName": "contract",
             "OutputColumnName": "contract"
@@ -84,27 +84,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e6": {
-            "NumberOfTrees": 4,
-            "NumberOfLeaves": 4,
-            "FeatureFraction": 1.0,
+          "e2": {
+            "NumberOfLeaves": 7,
+            "MinimumExampleCountPerLeaf": 16,
+            "NumberOfTrees": 5,
+            "MaximumBinCountPerFeature": 282,
+            "FeatureFraction": 0.96282175372157,
+            "LearningRate": 0.716097481678291,
             "LabelColumnName": "isGood",
-            "FeatureColumnName": "Features"
-          },
-          "e7": {
-            "LabelColumnName": "isGood",
-            "ScoreColumnName": "Score"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastForestBinary",
-        "Score": 0.87777777777777788,
-        "RuntimeInSeconds": 2.511,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.91111111111111109,
+        "RuntimeInSeconds": 2.022,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "InputColumnName": "contract",
             "OutputColumnName": "contract"
@@ -115,27 +115,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e6": {
-            "NumberOfTrees": 4,
-            "NumberOfLeaves": 4,
-            "FeatureFraction": 0.99950355,
+          "e2": {
+            "NumberOfLeaves": 8,
+            "MinimumExampleCountPerLeaf": 16,
+            "NumberOfTrees": 5,
+            "MaximumBinCountPerFeature": 284,
+            "FeatureFraction": 0.95832036184835989,
+            "LearningRate": 0.7377114757220351,
             "LabelColumnName": "isGood",
-            "FeatureColumnName": "Features"
-          },
-          "e7": {
-            "LabelColumnName": "isGood",
-            "ScoreColumnName": "Score"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastForestBinary",
-        "Score": 0.87777777777777788,
-        "RuntimeInSeconds": 2.522,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.91111111111111109,
+        "RuntimeInSeconds": 2.077,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "InputColumnName": "contract",
             "OutputColumnName": "contract"
@@ -146,27 +146,27 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e6": {
-            "NumberOfTrees": 4,
-            "NumberOfLeaves": 4,
-            "FeatureFraction": 1.0,
+          "e2": {
+            "NumberOfLeaves": 8,
+            "MinimumExampleCountPerLeaf": 16,
+            "NumberOfTrees": 5,
+            "MaximumBinCountPerFeature": 284,
+            "FeatureFraction": 0.95951942854429939,
+            "LearningRate": 0.73298543960620488,
             "LabelColumnName": "isGood",
-            "FeatureColumnName": "Features"
-          },
-          "e7": {
-            "LabelColumnName": "isGood",
-            "ScoreColumnName": "Score"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       },
       {
         "Version": 1,
         "Type": "Trial",
-        "TrainerName": "FastForestBinary",
-        "Score": 0.861111111111111,
-        "RuntimeInSeconds": 2.379,
+        "TrainerName": "FastTreeBinary",
+        "Score": 0.9,
+        "RuntimeInSeconds": 2.026,
         "Parameter": {
-          "_SCHEMA_": "e0 * e1 * e6 * e7",
+          "_SCHEMA_": "e0 * e1 * e2",
           "e0": {
             "InputColumnName": "contract",
             "OutputColumnName": "contract"
@@ -177,16 +177,16 @@
             ],
             "OutputColumnName": "Features"
           },
-          "e6": {
-            "NumberOfTrees": 4,
+          "e2": {
             "NumberOfLeaves": 6,
-            "FeatureFraction": 0.9199553,
+            "MinimumExampleCountPerLeaf": 16,
+            "NumberOfTrees": 5,
+            "MaximumBinCountPerFeature": 239,
+            "FeatureFraction": 0.99999999,
+            "LearningRate": 0.99999977667298645,
             "LabelColumnName": "isGood",
-            "FeatureColumnName": "Features"
-          },
-          "e7": {
-            "LabelColumnName": "isGood",
-            "ScoreColumnName": "Score"
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
           }
         }
       }
@@ -211,7 +211,7 @@
     "Version": 2,
     "Subsampling": false,
     "Type": "ClassificationTrainingOption",
-    "TrainingTime": 60,
+    "TrainingTime": 600,
     "LabelColumn": "isGood",
     "ValidationOption": {
       "Version": 0,

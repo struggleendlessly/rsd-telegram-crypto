@@ -92,8 +92,7 @@ namespace WorkerServiceAi
             // Data process configuration with pipeline data transformations
             var pipeline = mlContext.Transforms.Text.FeaturizeText(inputColumnName:@"contract",outputColumnName:@"contract")      
                                     .Append(mlContext.Transforms.Concatenate(@"Features", new []{@"contract"}))      
-                                    .Append(mlContext.BinaryClassification.Trainers.FastForest(new FastForestBinaryTrainer.Options(){NumberOfTrees=4,NumberOfLeaves=4,FeatureFraction=1F,LabelColumnName=@"isGood",FeatureColumnName=@"Features"}))      
-                                    .Append(mlContext.BinaryClassification.Calibrators.Naive(labelColumnName:@"isGood",scoreColumnName:@"Score"));
+                                    .Append(mlContext.BinaryClassification.Trainers.FastTree(new FastTreeBinaryTrainer.Options(){NumberOfLeaves=8,MinimumExampleCountPerLeaf=16,NumberOfTrees=5,MaximumBinCountPerFeature=284,FeatureFraction=0.9591918450573578,LearningRate=0.735554114997206,LabelColumnName=@"isGood",FeatureColumnName=@"Features",DiskTranspose=false}));
 
             return pipeline;
         }

@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string didXXX { get; set; } = "";
+        public bool isGood { get; set; }
         public string typeOfScam { get; set; } = "";
 
         public string AddressToken { get; set; } = "";

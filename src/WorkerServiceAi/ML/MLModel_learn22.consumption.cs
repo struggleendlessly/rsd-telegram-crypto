@@ -16,12 +16,12 @@ namespace ML.WorkerServiceAi
         public class ModelInput
         {
             [LoadColumn(0)]
-            [ColumnName(@"isGood")]
-            public bool IsGood { get; set; }
+            [ColumnName(@"didXXX")]
+            public string didXXX { get; set; }
 
             [LoadColumn(1)]
-            [ColumnName(@"contractCode")]
-            public string ContractCode { get; set; }
+            [ColumnName(@"SourceCode")]
+            public string SourceCode { get; set; }
 
         }
 
@@ -33,8 +33,8 @@ namespace ML.WorkerServiceAi
         #region model output class
         public class ModelOutput
         {
-            [ColumnName(@"isGood")]
-            public bool IsGood { get; set; }
+            [ColumnName(@"didXXX")]
+            public string didXXX { get; set; }
 
             [ColumnName(@"contract")]
             public float[] Contract { get; set; }
@@ -43,10 +43,10 @@ namespace ML.WorkerServiceAi
             public float[] Features { get; set; }
 
             [ColumnName(@"PredictedLabel")]
-            public bool PredictedLabel { get; set; }
+            public string PredictedLabel { get; set; }
 
-            [ColumnName(@"Score")]
-            public float Score { get; set; }
+            //[ColumnName(@"Score")]
+            //public float Score { get; set; }
 
             [ColumnName(@"Probability")]
             public float Probability { get; set; }
@@ -55,16 +55,17 @@ namespace ML.WorkerServiceAi
 
         #endregion
 
-        private static string MLNetModelPath = Path.GetFullPath("MLModel1.mlnet");
+        //private static string MLNetModelPath = Path.GetFullPath("MLModel1.mlnet");
 
-        public static readonly Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);
+        //public static readonly Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);
 
+        private PredictionEngine<ModelInput, ModelOutput> PredictEngine;
 
-        private static PredictionEngine<ModelInput, ModelOutput> CreatePredictEngine()
+        public void CreatePredictEngine(string MLNetModelPath)
         {
             var mlContext = new MLContext();
             ITransformer mlModel = mlContext.Model.Load(MLNetModelPath, out var _);
-            return mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+            PredictEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
         }
 
         /// <summary>
@@ -72,9 +73,9 @@ namespace ML.WorkerServiceAi
         /// </summary>
         /// <param name="input">model input.</param>
         /// <returns><seealso cref=" ModelOutput"/></returns>
-        public static ModelOutput Predict(ModelInput input)
+        public ModelOutput Predict(ModelInput input)
         {
-            var predEngine = PredictEngine.Value;
+            var predEngine = PredictEngine;
             return predEngine.Predict(input);
         }
     }

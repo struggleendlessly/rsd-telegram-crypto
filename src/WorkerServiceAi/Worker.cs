@@ -3,6 +3,7 @@ using Microsoft.ML;
 using ML.WorkerServiceAi;
 
 using WorkerServiceAi.DB;
+using WorkerServiceAi.ML;
 
 namespace WorkerServiceAi
 {
@@ -27,8 +28,25 @@ namespace WorkerServiceAi
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            new MLModel_learn22(dbContext).Train(_modelPath);
+            new Training(dbContext).CompareTrainerEvaluations();
 
+            var model = new MLModel_learn22(dbContext);
+            model.Train(_modelPath);
+            model.CreatePredictEngine(_modelPath);
+
+            var dataSet =
+                dbContext.
+                Learn22.
+                Where(x=>x.Id == 20).
+                FirstOrDefault();
+
+            var input = new MLModel_learn22.ModelInput
+            {
+                didXXX = dataSet.isGood,
+                SourceCode = dataSet.contractCode
+            };
+
+            var aa = model.Predict(input);
             //while (!stoppingToken.IsCancellationRequested)
             //{
             //    if (_logger.IsEnabled(LogLevel.Information))

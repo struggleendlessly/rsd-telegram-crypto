@@ -265,7 +265,10 @@ namespace Shared.BaseScan
 
                 await UpdateDBWithPaidApiTokenInfo(t);
 
-                ti.Add(t);
+                if (!string.IsNullOrEmpty(t.NameToken))
+                {
+                    ti.Add(t);
+                }
             }
 
             await dBContext.TokenInfos.AddRangeAsync(ti);

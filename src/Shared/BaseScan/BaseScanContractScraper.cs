@@ -249,6 +249,7 @@ namespace Shared.BaseScan
                 var t = new DB.TokenInfo();
 
                 t.ContractByteCodeLength = item.input.Length;
+                t.byteCode = item.input;
 
                 t.HashContractTransaction = item.hash;
                 t.AddressToken = item.contractAddress;

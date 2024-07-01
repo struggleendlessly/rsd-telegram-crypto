@@ -49,6 +49,7 @@
         public string whitepaper { get; set; } = "";
         public string tokenPriceUSD { get; set; } = "";
 
-        //public List<TokenInfoUrl> TokenInfoUrls { get; } = new();
+        public string byteCode { get; set; } = "";
+
     }
 }

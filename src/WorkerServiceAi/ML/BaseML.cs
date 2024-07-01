@@ -21,14 +21,13 @@ namespace WorkerServiceAi.ML
             var dataSetTrain =
                 dbContext.
                 ContractSourceCodeTrainDatas.
-                Where(x => !string.IsNullOrEmpty(x.didXXX) && !string.Equals(x.didXXX, "?") && x.Id != 2 && x.Id != 3 && x.Id != 5 && x.Id != 6).
+                Where(x => !string.IsNullOrEmpty(x.didXXX) && !string.Equals(x.didXXX, "?")).
                 //Take(10).
                 ToList();
 
             var dataSetTest =
                 dbContext.
-                ContractSourceCodeTrainDatas.
-                Where(x => x.Id == 2 || x.Id == 3 || x.Id == 5 || x.Id == 6).
+                ContractSourceCodeTestDatas.
                 ToList();
 
 
@@ -37,19 +36,19 @@ namespace WorkerServiceAi.ML
             //trainData = trainTestSplit.TrainSet;
             testData = mlContext.Data.LoadFromEnumerable(dataSetTest);
 
-            featurizationPipeline = 
+            featurizationPipeline =
                 mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "isGood", outputColumnName: "Label").
                 Append(mlContext.Transforms.Conversion.MapKeyToValue("Label")).
                 Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "SourceCode", outputColumnName: "SourceCodeFeaturized")).
-                //.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "contractByteCode", outputColumnName: "contractByteCodeFeaturized"))
-                //.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "contractABI", outputColumnName: "contractABIFeaturized"))
+                ///.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "contractByteCode", outputColumnName: "contractByteCodeFeaturized"))
+                Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "ABI", outputColumnName: "ABIFeaturized")).
                 //.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "totalSupply", outputColumnName: "totalSupplyFeaturized"))
                 //.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "divisor", outputColumnName: "divisorFeaturized"))
                 Append(mlContext.Transforms.Concatenate(
                     "Features",
-                    "SourceCodeFeaturized"
+                    "SourceCodeFeaturized",
                     //"contractByteCodeFeaturized", 
-                    //"contractABIFeaturized", 
+                    "ABIFeaturized"
                     //"totalSupplyFeaturized", 
                     //"divisorFeaturized"
                     ));

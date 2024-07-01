@@ -7,7 +7,7 @@ dotnet tool update --global dotnet-ef
 
 PS H:\rsd-telegram-crypto\src> 
 
-dotnet ef migrations add In25 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
+dotnet ef migrations add In26 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
 dotnet ef database update --project Shared --startup-project WorkerServiceRead
 
 dotnet ef  migrations remove  --project Shared --startup-project WorkerServiceRead

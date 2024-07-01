@@ -20,14 +20,14 @@ namespace WorkerServiceAi.ML
 
             var dataSetTrain =
                 dbContext.
-                ContractSourceCodes.
+                ContractSourceCodeTrainDatas.
                 Where(x => !string.IsNullOrEmpty(x.didXXX) && !string.Equals(x.didXXX, "?") && x.Id != 2 && x.Id != 3 && x.Id != 5 && x.Id != 6).
                 //Take(10).
                 ToList();
 
             var dataSetTest =
                 dbContext.
-                ContractSourceCodes.
+                ContractSourceCodeTrainDatas.
                 Where(x => x.Id == 2 || x.Id == 3 || x.Id == 5 || x.Id == 6).
                 ToList();
 

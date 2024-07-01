@@ -4,9 +4,8 @@ namespace WorkerServiceAi.DB
 {
     public class DBContext : DbContext
     {
-        public DbSet<ContractSourceCode> ContractSourceCodes { get; set; }
-        public DbSet<Learn22> Learn22 { get; set; }
-        public DbSet<Learn22_testData> Learn22_testData { get; set; }
+        public DbSet<ContractSourceCodeTestData> ContractSourceCodeTestDatas { get; set; }
+        public DbSet<ContractSourceCodeTrainData> ContractSourceCodeTrainDatas { get; set; }
 
         public string DbPath { get; }
 

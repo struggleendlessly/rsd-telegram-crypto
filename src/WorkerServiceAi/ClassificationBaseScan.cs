@@ -23,7 +23,7 @@ namespace WorkerServiceAi
         IDataView _testData;
         private readonly DBContext dbContext;
         private static MLContext _mlContext;
-        private static PredictionEngine<ContractSourceCode, IssuePredictionBaseScan> _predEngine;
+        private static PredictionEngine<ContractSourceCodeTrainData, IssuePredictionBaseScan> _predEngine;
         private static ITransformer _trainedModel;
         static IDataView _trainingDataView;
         // </SnippetDeclareGlobalVariables>
@@ -41,10 +41,10 @@ namespace WorkerServiceAi
             // .Read(_trainDataPath) - Loads the training text file into an IDataView (_trainingDataView) and maps from input columns to IDataView columns.
             Console.WriteLine($"=============== Loading Dataset  ===============");
 
-            var dataSet = dbContext.Learn22.ToList();
+            var dataSet = dbContext.ContractSourceCodeTrainDatas.ToList();
             _trainingDataView = _mlContext.Data.LoadFromEnumerable(dataSet);
 
-            var dataSetTest = dbContext.Learn22_testData.ToList();
+            var dataSetTest = dbContext.ContractSourceCodeTestDatas.ToList();
             _testData = _mlContext.Data.LoadFromEnumerable(dataSet);
         }
         public void Start()
@@ -144,7 +144,7 @@ namespace WorkerServiceAi
 
             // Create prediction engine related to the loaded trained model
             // <SnippetCreatePredictionEngine1>
-            _predEngine = _mlContext.Model.CreatePredictionEngine<ContractSourceCode, IssuePredictionBaseScan>(_trainedModel);
+            _predEngine = _mlContext.Model.CreatePredictionEngine<ContractSourceCodeTrainData, IssuePredictionBaseScan>(_trainedModel);
             // </SnippetCreatePredictionEngine1>
             // <SnippetCreateTestIssue1>
 

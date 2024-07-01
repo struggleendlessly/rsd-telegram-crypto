@@ -36,7 +36,7 @@ namespace ML.WorkerServiceAi
         {
             var dataSet = 
                 dbContext.
-                ContractSourceCodes.
+                ContractSourceCodeTrainDatas.
                 Where(x=>!string.IsNullOrEmpty(x.didXXX) && !string.Equals(x.didXXX, "?")).
                 Take(10).
                 ToList();

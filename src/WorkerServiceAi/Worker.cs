@@ -36,14 +36,14 @@ namespace WorkerServiceAi
 
             var dataSet =
                 dbContext.
-                Learn22.
+                ContractSourceCodeTrainDatas.
                 Where(x=>x.Id == 20).
                 FirstOrDefault();
 
             var input = new MLModel_learn22.ModelInput
             {
-                didXXX = dataSet.isGood,
-                SourceCode = dataSet.contractCode
+                didXXX = dataSet.didXXX,
+                SourceCode = dataSet.SourceCode
             };
 
             var aa = model.Predict(input);

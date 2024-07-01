@@ -6,7 +6,8 @@ namespace Shared.DB
     {
         public DbSet<Gyosa> Gyosas { get; set; }
         public DbSet<TokenInfo> TokenInfos { get; set; }
-        public DbSet<ContractSourceCode> ContractSourceCodes { get; set; }
+        public DbSet<ContractSourceCodeTestData> ContractSourceCodeTestDatas { get; set; }
+        public DbSet<ContractSourceCodeTrainData> ContractSourceCodeTrainDatas { get; set; }
 
         public string DbPath { get; }
 

@@ -31,7 +31,7 @@ namespace WorkerServiceAi.ML
                     new SdcaLogisticRegressionBinaryTrainer.Options { NumberOfThreads = 8 });
 
             var fastTreeTrainer = mlContext.BinaryClassification.Trainers.FastTree(
-                    new FastTreeBinaryTrainer.Options { NumberOfThreads = 1 });
+                    new FastTreeBinaryTrainer.Options { NumberOfThreads = 8 });
 
             var ffmTrainer = mlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine();
 

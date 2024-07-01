@@ -100,7 +100,7 @@ namespace Shared.BaseScan
         {
             var res = 0;
 
-            var contractSourceCodeDB = dBContext.ContractSourceCodes.Where(x => x.AddressToken == contractAddress).FirstOrDefault();
+            var contractSourceCodeDB = dBContext.ContractSourceCodeTrainDatas.Where(x => x.AddressToken == contractAddress).FirstOrDefault();
 
             if (contractSourceCodeDB is not null)
             {
@@ -130,7 +130,7 @@ namespace Shared.BaseScan
                     contractSourceCodeDB.Proxy = contractSourceCodeAPIRes.Proxy;
                     contractSourceCodeDB.Runs = contractSourceCodeAPIRes.Runs;
 
-                    dBContext.ContractSourceCodes.Add(contractSourceCodeDB);
+                    dBContext.ContractSourceCodeTrainDatas.Add(contractSourceCodeDB);
                     await dBContext.SaveChangesAsync();
                 }
             }

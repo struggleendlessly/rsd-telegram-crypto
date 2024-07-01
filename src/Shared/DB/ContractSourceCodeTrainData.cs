@@ -1,6 +1,6 @@
-﻿namespace WorkerServiceAi.DB
+﻿namespace Shared.DB
 {
-    public class ContractSourceCode
+    public class ContractSourceCodeTrainData
     {
         public int Id { get; set; }
         public string didXXX { get; set; } = "";

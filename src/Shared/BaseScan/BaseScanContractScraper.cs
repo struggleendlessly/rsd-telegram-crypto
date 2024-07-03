@@ -266,6 +266,11 @@ namespace Shared.BaseScan
 
                 await UpdateDBWithPaidApiTokenInfo(t);
 
+                if (t.NameToken.Equals("aimemecoin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    continue;
+                }
+
                 if (!string.IsNullOrEmpty(t.NameToken))
                 {
                     ti.Add(t);

@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		daemons.txt = daemons.txt
 		helpMe.txt = helpMe.txt
 		linux setup.txt = linux setup.txt
+		ml metrix.txt = ml metrix.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared.csproj", "{31F62D14-23AB-4D47-A6C6-81958DB02925}"
@@ -24,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceProcess2", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceAi", "src\WorkerServiceAi\WorkerServiceAi.csproj", "{E714CB88-7F2F-4954-98F2-4E11C0BF0AEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GyosaScrapperFromTelegram", "src\GyosaScrapperFromTelegram\GyosaScrapperFromTelegram.csproj", "{79C70ACA-0016-47F3-8AD2-8E71386CCA30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GyosaScrapperFromTelegram", "src\GyosaScrapperFromTelegram\GyosaScrapperFromTelegram.csproj", "{79C70ACA-0016-47F3-8AD2-8E71386CCA30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

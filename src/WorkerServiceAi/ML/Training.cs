@@ -33,7 +33,30 @@ namespace WorkerServiceAi.ML
             var fastTreeTrainer = mlContext.BinaryClassification.Trainers.FastTree(
                     new FastTreeBinaryTrainer.Options { NumberOfThreads = 8 });
 
+            var FastForestTrainer = mlContext.BinaryClassification.Trainers.FastForest(
+                new FastForestBinaryTrainer.Options() {  NumberOfThreads = 8 });
+
+            var GamTrainer = mlContext.BinaryClassification.Trainers.Gam(
+                new GamBinaryTrainer.Options() {   });
+
+            var LbfgsLogisticRegressionTrainer = mlContext.BinaryClassification.Trainers.LbfgsLogisticRegression(
+                new LbfgsLogisticRegressionBinaryTrainer.Options() { NumberOfThreads = 8 });
+
+            var LdSvmTrainer = mlContext.BinaryClassification.Trainers.LdSvm(
+                new LdSvmTrainer.Options() {});
+
+            var LinearSvmTrainer = mlContext.BinaryClassification.Trainers.LinearSvm(
+                new LinearSvmTrainer.Options() {});
+
+            var SgdNonCalibratedTrainer = mlContext.BinaryClassification.Trainers.SgdNonCalibrated(
+                new SgdNonCalibratedTrainer.Options() {NumberOfThreads = 8});
+
             var ffmTrainer = mlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine();
+
+            var priorTrainer = mlContext.BinaryClassification.Trainers.Prior();
+
+            var SgdCalibratedTrainer = mlContext.BinaryClassification.Trainers.SgdCalibrated(
+                new SgdCalibratedTrainer.Options() { NumberOfThreads = 8 });
 
             // Fit the data transformation pipeline.
             var featurization = featurizationPipeline.Fit(trainData);
@@ -41,22 +64,51 @@ namespace WorkerServiceAi.ML
             var featurizedTest = featurization.Transform(testData);
 
             // Fit the trainers.
+            var SgdCalibrated = SgdCalibratedTrainer.Fit(featurizedTrain);
+            var prior = priorTrainer.Fit(featurizedTrain);
+            var SgdNonCalibrated = SgdNonCalibratedTrainer.Fit(featurizedTrain);
+            var LinearSvm = LinearSvmTrainer.Fit(featurizedTrain);
+            var LdSvm = LdSvmTrainer.Fit(featurizedTrain);
+            var lbfgsLogisticRegression = LbfgsLogisticRegressionTrainer.Fit(featurizedTrain);
+            var Gam = GamTrainer.Fit(featurizedTrain);
+            var fastForest = fastTreeTrainer.Fit(featurizedTrain);
             var sdca = sdcaTrainer.Fit(featurizedTrain);
             var fastTree = fastTreeTrainer.Fit(featurizedTrain);
             var ffm = ffmTrainer.Fit(featurizedTrain);
 
             // Evaluate the trainers.
+            var SgdCalibratedPredictions = SgdCalibrated.Transform(featurizedTest);
+            var SgdCalibratedMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(SgdCalibratedPredictions);
+
+            var priorPredictions = prior.Transform(featurizedTest);
+            var priorMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(priorPredictions);
+
+            var SgdNonCalibratedPredictions = SgdNonCalibrated.Transform(featurizedTest);
+            var SgdNonCalibratedMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(SgdNonCalibratedPredictions);
+
+            var LinearSvmPredictions = LinearSvm.Transform(featurizedTest);
+            var LinearSvmMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(LinearSvmPredictions);
+
+            var LdSvmPredictions = LdSvm.Transform(featurizedTest);
+            var LdSvmMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(LdSvmPredictions);
+           
+            var lbfgsLogisticRegressionPredictions = lbfgsLogisticRegression.Transform(featurizedTest);
+            var lbfgsLogisticRegressionMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(lbfgsLogisticRegressionPredictions);
+           
+            var GamPredictions = Gam.Transform(featurizedTest);
+            var GamMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(GamPredictions);
+
+            var fastForestPredictions = fastForest.Transform(featurizedTest);
+            var fastForestMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(fastForestPredictions);
+
             var sdcaPredictions = sdca.Transform(featurizedTest);
             var sdcaMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(sdcaPredictions);
+
             var fastTreePredictions = fastTree.Transform(featurizedTest);
             var fastTreeMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(fastTreePredictions);
+
             var ffmPredictions = sdca.Transform(featurizedTest);
             var ffmMetrics = mlContext.BinaryClassification.EvaluateNonCalibrated(ffmPredictions);
-
-            //// Validate the results.
-            //Common.AssertMetrics(sdcaMetrics);
-            //Common.AssertMetrics(fastTreeMetrics);
-            //Common.AssertMetrics(ffmMetrics);
         }
     }
 }

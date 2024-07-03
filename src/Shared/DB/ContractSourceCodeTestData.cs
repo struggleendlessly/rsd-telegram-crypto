@@ -21,5 +21,6 @@
         public string Proxy { get; set; } = "";
         public string Implementation { get; set; } = "";
         public string SwarmSource { get; set; } = "";
+        public string byteCode { get; set; } = "";
     }
 }

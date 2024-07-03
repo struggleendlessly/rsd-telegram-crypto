@@ -1,0 +1,28 @@
+﻿Area under the ROC Curve
+AUC ranges in value from 0 to 1. A model whose predictions are 100% wrong has an AUC of 0.0; one whose predictions are 100% correct has an AUC of 1.0.
+
+ROC Curves summarize the trade-off between the true positive rate and false positive rate for a predictive model using different probability thresholds.
+Precision-Recall curves summarize the trade-off between the true positive rate and the positive predictive value for a predictive model using different 
+probability thresholds.
+ROC curves are appropriate when the observations are balanced between each class, whereas precision-recall curves are appropriate for imbalanced datasets.
+
+
+
+
+
+Consider a computer program for recognizing dogs (the relevant element) in a digital photograph. Upon processing a picture which contains ten cats and 
+twelve dogs, the program identifies eight dogs. Of the eight elements identified as dogs, only five actually are dogs (true positives), 
+while the other three are cats (false positives). Seven dogs were missed (false negatives), and seven cats were correctly excluded (true negatives). 
+The program's precision is then 5/8 (true positives / selected elements) while its recall is 5/12 (true positives / relevant elements).
+
+Adopting a hypothesis-testing approach, where in this case, the null hypothesis is that a given item is irrelevant (not a dog), absence of type I and 
+type II errors (perfect specificity and sensitivity) corresponds respectively to perfect precision (no false positives) and perfect recall 
+(no false negatives).
+
+More generally, recall is simply the complement of the type II error rate (i.e., one minus the type II error rate). Precision is related to the type 
+I error rate, but in a slightly more complicated way, as it also depends upon the prior distribution of seeing a relevant vs. an irrelevant item.
+
+The above cat and dog example contained 8 − 5 = 3 type I errors (false positives) out of 10 total cats (true negatives), for a type I error rate of 3/10, 
+and 12 − 5 = 7 type II errors (false negatives), for a type II error rate of 7/12. Precision can be seen as a measure of quality, and recall as a measure 
+of quantity. Higher precision means that an algorithm returns more relevant results than irrelevant ones, and high recall means that an algorithm returns 
+most of the relevant results (whether or not irrelevant ones are also returned).

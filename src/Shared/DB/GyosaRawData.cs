@@ -1,6 +1,6 @@
 ﻿namespace Shared.DB
 {
-    public class Gyosa : IGyosa
+    public class GyosaRawData : IGyosa
     {
         public int Id { get; set; }
         public string Title { get; set; } = "";

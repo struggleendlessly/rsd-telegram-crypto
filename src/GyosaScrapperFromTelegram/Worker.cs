@@ -58,8 +58,16 @@ namespace GyosaScrapperFromTelegram
         {
             bool res = false;
 
-            dbContext.Gyosas.AddRange(val);
-            await dbContext.SaveChangesAsync();
+            foreach (var gyosa in val)
+            {
+                var t = (IGyosa)gyosa;
+                var t1 = (GyosaRawData)t;
+
+                dbContext.GyosaRawData.Add(t1);
+            }
+            //dbContext.Gyosas.AddRange(val);
+            //dbContext.GyosaRawData.AddRange(val);
+            //await dbContext.SaveChangesAsync();
             res = true;
         }
         public List<Gyosa> Filter(List<Gyosa> val)
@@ -166,7 +174,7 @@ namespace GyosaScrapperFromTelegram
                 catch (Exception ex)
                 {
 
-                    throw;
+                    //throw;
                 }
             }
 

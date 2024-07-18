@@ -58,15 +58,15 @@ namespace WorkerServiceAi.ML
                 mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "isGood", outputColumnName: "Label").
                 Append(mlContext.Transforms.Conversion.MapKeyToValue("Label")).
                 Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "SourceCode", outputColumnName: "SourceCodeFeaturized")).
-                //Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "byteCode", outputColumnName: "byteCodeFeaturized")).
-                //Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "ABI", outputColumnName: "ABIFeaturized")).
+                Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "byteCode", outputColumnName: "byteCodeFeaturized")).
+                Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "ABI", outputColumnName: "ABIFeaturized")).
                 //.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "totalSupply", outputColumnName: "totalSupplyFeaturized"))
                 //.Append(mlContext.Transforms.Text.FeaturizeText(inputColumnName: "divisor", outputColumnName: "divisorFeaturized"))
                 Append(mlContext.Transforms.Concatenate(
                     "Features",
-                    "SourceCodeFeaturized"
-                    //"byteCodeFeaturized",
-                    //"ABIFeaturized"
+                    "SourceCodeFeaturized",
+                    "byteCodeFeaturized",
+                    "ABIFeaturized"
                     //"totalSupplyFeaturized", 
                     //"divisorFeaturized"
                     ));

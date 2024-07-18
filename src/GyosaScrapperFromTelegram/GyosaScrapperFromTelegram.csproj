@@ -14,18 +14,69 @@
 
   <ItemGroup>
     <None Remove="FilesToScrap\messages.html" />
+    <None Remove="FilesToScrap\messages10.html" />
+    <None Remove="FilesToScrap\messages11.html" />
+    <None Remove="FilesToScrap\messages12.html" />
+    <None Remove="FilesToScrap\messages13.html" />
+    <None Remove="FilesToScrap\messages14.html" />
+    <None Remove="FilesToScrap\messages15.html" />
+    <None Remove="FilesToScrap\messages16.html" />
+    <None Remove="FilesToScrap\messages17.html" />
+    <None Remove="FilesToScrap\messages18.html" />
+    <None Remove="FilesToScrap\messages19.html" />
     <None Remove="FilesToScrap\messages2.html" />
+    <None Remove="FilesToScrap\messages20.html" />
+    <None Remove="FilesToScrap\messages21.html" />
     <None Remove="FilesToScrap\messages3.html" />
     <None Remove="FilesToScrap\messages4.html" />
     <None Remove="FilesToScrap\messages5.html" />
     <None Remove="FilesToScrap\messages6.html" />
+    <None Remove="FilesToScrap\messages7.html" />
+    <None Remove="FilesToScrap\messages8.html" />
+    <None Remove="FilesToScrap\messages9.html" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="FilesToScrap\messages.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="FilesToScrap\messages10.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages11.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages12.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages13.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages14.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages15.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages16.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages17.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages18.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages19.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="FilesToScrap\messages2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages20.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages21.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="FilesToScrap\messages3.html">
@@ -38,6 +89,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="FilesToScrap\messages6.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages7.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages8.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FilesToScrap\messages9.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

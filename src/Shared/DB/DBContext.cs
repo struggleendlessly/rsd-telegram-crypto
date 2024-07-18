@@ -5,6 +5,7 @@ namespace Shared.DB
     public class DBContext : DbContext
     {
         public DbSet<Gyosa> Gyosas { get; set; }
+        public DbSet<GyosaRawData> GyosaRawData { get; set; }
         public DbSet<TokenInfo> TokenInfos { get; set; }
         public DbSet<ContractSourceCodeTestData> ContractSourceCodeTestDatas { get; set; }
         public DbSet<ContractSourceCodeTrainData> ContractSourceCodeTrainDatas { get; set; }

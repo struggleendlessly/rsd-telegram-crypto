@@ -1,19 +1,23 @@
 using api_alchemy;
 
 using Shared;
+using Shared.ConfigurationOptions;
+using Shared.Telegram;
 
 using ws_eth_findTokens;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 
-builder.Services.AddHttpClient();
-builder.Services.AddHttpClient<ApiAlchemy>(client =>
+builder.Services.Configure<OptionsAlchemy>(builder.Configuration.GetSection(OptionsAlchemy.SectionName));
+
+builder.Services.AddHttpClient("ApiAlchemy", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["BaseUrl"]);
 })
 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
+
+builder.Services.AddTransient<ApiAlchemy>();
 
 var host = builder.Build();
 host.Run();

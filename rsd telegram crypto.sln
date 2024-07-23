@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api_alchemy", "src\api_alch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "src\Data\Data.csproj", "{DF544BF2-D3A4-4F94-ACD3-5A59BCB62A87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eth_shared", "src\eth\eth_shared\eth_shared.csproj", "{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,12 +87,17 @@ Global
 		{DF544BF2-D3A4-4F94-ACD3-5A59BCB62A87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF544BF2-D3A4-4F94-ACD3-5A59BCB62A87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF544BF2-D3A4-4F94-ACD3-5A59BCB62A87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{05CB0B71-E051-4FD5-8A9E-CA3336BEB4C9} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
+		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D54AC4D8-ED12-40CF-BD73-23C6CD5E0CF1}

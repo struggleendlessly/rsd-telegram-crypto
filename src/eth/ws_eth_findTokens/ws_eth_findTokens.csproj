@@ -20,5 +20,6 @@
     <ProjectReference Include="..\..\api_alchemy\api_alchemy.csproj" />
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\eth_shared\eth_shared.csproj" />
   </ItemGroup>
 </Project>

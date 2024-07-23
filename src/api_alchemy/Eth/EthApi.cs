@@ -30,6 +30,28 @@ namespace api_alchemy.Eth
 
         // https://sandbox.alchemy.com/?network=ETH_MAINNET&method=eth_getBlockByNumber&body.id=1&body.jsonrpc=2.0&body.method=eth_getBlockByNumber&body.params%5B0%5D=finalized&body.params%5B1%5D=true
         // https://docs.alchemy.com/reference/eth-getblockbynumber
+        public async Task<int> lastBlockNumber()
+        {
+            var res = 0;
+
+            var body = EthUrlBuilder.lastBlockNumber();
+
+            StringContent httpContent = new StringContent(
+                body,
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<lastBlockNumber>();
+                res = Convert.ToInt32(t.result, 16);
+            }
+
+            return res;
+        }    
+        
         public async Task<getBlockByNumberDTO> getBlockByNumber(int block)
         {
             getBlockByNumberDTO res = new getBlockByNumberDTO();

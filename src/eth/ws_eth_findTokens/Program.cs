@@ -7,6 +7,7 @@ using Shared.Telegram;
 using Data;
 
 using ws_eth_findTokens;
+using eth_shared;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
@@ -23,6 +24,7 @@ builder.Services.AddHttpClient("ApiAlchemy", client =>
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 
 builder.Services.AddTransient<EthApi>();
+builder.Services.AddTransient<FindTransactionService>();
 
 var host = builder.Build();
 host.Run();

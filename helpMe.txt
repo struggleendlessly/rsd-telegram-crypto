@@ -12,6 +12,9 @@ dotnet ef database update --project Shared --startup-project WorkerServiceRead
 
 dotnet ef  migrations remove  --project Shared --startup-project WorkerServiceRead
 
+
+dotnet ef migrations add In1 -o Migrations --project Data --startup-project eth/ws_eth_findTokens
+dotnet ef database update --project Data --startup-project eth/ws_eth_findTokens
 ////////////////////////////////////////////////////////
 
 ssh -i "D:\downloads\cryptofilter_key.pem" azureuser@52.252.195.157

@@ -1,5 +1,4 @@
-using api_alchemy;
-
+using api_alchemy.Eth;
 using Shared;
 using Shared.ConfigurationOptions;
 using Shared.Telegram;
@@ -17,7 +16,7 @@ builder.Services.AddHttpClient("ApiAlchemy", client =>
 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 
-builder.Services.AddTransient<ApiAlchemy>();
+builder.Services.AddTransient<EthApi>();
 
 var host = builder.Build();
 host.Run();

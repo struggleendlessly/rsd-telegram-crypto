@@ -1,5 +1,3 @@
-using api_alchemy.Eth;
-
 using eth_shared;
 
 namespace ws_eth_findTokens
@@ -18,16 +16,17 @@ namespace ws_eth_findTokens
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await findTransactionService.Start();
-
+        {           
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 }
-                await Task.Delay(5000, stoppingToken);
+
+                await findTransactionService.Start();
+
+                await Task.Delay(60000, stoppingToken);
             }
         }
     }

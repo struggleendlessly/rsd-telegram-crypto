@@ -7,6 +7,8 @@ using Data.Models;
 
 using eth_shared.Map;
 
+using Microsoft.EntityFrameworkCore;
+
 using System.Collections.Concurrent;
 
 namespace eth_shared
@@ -20,8 +22,8 @@ namespace eth_shared
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
 
-        private readonly int maxDiffToProcess = 100;
-        private readonly int maxBatchSize = 50;
+        private readonly int maxDiffToProcess = 250;
+        private int batchSize = 50;
 
         public FindTransactionService(
             EthApi apiAlchemy,
@@ -39,8 +41,9 @@ namespace eth_shared
             //var test = await GetTransactionsFromBlockByNumber(20350220);
             await GetBlocks(lastBlockNumber, lastProccessedBlock);
             await ApplyFiltersToTransactions();
-            SaveToDB_Txc();
-            SaveToDB_Blocks();
+            await SaveToDB_Txc();
+            //await SaveToDB_Others();
+            await SaveToDB_Blocks();
         }
 
         private async Task<int> GetLastEthBlockNumber()
@@ -65,10 +68,15 @@ namespace eth_shared
                 if (diff > maxDiffToProcess)
                 {
                     diff = maxDiffToProcess;
-
                 }
 
-                rangeOfBatches = (int)Math.Floor(maxDiffToProcess / (double)maxBatchSize);
+                rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
+
+                if (rangeOfBatches == 0)
+                {
+                    rangeOfBatches = 1;
+                    batchSize = diff;
+                }
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
 
@@ -77,7 +85,7 @@ namespace eth_shared
                     new ParallelOptions { MaxDegreeOfParallelism = 4, },
                     async (iterator, ct) =>
                 {
-                    List<int> rangeForBlocks = Enumerable.Range(lastProccessedBlock + maxBatchSize * iterator + 1, maxBatchSize).ToList();
+                    List<int> rangeForBlocks = Enumerable.Range(lastProccessedBlock + batchSize * iterator + 1, batchSize).ToList();
 
                     var t = await GetTransactionsFromBlockByNumberBatch(rangeForBlocks);
 
@@ -106,6 +114,11 @@ namespace eth_shared
         private async Task<int> GetLastProccessedBlockNumber()
         {
             var res = 20350220;
+
+            if ((await dbContext.EthBlock.CountAsync()) > 0)
+            {
+                res = await dbContext.EthBlock.MaxAsync(x => x.numberInt);
+            }
 
             return res;
         }
@@ -155,37 +168,50 @@ namespace eth_shared
                     t.isCustomInputStart = true;
                 }
 
+                t.blockNumberInt = Convert.ToInt32(t.blockNumber, 16);
+
                 res.Add(t);
             }
 
             return res;
         }
 
-        private List<EthTrainData> ProcessOthers()
+        private List<EthTrxOthers> ProcessOthers()
         {
-            List<EthTrainData> res = new();
+            List<EthTrxOthers> res = new();
 
-            foreach (var item in tokens)
+            foreach (var item in others)
+            {
+                var t = item.MapOthers();
+
+                t.blockNumberInt = Convert.ToInt32(t.blockNumber, 16);
+
+                res.Add(t);
+            }
+
+            return res;
+        }
+
+        private List<EthBlocks> ProcessBlocks()
+        {
+            List<EthBlocks> res = new();
+
+            foreach (var item in blocks)
             {
                 var t = item.Map();
+
+                if (string.IsNullOrEmpty(t.number))
+                {
+                    continue;
+                }
+
+                t.numberInt = Convert.ToInt32(t.number, 16);
+
                 res.Add(t);
             }
 
             return res;
         }
-
-        //private List<EthTrainData> ProcessBlocks()
-        //{
-        //    List<EthTrainData> res = new();
-
-        //    foreach (var item in blocks)
-        //    {
-        //        var t = item.Map();
-        //        res.Add(t);
-        //    }
-
-        //    return res;
-        //}
 
         private async Task<int> SaveToDB_Txc()
         {
@@ -199,21 +225,26 @@ namespace eth_shared
             return res;
         }
 
-        //private async Task<int> SaveToDB_Others()
-        //{
-        //    var res = 0;
+        private async Task<int> SaveToDB_Others()
+        {
+            var res = 0;
 
-        //    var t = ProcessOthers();
+            var t = ProcessOthers();
 
-        //    //dbContext.EthTrainData.AddRange(t);
-        //    res = await dbContext.SaveChangesAsync();
+            dbContext.EthTrxOther.AddRange(t);
+            res = await dbContext.SaveChangesAsync();
 
-        //    return res;
-        //}
+            return res;
+        }
 
         private async Task<int> SaveToDB_Blocks()
         {
-            var res = 20350220;
+            var res = 0;
+
+            var t = ProcessBlocks();
+
+            dbContext.EthBlock.AddRange(t);
+            res = await dbContext.SaveChangesAsync();
 
             return res;
         }

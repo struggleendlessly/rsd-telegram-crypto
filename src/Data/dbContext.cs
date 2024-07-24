@@ -7,6 +7,8 @@ namespace Data
     public class dbContext : DbContext
     {
         public DbSet<EthTrainData> EthTrainData { get; set; }
+        public DbSet<EthBlocks> EthBlock { get; set; }
+        public DbSet<EthTrxOthers> EthTrxOther { get; set; }
 
         public string DbPath { get; }
 

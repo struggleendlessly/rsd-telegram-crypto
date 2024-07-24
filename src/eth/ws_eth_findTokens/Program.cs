@@ -20,6 +20,15 @@ builder.Services.Configure<OptionsAlchemy>(builder.Configuration.GetSection(Opti
 builder.Services.AddHttpClient("ApiAlchemy", client =>
 {
 })
+.ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var socketHandler = new SocketsHttpHandler
+        {
+            MaxConnectionsPerServer = int.MaxValue,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+        };
+        return socketHandler;
+    })
 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 

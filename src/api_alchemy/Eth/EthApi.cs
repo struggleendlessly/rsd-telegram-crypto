@@ -1,10 +1,14 @@
 ﻿using api_alchemy.Eth.ResponseDTO;
+
 using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace api_alchemy.Eth
 {
@@ -50,8 +54,8 @@ namespace api_alchemy.Eth
             }
 
             return res;
-        }    
-        
+        }
+
         public async Task<getBlockByNumberDTO> getBlockByNumber(int block)
         {
             getBlockByNumberDTO res = new getBlockByNumberDTO();
@@ -60,14 +64,50 @@ namespace api_alchemy.Eth
 
             StringContent httpContent = new StringContent(
                 body,
-                System.Text.Encoding.UTF8,
+                Encoding.UTF8,
                 "application/json");
 
             var response = await httpClient.PostAsync(vAndApiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
+                var t = await response.Content.ReadAsStringAsync();
                 res = await response.Content.ReadFromJsonAsync<getBlockByNumberDTO>();
+            }
+
+            return res;
+        }
+
+        public async Task<List<getBlockByNumberDTO>> getBlockByNumberBatch(List<int> blocks)
+        {
+            List<getBlockByNumberDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in blocks)
+            {
+                aa.Append(EthUrlBuilder.getBlockByNumber(item));
+
+                if (blocks.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadAsStringAsync();
+                res = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
             }
 
             return res;

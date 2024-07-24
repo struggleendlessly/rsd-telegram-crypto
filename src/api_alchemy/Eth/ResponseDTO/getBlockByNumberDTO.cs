@@ -1,6 +1,5 @@
 ﻿namespace api_alchemy.Eth.ResponseDTO
 {
-
     public class getBlockByNumberDTO
     {
         public string jsonrpc { get; set; }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\api_alchemy\api_alchemy.csproj" />
+    <ProjectReference Include="..\..\Data\Data.csproj" />
   </ItemGroup>
 
 </Project>

@@ -15,7 +15,8 @@ namespace eth_shared
 {
     public class FindTransactionService
     {
-        private ConcurrentBag<getBlockByNumberDTO> blocks = new();
+        private ConcurrentBag<getBlockByNumberDTO> blocksUnfiltered = new();
+        private List<getBlockByNumberDTO> blocksFiltered = new();
         private List<Transaction> tokens = new();
         private List<Transaction> others = new();
 
@@ -35,15 +36,43 @@ namespace eth_shared
         }
         public async Task Start()
         {
+            await CheckSkippedBlocks();
             var lastBlockNumber = await GetLastEthBlockNumber();
             var lastProccessedBlock = await GetLastProccessedBlockNumber();
 
             //var test = await GetTransactionsFromBlockByNumber(20350220);
             await GetBlocks(lastBlockNumber, lastProccessedBlock);
+            await Middle();
+            await End();
+
+            await CheckSkippedBlocks();
+        }
+
+        public async Task Middle()
+        {
+            await FilterReceivedBlocks();
             await ApplyFiltersToTransactions();
+        }
+
+        public async Task End()
+        {
             await SaveToDB_Txc();
             //await SaveToDB_Others();
             await SaveToDB_Blocks();
+        }
+
+
+        private async Task FilterReceivedBlocks()
+        {
+            foreach (var item in blocksUnfiltered)
+            {
+                if (item.result is not null && item.result.transactions is not null)
+                {
+                    blocksFiltered.Add(item);
+                }
+            }
+
+            blocksFiltered = blocksFiltered.DistinctBy(x => x.result.number).ToList();
         }
 
         private async Task<int> GetLastEthBlockNumber()
@@ -57,11 +86,8 @@ namespace eth_shared
             int lastBlockNumber,
             int lastProccessedBlock)
         {
-            ConcurrentBag<Transaction> res = new ConcurrentBag<Transaction>();
-
             var rangeOfBatches = 1;
             var diff = lastBlockNumber - lastProccessedBlock;
-            var endBlock = lastBlockNumber;
 
             if (diff > 0)
             {
@@ -79,23 +105,35 @@ namespace eth_shared
                 }
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
+                List<int> rangeForBlocksFull = Enumerable.Range(lastProccessedBlock, diff).ToList();
+                var rangeForBlocksChunks = rangeForBlocksFull.Chunk(batchSize).ToList();
 
-                await Parallel.ForEachAsync(
-                    rangeForBatches,
-                    new ParallelOptions { MaxDegreeOfParallelism = 4, },
-                    async (iterator, ct) =>
+                await GetBlocksInParalel(rangeForBatches, rangeForBlocksChunks);
+            }
+        }
+
+        private async Task GetBlocksInParalel(
+            List<int> rangeForBatches,
+            List<int[]> rangeForBlocksChunks)
+        {
+
+            await Parallel.ForEachAsync(
+                rangeForBatches,
+                new ParallelOptions { MaxDegreeOfParallelism = 4, },
+                async (iterator, ct) =>
                 {
-                    List<int> rangeForBlocks = Enumerable.Range(lastProccessedBlock + batchSize * iterator + 1, batchSize).ToList();
+                    List<int> rangeForBlocks = rangeForBlocksChunks[iterator].ToList();
 
                     var t = await GetTransactionsFromBlockByNumberBatch(rangeForBlocks);
 
                     foreach (var item in t)
                     {
-                        blocks.Add(item);
+                        blocksUnfiltered.Add(item);
                     }
                 });
-            }
+
         }
+
         private async Task<getBlockByNumberDTO> GetTransactionsFromBlockByNumber(int block)
         {
             var res = await apiAlchemy.getBlockByNumber(block);
@@ -128,12 +166,9 @@ namespace eth_shared
         {
             List<Transaction> transactions = new();
 
-            foreach (var item in blocks)
+            foreach (var item in blocksFiltered)
             {
-                if (item.result is not null && item.result.transactions is not null)
-                {
-                    transactions.AddRange(item.result.transactions);
-                }
+                transactions.AddRange(item.result.transactions);
             }
 
             foreach (var item in transactions)
@@ -158,8 +193,8 @@ namespace eth_shared
                 var t = item.Map();
 
                 if (t.input.StartsWith("0x6080") ||
-                    t.input.StartsWith("0x6040") ||
-                    t.input.StartsWith("0x60806040"))
+                    t.input.StartsWith("0x6040")
+                    )
                 {
                     t.isCustomInputStart = false;
                 }
@@ -170,7 +205,12 @@ namespace eth_shared
 
                 t.blockNumberInt = Convert.ToInt32(t.blockNumber, 16);
 
-                res.Add(t);
+                var isExist = dbContext.EthTrainData.Any(x => x.hash == t.hash);
+
+                if (!isExist)
+                {
+                    res.Add(t);
+                }
             }
 
             return res;
@@ -186,7 +226,12 @@ namespace eth_shared
 
                 t.blockNumberInt = Convert.ToInt32(t.blockNumber, 16);
 
-                res.Add(t);
+                var isExist = dbContext.EthTrxOther.Any(x => x.hash == t.hash);
+
+                if (!isExist)
+                {
+                    res.Add(t);
+                }
             }
 
             return res;
@@ -196,7 +241,7 @@ namespace eth_shared
         {
             List<EthBlocks> res = new();
 
-            foreach (var item in blocks)
+            foreach (var item in blocksFiltered)
             {
                 var t = item.Map();
 
@@ -207,7 +252,12 @@ namespace eth_shared
 
                 t.numberInt = Convert.ToInt32(t.number, 16);
 
-                res.Add(t);
+                var isExist = dbContext.EthBlock.Any(x => x.number == t.number);
+
+                if (!isExist)
+                {
+                    res.Add(t);
+                }
             }
 
             return res;
@@ -247,6 +297,49 @@ namespace eth_shared
             res = await dbContext.SaveChangesAsync();
 
             return res;
+        }
+
+        private async Task CheckSkippedBlocks()
+        {
+            blocksUnfiltered = new();
+            blocksFiltered = new();
+            tokens = new();
+            others = new();
+
+            var blocks = dbContext.EthBlock.Select(x => x.numberInt).ToList().Order().ToList();
+            var minBlockNumber = blocks.First();
+            var lastProccessedBlock = await GetLastProccessedBlockNumber();
+            var endOfEtalonRange = lastProccessedBlock - minBlockNumber;
+            var etalonBlockNumbers = Enumerable.Range(minBlockNumber, endOfEtalonRange);
+            bool isInSequence = blocks.SequenceEqual(etalonBlockNumbers);
+            var blockDiff = etalonBlockNumbers.Except(blocks).ToList();
+            var blockDiffChunks = blockDiff.Chunk(batchSize).ToList();
+
+            var rangeOfBatches = 1;
+            var diff = blockDiff.Count();
+
+            if (diff > 0)
+            {
+                if (diff > maxDiffToProcess)
+                {
+                    diff = maxDiffToProcess;
+                }
+
+                rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
+
+                if (rangeOfBatches == 0)
+                {
+                    rangeOfBatches = 1;
+                    batchSize = diff;
+                }
+
+                List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
+
+                await GetBlocksInParalel(rangeForBatches, blockDiffChunks);
+            }
+
+            await Middle();
+            await End();
         }
     }
 }

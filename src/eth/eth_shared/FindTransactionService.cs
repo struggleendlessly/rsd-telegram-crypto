@@ -151,7 +151,7 @@ namespace eth_shared
 
         private async Task<int> GetLastProccessedBlockNumber()
         {
-            var res = 20350220;
+            var res = 18910000;
 
             if ((await dbContext.EthBlock.CountAsync()) > 0)
             {

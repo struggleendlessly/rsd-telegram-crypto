@@ -36,7 +36,7 @@ namespace eth_shared
         }
         public async Task Start()
         {
-            await CheckSkippedBlocks();
+            //await CheckSkippedBlocks();
             var lastBlockNumber = await GetLastEthBlockNumber();
             var lastProccessedBlock = await GetLastProccessedBlockNumber();
 
@@ -130,6 +130,8 @@ namespace eth_shared
                     {
                         blocksUnfiltered.Add(item);
                     }
+
+                    Thread.Sleep(50);
                 });
 
         }

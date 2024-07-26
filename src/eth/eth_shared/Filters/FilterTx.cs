@@ -3,6 +3,7 @@
 using Data.Models;
 
 using System.Collections.Concurrent;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace eth_shared.Filters
@@ -88,7 +89,9 @@ namespace eth_shared.Filters
 
             foreach (var item in ethTrainDatas)
             {
-                if (item.totalSupply >= 1_000_000)
+                var totalSupply = BigInteger.Parse(item.totalSupply);
+
+                if (totalSupply >= 1_000_000)
                 {
                     res.Add(item);
                 }

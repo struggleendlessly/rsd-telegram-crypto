@@ -112,7 +112,7 @@ namespace eth_shared
                     t = t / 10;
                 }
 
-                item.totalSupply = (long)t;
+                item.totalSupply = t.ToString();
             }
         }
 

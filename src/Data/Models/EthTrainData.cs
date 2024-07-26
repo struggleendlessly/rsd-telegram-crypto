@@ -12,7 +12,7 @@ namespace Data.Models
         // Custom fields
         public bool isCustomInputStart { get; set; } = false;
         public int blockNumberInt { get; set; } = 0;
-        public long totalSupply { get; set; } = 0;
+        public string totalSupply { get; set; } = default!;
 
         // TokenMetadata
         public int decimals { get; set; } = default!;

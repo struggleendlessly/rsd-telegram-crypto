@@ -1,19 +1,45 @@
 using api_alchemy.Eth;
+
+using Data;
+
+using eth_shared;
+using eth_shared.Processors;
+
 using Microsoft.EntityFrameworkCore;
+
+using nethereum;
+
+using Serilog;
+using Serilog.Sinks.OpenTelemetry;
 
 using Shared;
 using Shared.ConfigurationOptions;
-using Shared.Telegram;
-using Data;
 
 using ws_eth_findTokens;
-using eth_shared;
-using eth_shared.Processors;
-using Nethereum.Web3;
-using nethereum;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+Log.Logger = new LoggerConfiguration().
+    Enrich.FromLogContext().
+
+    WriteTo.Console().
+    WriteTo.OpenTelemetry(
+    x =>
+    {
+        x.Endpoint = "http://localhost:5341";
+        x.Protocol = OtlpProtocol.HttpProtobuf;
+        x.Headers = new Dictionary<string, string>
+        {
+            ["Authorization"] = "KoRAGAVQfLnnJNet9VRj"
+        };
+        x.ResourceAttributes = new Dictionary<string, object>
+        {
+            ["service.name"] = "ws_eth_findTokens"
+        };
+    }).
+    CreateLogger();
+
+builder.Logging.AddSerilog();
 builder.Services.AddWindowsService(options =>
 {
     options.ServiceName = "ws_eth_findTokens";

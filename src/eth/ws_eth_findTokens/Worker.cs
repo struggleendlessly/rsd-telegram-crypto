@@ -1,5 +1,7 @@
 using eth_shared;
 
+using System;
+
 namespace ws_eth_findTokens
 {
     public class Worker : BackgroundService
@@ -8,7 +10,7 @@ namespace ws_eth_findTokens
         private readonly FindTransactionService findTransactionService;
 
         public Worker(
-            ILogger<Worker> logger, 
+            ILogger<Worker> logger,
             FindTransactionService findTransactionService)
         {
             _logger = logger;
@@ -16,15 +18,18 @@ namespace ws_eth_findTokens
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {           
+        {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
+                var timeStart = DateTimeOffset.Now;
+
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
                 await findTransactionService.Start();
+                var timeEnd = DateTimeOffset.Now;
+
+                _logger.LogInformation("Worker stopped at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker running time: {time}", (timeEnd - timeStart).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);
             }

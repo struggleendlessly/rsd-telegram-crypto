@@ -3,7 +3,7 @@
 using Data.Models;
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace eth_shared.Filters
 {
@@ -58,16 +58,21 @@ namespace eth_shared.Filters
             foreach (var item in metadata)
             {
                 var name = item.result.name;
+                var decimals = item.result.decimals;
+                string pattern = @"\p{IsCyrillic}";
 
-                if (name is not null &&
-                    !name.Contains('.') &&
-                    !name.Contains(',') &&
-                    !name.Contains('<') &&
-                    !name.Contains('>') &&
-                    !name.Contains(';') &&
-                    !name.Contains("test", StringComparison.OrdinalIgnoreCase) &&
-                    !name.Contains('/')
-                    )
+                if (decimals is not null &&
+                name is not null &&
+                Regex.Matches(name, pattern).Count == 0 &&
+                !name.Contains('.') &&
+                !name.Contains(',') &&
+                !name.Contains('<') &&
+                !name.Contains('>') &&
+                !name.Contains('$') &&
+                !name.Contains(';') &&
+                !name.Contains("test", StringComparison.OrdinalIgnoreCase) &&
+                !name.Contains('/')
+                )
                 {
                     res.Add(item);
                 }

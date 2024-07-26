@@ -68,7 +68,7 @@ namespace eth_shared.Processors
                     )
                 {
                     t.logo = tokenMetadata.result.logo;
-                    t.decimals = tokenMetadata.result.decimals;
+                    t.decimals = (int)tokenMetadata.result.decimals;
                     t.name = tokenMetadata.result.name;
                     t.symbol = tokenMetadata.result.symbol;
 

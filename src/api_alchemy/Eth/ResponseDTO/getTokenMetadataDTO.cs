@@ -8,10 +8,10 @@
 
         public class Result
         {
-            public int decimals { get; set; } = default!;
-            public string logo { get; set; } = default!;
-            public string name { get; set; } = default!;
-            public string symbol { get; set; } = default!;
+            public int? decimals { get; set; } = null;
+            public string? logo { get; set; } = null;
+            public string? name { get; set; } = null;
+            public string? symbol { get; set; } = null;
         }
     }
 }

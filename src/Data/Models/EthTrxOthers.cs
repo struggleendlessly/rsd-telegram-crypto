@@ -5,31 +5,31 @@
         public int Id { get; set; }
 
         // Custom fields
-        public int blockNumberInt { get; set; }
+        public int blockNumberInt { get; set; } = 0;
 
         // Transaction
-        public string blockHash { get; set; }
-        public string blockNumber { get; set; }
-        public string? hash { get; set; }
-        public string? yParity { get; set; }
-        //public Acce?sslist[] accessList { get; set; }
-        public string? transactionIndex { get; set; }
-        public string? type { get; set; }
-        public string? nonce { get; set; }
-        public string? input { get; set; }
-        public string? r { get; set; }
-        public string? s { get; set; }
-        public string? chainId { get; set; }
-        public string? v { get; set; }
-        public string? gas { get; set; }
-        public string? maxPriorityFeePerGas { get; set; }
-        public string? from { get; set; }
-        public string? to { get; set; }
-        public string? maxFeePerGas { get; set; }
-        public string? value { get; set; }
-        public string? gasPrice { get; set; }
-        public string? maxFeePerBlobGas { get; set; }
-        //public string[] blobVersionedHashes { get; set; }
+        public string blockHash { get; set; } = string.Empty;
+        public string blockNumber { get; set; } = string.Empty;
+        public string? hash { get; set; } = null;
+        public string? yParity { get; set; } = null;
+        //public Acce?sslist[] accessList { get; set; } = null;
+        public string? transactionIndex { get; set; } = null;
+        public string? type { get; set; } = null;
+        public string? nonce { get; set; } = null;
+        public string? input { get; set; } = null;
+        public string? r { get; set; } = null;
+        public string? s { get; set; } = null;
+        public string? chainId { get; set; } = null;
+        public string? v { get; set; } = null;
+        public string? gas { get; set; } = null;
+        public string? maxPriorityFeePerGas { get; set; } = null;
+        public string? from { get; set; } = null;
+        public string? to { get; set; } = null;
+        public string? maxFeePerGas { get; set; } = null;
+        public string? value { get; set; } = null;
+        public string? gasPrice { get; set; } = null;
+        public string? maxFeePerBlobGas { get; set; } = null;
+        //public string[] blobVersionedHashes { get; set; } = null;
 
         //
     }

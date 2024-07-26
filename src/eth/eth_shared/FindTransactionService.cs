@@ -210,6 +210,12 @@ namespace eth_shared
             {
                 var t = item.Map();
 
+                if (t is null ||
+                    t.input is null)
+                {
+                    continue;
+                }
+
                 if (t.input.StartsWith("0x6080") ||
                     t.input.StartsWith("0x6040")
                     )

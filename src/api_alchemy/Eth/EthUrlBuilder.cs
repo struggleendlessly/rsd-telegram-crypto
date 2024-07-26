@@ -1,6 +1,4 @@
-﻿
-
-using api_alchemy.Eth.RequestDTO;
+﻿using api_alchemy.Eth.RequestDTO;
 
 using System.Text.Json;
 
@@ -37,8 +35,8 @@ namespace api_alchemy.Eth
             var res = JsonSerializer.Serialize(request);
 
             return res;
-        }  
-        
+        }
+
         public static string getTransactionReceipt(string transactionHash)
         {
             var request = new requestBaseDTO()
@@ -46,6 +44,21 @@ namespace api_alchemy.Eth
                 jsonrpc = "2.0",
                 method = "eth_getTransactionReceipt",
                 _params = [$"{transactionHash}"],
+                id = 0
+            };
+
+            var res = JsonSerializer.Serialize(request);
+
+            return res;
+        }
+
+        public static string getTokenMetadata(string contractAddress)
+        {
+            var request = new requestBaseDTO()
+            {
+                jsonrpc = "2.0",
+                method = "alchemy_getTokenMetadata",
+                _params = [$"{contractAddress}"],
                 id = 0
             };
 

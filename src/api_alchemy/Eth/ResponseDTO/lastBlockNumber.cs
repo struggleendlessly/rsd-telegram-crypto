@@ -2,8 +2,8 @@
 {
     public class lastBlockNumber
     {
-        public string jsonrpc { get; set; }
-        public int id { get; set; }
-        public string result { get; set; }
+        public string jsonrpc { get; set; } = default!;
+        public int id { get; set; } = default!;
+        public string result { get; set; } = default!;
     }
 }

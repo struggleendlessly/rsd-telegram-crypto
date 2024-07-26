@@ -8,31 +8,31 @@ namespace Data.Models
         public int Id { get; set; }
 
         // Block
-        public string number { get; set; }
-        public int numberInt { get; set; }
-        public string baseFeePerGas { get; set; }
-        public string gasLimit { get; set; }
-        public string gasUsed { get; set; }
-        public string timestamp { get; set; }
+        public string number { get; set; } = string.Empty;
+        public int numberInt { get; set; } = 0;
+        public string baseFeePerGas { get; set; } = string.Empty;
+        public string gasLimit { get; set; } = string.Empty;
+        public string gasUsed { get; set; } = string.Empty;
+        public string timestamp { get; set; } = string.Empty;
 
-        //public string hash { get; set; }
-        //public string logsBloom { get; set; }
-        //public string totalDifficulty { get; set; }
-        //public string receiptsRoot { get; set; }
-        //public string extraData { get; set; }
-        //public string withdrawalsRoot { get; set; }
-        //public string nonce { get; set; }
-        //public string miner { get; set; }
-        //public string excessBlobGas { get; set; }
-        //public string difficulty { get; set; }
-        //public string parentBeaconBlockRoot { get; set; }
-        //public string size { get; set; }
-        //public string sha3Uncles { get; set; }
-        //public string transactionsRoot { get; set; }
-        //public string stateRoot { get; set; }
-        //public string mixHash { get; set; }
-        //public string parentHash { get; set; }
-        //public string blobGasUsed { get; set; }
-        
+        //public string hash { get; set; } = string.Empty;
+        //public string logsBloom { get; set; } = string.Empty;
+        //public string totalDifficulty { get; set; } = string.Empty;
+        //public string receiptsRoot { get; set; } = string.Empty;
+        //public string extraData { get; set; } = string.Empty;
+        //public string withdrawalsRoot { get; set; } = string.Empty;
+        //public string nonce { get; set; } = string.Empty;
+        //public string miner { get; set; } = string.Empty;
+        //public string excessBlobGas { get; set; } = string.Empty;
+        //public string difficulty { get; set; } = string.Empty;
+        //public string parentBeaconBlockRoot { get; set; } = string.Empty;
+        //public string size { get; set; } = string.Empty;
+        //public string sha3Uncles { get; set; } = string.Empty;
+        //public string transactionsRoot { get; set; } = string.Empty;
+        //public string stateRoot { get; set; } = string.Empty;
+        //public string mixHash { get; set; } = string.Empty;
+        //public string parentHash { get; set; } = string.Empty;
+        //public string blobGasUsed { get; set; } = string.Empty;
+
     }
 }

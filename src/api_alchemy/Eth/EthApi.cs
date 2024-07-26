@@ -4,11 +4,8 @@ using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 
 namespace api_alchemy.Eth
 {
@@ -42,7 +39,7 @@ namespace api_alchemy.Eth
 
             StringContent httpContent = new StringContent(
                 body,
-                System.Text.Encoding.UTF8,
+                Encoding.UTF8,
                 "application/json");
 
             var response = await httpClient.PostAsync(vAndApiKey, httpContent);
@@ -50,7 +47,11 @@ namespace api_alchemy.Eth
             if (response.IsSuccessStatusCode)
             {
                 var t = await response.Content.ReadFromJsonAsync<lastBlockNumber>();
-                res = Convert.ToInt32(t.result, 16);
+
+                if (t is not null)
+                {
+                    res = Convert.ToInt32(t.result, 16); ;
+                }
             }
 
             return res;
@@ -72,8 +73,12 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadAsStringAsync();
-                res = await response.Content.ReadFromJsonAsync<getBlockByNumberDTO>();
+                var t = await response.Content.ReadFromJsonAsync<getBlockByNumberDTO>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
             }
 
             return res;
@@ -108,7 +113,12 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                res = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
+                var t = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
             }
 
             return res;
@@ -143,7 +153,52 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                res = await response.Content.ReadFromJsonAsync<List<getTransactionReceiptDTO>>();
+                var t = await response.Content.ReadFromJsonAsync<List<getTransactionReceiptDTO>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
+            }
+
+            return res;
+        }
+
+        public async Task<List<getTokenMetadataDTO>> getTokenMetadataBatch(
+            List<string> transactinHash)
+        {
+            List<getTokenMetadataDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in transactinHash)
+            {
+                aa.Append(EthUrlBuilder.getTokenMetadata(item));
+
+                if (transactinHash.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<List<getTokenMetadataDTO>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
             }
 
             return res;

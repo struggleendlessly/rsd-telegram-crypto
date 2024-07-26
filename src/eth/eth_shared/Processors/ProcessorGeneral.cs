@@ -31,6 +31,12 @@ namespace eth_shared.Processors
             {
                 var t = item.Map();
 
+                if (t is null ||
+                    t.input is null)
+                {
+                    continue;
+                }
+
                 if (t.input.StartsWith("0x6080") ||
                     t.input.StartsWith("0x6040")
                     )
@@ -102,7 +108,7 @@ namespace eth_shared.Processors
 
                 t.numberInt = Convert.ToInt32(t.number, 16);
 
-                var isExist = dbContext.EthBlock.Any(x => x.numberInt == t.numberInt);
+                var isExist = await dbContext.EthBlock.AnyAsync(x => x.numberInt == t.numberInt);
 
                 if (!isExist)
                 {

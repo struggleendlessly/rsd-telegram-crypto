@@ -59,7 +59,8 @@ namespace eth_shared.Filters
             {
                 var name = item.result.name;
 
-                if (!name.Contains('.') &&
+                if (name is not null &&
+                    !name.Contains('.') &&
                     !name.Contains(',') &&
                     !name.Contains('<') &&
                     !name.Contains('>') &&

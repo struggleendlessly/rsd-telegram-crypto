@@ -37,7 +37,7 @@ namespace eth_shared
         private readonly dbContext dbContext;
         private readonly ProcessorGeneral processorGeneral;
 
-        private int batchSize = 50;
+        private readonly int batchSize = 50;
         private readonly int maxDiffToProcess = 250;
 
         public FindTransactionService(
@@ -125,6 +125,8 @@ namespace eth_shared
 
             if (diff > 0)
             {
+                var batchSizeLocal = batchSize;
+
                 if (diff > maxDiffToProcess)
                 {
                     diff = maxDiffToProcess;
@@ -135,12 +137,12 @@ namespace eth_shared
                 if (rangeOfBatches == 0)
                 {
                     rangeOfBatches = 1;
-                    batchSize = diff;
+                    batchSizeLocal = diff;
                 }
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
                 List<int> rangeForBlocksFull = Enumerable.Range(lastProccessedBlock, diff).ToList();
-                var rangeForBlocksChunks = rangeForBlocksFull.Chunk(batchSize).ToList();
+                var rangeForBlocksChunks = rangeForBlocksFull.Chunk(batchSizeLocal).ToList();
 
                 await GetBlocksInParalel(rangeForBatches, rangeForBlocksChunks);
             }
@@ -204,6 +206,8 @@ namespace eth_shared
 
             if (diff > 0)
             {
+                var batchSizeLocal = batchSize;
+
                 if (diff > maxDiffToProcess)
                 {
                     diff = maxDiffToProcess;
@@ -214,11 +218,11 @@ namespace eth_shared
                 if (rangeOfBatches == 0)
                 {
                     rangeOfBatches = 1;
-                    batchSize = diff;
+                    batchSizeLocal = diff;
                 }
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
-                var rangeChunks = tokens.Chunk(batchSize).ToList();
+                var rangeChunks = tokens.Chunk(batchSizeLocal).ToList();
 
                 await Parallel.ForEachAsync(
                     rangeForBatches,
@@ -247,6 +251,8 @@ namespace eth_shared
 
             if (diff > 0)
             {
+                var batchSizeLocal = batchSize;
+
                 if (diff > maxDiffToProcess)
                 {
                     diff = maxDiffToProcess;
@@ -257,7 +263,7 @@ namespace eth_shared
                 if (rangeOfBatches == 0)
                 {
                     rangeOfBatches = 1;
-                    batchSize = diff;
+                    batchSizeLocal = diff;
                 }
 
                 for (int i = 0; i < txnReceiptsFiltered.Count; i++)
@@ -267,7 +273,7 @@ namespace eth_shared
                 }
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
-                var rangeChunks = txnReceiptsFiltered.Chunk(batchSize).ToList();
+                var rangeChunks = txnReceiptsFiltered.Chunk(batchSizeLocal).ToList();
 
                 await Parallel.ForEachAsync(
                     rangeForBatches,
@@ -333,14 +339,15 @@ namespace eth_shared
             var endOfEtalonRange = lastProccessedBlock - minBlockNumber;
             var etalonBlockNumbers = Enumerable.Range(minBlockNumber, endOfEtalonRange);
             bool isInSequence = blocks.SequenceEqual(etalonBlockNumbers);
-            var blockDiff = etalonBlockNumbers.Except(blocks).ToList();
-            var blockDiffChunks = blockDiff.Chunk(batchSize).ToList();
+            var blockDiff = etalonBlockNumbers.Except(blocks).ToList();            
 
             var rangeOfBatches = 1;
             var diff = blockDiff.Count();
 
             if (diff > 0)
             {
+                var batchSizeLocal = batchSize;
+
                 if (diff > maxDiffToProcess)
                 {
                     diff = maxDiffToProcess;
@@ -351,10 +358,11 @@ namespace eth_shared
                 if (rangeOfBatches == 0)
                 {
                     rangeOfBatches = 1;
-                    batchSize = diff;
+                    batchSizeLocal = diff;
                 }
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
+                var blockDiffChunks = blockDiff.Chunk(batchSizeLocal).ToList();
 
                 await GetBlocksInParalel(rangeForBatches, blockDiffChunks);
 

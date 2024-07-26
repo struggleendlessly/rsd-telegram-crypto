@@ -165,18 +165,20 @@ namespace api_alchemy.Eth
         }
 
         public async Task<List<getTokenMetadataDTO>> getTokenMetadataBatch(
-            List<string> transactinHash)
+            List<getTransactionReceiptDTO.Result> txnReceipts)
         {
             List<getTokenMetadataDTO> res = new();
             StringBuilder aa = new();
 
             aa.Append("[");
 
-            foreach (var item in transactinHash)
+            foreach (var item in txnReceipts)
             {
-                aa.Append(EthUrlBuilder.getTokenMetadata(item));
+                aa.Append(EthUrlBuilder.getTokenMetadata(
+                    item.contractAddress, 
+                    item.txnNumberForMetadata));
 
-                if (transactinHash.Last() != item)
+                if (txnReceipts.Last() != item)
                 {
                     aa.Append(",");
                 }

@@ -52,14 +52,16 @@ namespace api_alchemy.Eth
             return res;
         }
 
-        public static string getTokenMetadata(string contractAddress)
+        public static string getTokenMetadata(
+            string contractAddress,
+            int id)
         {
             var request = new requestBaseDTO()
             {
                 jsonrpc = "2.0",
                 method = "alchemy_getTokenMetadata",
                 _params = [$"{contractAddress}"],
-                id = 0
+                id = id
             };
 
             var res = JsonSerializer.Serialize(request);

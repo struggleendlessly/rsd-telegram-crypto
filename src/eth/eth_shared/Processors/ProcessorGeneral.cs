@@ -23,7 +23,8 @@ namespace eth_shared.Processors
 
         public async Task<List<EthTrainData>> ProcessTokens(
             List<Transaction> tokens,
-            List<getTransactionReceiptDTO.Result> txnReceiptsFiltered)
+            List<getTransactionReceiptDTO.Result> txnReceiptsFiltered, 
+            List<getTokenMetadataDTO> tokenMetadataFiltered)
         {
             List<EthTrainData> res = new();
 
@@ -52,16 +53,28 @@ namespace eth_shared.Processors
 
                 var isExistInDB = await dbContext.EthTrainData.AnyAsync(x => x.hash == t.hash);
 
-                var txMetadata = txnReceiptsFiltered.Where(x => x.transactionHash == t.hash).FirstOrDefault();
+                var txReceipt = txnReceiptsFiltered.Where(x => x.transactionHash == t.hash).FirstOrDefault();
 
+                getTokenMetadataDTO? tokenMetadata = null;
+
+                if (txReceipt != null)
+                {
+                    tokenMetadata = tokenMetadataFiltered.Where(x => x.id == txReceipt.txnNumberForMetadata).FirstOrDefault();
+                }
 
                 if (!isExistInDB &&
-                    txMetadata is not null &&
-                    txMetadata.logs.Count() > 1)
+                    txReceipt is not null &&
+                    tokenMetadata is not null
+                    )
                 {
-                    t.contractAddress = txMetadata.contractAddress;
+                    t.logo = tokenMetadata.result.logo;
+                    t.decimals = tokenMetadata.result.decimals;
+                    t.name = tokenMetadata.result.name;
+                    t.symbol = tokenMetadata.result.symbol;
 
-                    var logsJson = JsonSerializer.Serialize(txMetadata.logs);
+                    t.contractAddress = txReceipt.contractAddress;
+
+                    var logsJson = JsonSerializer.Serialize(txReceipt.logs);
                     t.logs = logsJson;
 
                     res.Add(t);

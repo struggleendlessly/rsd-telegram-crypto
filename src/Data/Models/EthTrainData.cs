@@ -10,8 +10,14 @@ namespace Data.Models
         // Custom fields
         public bool isCustomInputStart { get; set; } = false;
         public int blockNumberInt { get; set; } = 0;
-        // TransactionReceipt
 
+        // TokenMetadata
+        public int decimals { get; set; } = default!;
+        public string? logo { get; set; } = null;
+        public string name { get; set; } = default!;
+        public string symbol { get; set; } = default!;
+
+        // TransactionReceipt
         public string logs { get; set; } = string.Empty;
         public string contractAddress { get; set; } = string.Empty;
 

@@ -8,6 +8,7 @@
 
         public class Result
         {
+            public int txnNumberForMetadata { get; set; } = 0;
             public string transactionHash { get; set; } = default!;
             public string blockHash { get; set; } = default!;
             public string blockNumber { get; set; } = default!;

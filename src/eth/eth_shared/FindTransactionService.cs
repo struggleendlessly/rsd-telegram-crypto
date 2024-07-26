@@ -18,19 +18,24 @@ namespace eth_shared
     public class FindTransactionService
     {
         private ConcurrentBag<getBlockByNumberDTO> blocksUnfiltered = new();
+        private ConcurrentBag<getTokenMetadataDTO> tokenMetadataUnfiltered = new();
         private ConcurrentBag<getTransactionReceiptDTO.Result> txnReceiptsUnfiltered = new();
 
-        private List<getBlockByNumberDTO> blocksFiltered = new();
-        private List<getTransactionReceiptDTO.Result> txnReceiptsFiltered = new();
         private List<Transaction> tokens = new();
         private List<Transaction> others = new();
+        private List<getBlockByNumberDTO> blocksFiltered = new();
+        private List<getTokenMetadataDTO> tokenMetadataFiltered = new();
+        private List<getTransactionReceiptDTO.Result> txnReceiptsFiltered = new();
+
+        private List<EthBlocks> ethBlocks = new();
+        private List<EthTrainData> ethTrainDatas = new();
 
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
         private readonly ProcessorGeneral processorGeneral;
 
-        private readonly int maxDiffToProcess = 250;
         private int batchSize = 50;
+        private readonly int maxDiffToProcess = 250;
 
         public FindTransactionService(
             EthApi apiAlchemy,
@@ -38,8 +43,8 @@ namespace eth_shared
             ProcessorGeneral processorGeneral
             )
         {
-            this.apiAlchemy = apiAlchemy;
             this.dbContext = dbContext;
+            this.apiAlchemy = apiAlchemy;
             this.processorGeneral = processorGeneral;
         }
         public async Task Start()
@@ -50,6 +55,7 @@ namespace eth_shared
 
             //var test = await GetTransactionsFromBlockByNumber(20350220);
             await GetBlocks(lastBlockNumber, lastProccessedBlock);
+
             await Middle();
             await End();
 
@@ -61,8 +67,16 @@ namespace eth_shared
         {
             blocksFiltered = FilterBlock.Filter_EmptyBlocks_Distinct(blocksUnfiltered);
             tokens = FilterTx.FilterTokens_ToIsNull_TotalSupply(blocksFiltered);
+
             await GetTransactionReceipt();
             txnReceiptsFiltered = FilterTx.FilterTxnReceipts_LogsCount(txnReceiptsUnfiltered);
+
+            await GetTokenMetadata();
+            tokenMetadataFiltered = FilterTx.FilterMetadata_Names(tokenMetadataUnfiltered);
+
+            ethTrainDatas = await processorGeneral.ProcessTokens(tokens, txnReceiptsFiltered, tokenMetadataFiltered);
+            ethBlocks = await processorGeneral.ProcessBlocks(blocksFiltered);
+
         }
 
         public async Task End()
@@ -202,51 +216,61 @@ namespace eth_shared
                     });
             }
         }
-        private List<EthTrainData> ProcessTransactionReceipt(getTransactionReceiptDTO.Result transaction)
+
+        private async Task GetTokenMetadata()
         {
-            List<EthTrainData> res = new();
+            List<getTokenMetadataDTO.Result> transactions = new();
 
-            foreach (var item in tokens)
+            var diff = tokens.Count();
+
+            if (diff > 0)
             {
-                var t = item.Map();
-
-                if (t is null ||
-                    t.input is null)
+                if (diff > maxDiffToProcess)
                 {
-                    continue;
+                    diff = maxDiffToProcess;
                 }
 
-                if (t.input.StartsWith("0x6080") ||
-                    t.input.StartsWith("0x6040")
-                    )
+                var rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
+
+                if (rangeOfBatches == 0)
                 {
-                    t.isCustomInputStart = false;
-                }
-                else
-                {
-                    t.isCustomInputStart = true;
+                    rangeOfBatches = 1;
+                    batchSize = diff;
                 }
 
-                t.blockNumberInt = Convert.ToInt32(t.blockNumber, 16);
-
-                var isExist = dbContext.EthTrainData.Any(x => x.hash == t.hash);
-
-                if (!isExist)
+                for (int i = 0; i < txnReceiptsFiltered.Count; i++)
                 {
-                    res.Add(t);
+                    var item = txnReceiptsFiltered[i];
+                    item.txnNumberForMetadata = i;
                 }
+
+                List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
+                var rangeChunks = txnReceiptsFiltered.Chunk(batchSize).ToList();
+
+                await Parallel.ForEachAsync(
+                    rangeForBatches,
+                    new ParallelOptions { MaxDegreeOfParallelism = 4, },
+                    async (iterator, ct) =>
+                    {
+                        var chunk = rangeChunks[iterator].ToList();
+
+                        var t = await apiAlchemy.getTokenMetadataBatch(chunk);
+
+                        foreach (var item in t)
+                        {
+                            tokenMetadataUnfiltered.Add(item);
+                        }
+
+                        Thread.Sleep(50);
+                    });
             }
-
-            return res;
         }
 
         private async Task<int> SaveToDB_Txc()
         {
             var res = 0;
 
-            var t = await processorGeneral.ProcessTokens(tokens, txnReceiptsFiltered);
-
-            dbContext.EthTrainData.AddRange(t);
+            dbContext.EthTrainData.AddRange(ethTrainDatas);
             res = await dbContext.SaveChangesAsync();
 
             return res;
@@ -268,9 +292,7 @@ namespace eth_shared
         {
             var res = 0;
 
-            var t = await processorGeneral.ProcessBlocks(blocksFiltered);
-
-            dbContext.EthBlock.AddRange(t);
+            dbContext.EthBlock.AddRange(ethBlocks);
             res = await dbContext.SaveChangesAsync();
 
             return res;

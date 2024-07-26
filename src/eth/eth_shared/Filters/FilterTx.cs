@@ -20,7 +20,7 @@ namespace eth_shared.Filters
 
             foreach (var item in transactions)
             {
-                if (string.IsNullOrEmpty(item.to) && 
+                if (string.IsNullOrEmpty(item.to) &&
                     item.input.Contains("18160ddd"))
                 {
                     res.Add(item);
@@ -38,6 +38,32 @@ namespace eth_shared.Filters
             foreach (var item in txnReceiptsUnfiltered)
             {
                 if (item.logs.Count() > 1)
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
+        }
+
+        // name != "test" or anything with symbols like  .  / , > < ;   
+        public static List<getTokenMetadataDTO> FilterMetadata_Names(
+              ConcurrentBag<getTokenMetadataDTO> metadata)
+        {
+            List<getTokenMetadataDTO> res = new();
+
+            foreach (var item in metadata)
+            {
+                var name = item.result.name;
+
+                if (!name.Contains('.') ||
+                    !name.Contains(',') ||
+                    !name.Contains('<') ||
+                    !name.Contains('>') ||
+                    !name.Contains(';') ||
+                    !name.Contains("test", StringComparison.OrdinalIgnoreCase) ||
+                    !name.Contains('/')
+                    )
                 {
                     res.Add(item);
                 }

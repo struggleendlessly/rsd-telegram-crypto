@@ -21,16 +21,16 @@ var builder = Host.CreateApplicationBuilder(args);
 
 Log.Logger = new LoggerConfiguration().
     Enrich.FromLogContext().
-
     WriteTo.Console().
     WriteTo.OpenTelemetry(
     x =>
     {
-        x.Endpoint = "http://localhost:5341";
+        x.Endpoint = builder.Configuration.GetSection("OpenTelemetry").GetValue<string>("Url");
         x.Protocol = OtlpProtocol.HttpProtobuf;
         x.Headers = new Dictionary<string, string>
         {
-            ["Authorization"] = "KoRAGAVQfLnnJNet9VRj"
+            
+            ["X-Seq-ApiKey"] = builder.Configuration.GetSection("OpenTelemetry").GetValue<string>("ApiKey")
         };
         x.ResourceAttributes = new Dictionary<string, object>
         {

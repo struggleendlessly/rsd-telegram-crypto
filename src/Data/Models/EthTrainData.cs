@@ -1,5 +1,8 @@
-﻿namespace Data.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Data.Models
 {
+    [Index(nameof(hash), IsUnique = true)]
     public class EthTrainData
     {
         public int Id { get; set; }
@@ -7,11 +10,15 @@
         // Custom fields
         public bool isCustomInputStart { get; set; }
         public int blockNumberInt { get; set; }
+        // TransactionReceipt
+
+        public string logs { get; set; }
+        public string contractAddress { get; set; }
 
         // Transaction
         public string blockHash { get; set; }
         public string blockNumber { get; set; }      
-        public string? hash { get; set; }
+        public string hash { get; set; }
         public string? yParity { get; set; }
         //public Acce?sslist[] accessList { get; set; }
         public string? transactionIndex { get; set; }

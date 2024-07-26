@@ -1,26 +1,6 @@
 https://docs.basescan.org/api-endpoints/accounts#get-a-list-of-normal-transactions-by-address
 https://dev.to/uthmanrahimi/deploy-net-core-worker-service-on-linux-1mjc
 
-////////////////////////////////////////////////////////
-
-dotnet tool update --global dotnet-ef
-
-PS H:\rsd-telegram-crypto\src> 
-
-dotnet ef migrations add In26 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
-dotnet ef database update --project Shared --startup-project WorkerServiceRead
-
-dotnet ef  migrations remove  --project Shared --startup-project WorkerServiceRead
-
-
-dotnet ef migrations add In5 -o Migrations --project Data --startup-project eth/ws_eth_findTokens
-dotnet ef database update --project Data --startup-project eth/ws_eth_findTokens
-
-dotnet ef  migrations remove --project Data --startup-project eth/ws_eth_findTokens
-
-dotnet publish src/eth/ws_eth_findTokens/ws_eth_findTokens.csproj -r win-x64 -p:PublishSingleFile=true --self-contained false -c Release -o I:\flw
-////////////////////////////////////////////////////////
-
 ssh -i "D:\downloads\cryptofilter_key.pem" azureuser@52.252.195.157
 scp -r "H:\rsd-telegram-crypto\src\WorkerServiceReadTelegram\bin\Release\net8.0\publish\linux-arm64" azureuser@52.252.195.157:/home/azureuser/telegram
 

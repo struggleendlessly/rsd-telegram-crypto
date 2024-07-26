@@ -1,5 +1,8 @@
-﻿namespace Data.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Data.Models
 {
+    [Index(nameof(numberInt), IsUnique = true)]
     public class EthBlocks
     {
         public int Id { get; set; }

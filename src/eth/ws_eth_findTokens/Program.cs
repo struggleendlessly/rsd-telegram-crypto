@@ -8,6 +8,7 @@ using Data;
 
 using ws_eth_findTokens;
 using eth_shared;
+using eth_shared.Processors;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services.AddHttpClient("ApiAlchemy", client =>
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 
 builder.Services.AddTransient<EthApi>();
+builder.Services.AddTransient<ProcessorGeneral>();
 builder.Services.AddTransient<FindTransactionService>();
 
 builder.Services.AddHostedService<Worker>();

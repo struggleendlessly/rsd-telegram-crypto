@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3F0CB670-3CE6-4BDA-99E9-65CCFEA79BFE}"
 	ProjectSection(SolutionItems) = preProject
 		daemons.txt = daemons.txt
+		db.txt = db.txt
 		helpMe.txt = helpMe.txt
 		linux setup.txt = linux setup.txt
 		ml metrix.txt = ml metrix.txt
@@ -33,9 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ws_eth_findTokens", "src\et
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api_alchemy", "src\api_alchemy\api_alchemy.csproj", "{47441E53-893C-4DE4-9D62-A7C757FE4115}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "src\Data\Data.csproj", "{DF544BF2-D3A4-4F94-ACD3-5A59BCB62A87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "src\Data\Data.csproj", "{DF544BF2-D3A4-4F94-ACD3-5A59BCB62A87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eth_shared", "src\eth\eth_shared\eth_shared.csproj", "{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eth_shared", "src\eth\eth_shared\eth_shared.csproj", "{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

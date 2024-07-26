@@ -56,7 +56,8 @@ namespace api_alchemy.Eth
             return res;
         }
 
-        public async Task<getBlockByNumberDTO> getBlockByNumber(int block)
+        public async Task<getBlockByNumberDTO> getBlockByNumber(
+            int block)
         {
             getBlockByNumberDTO res = new getBlockByNumberDTO();
 
@@ -78,7 +79,8 @@ namespace api_alchemy.Eth
             return res;
         }
 
-        public async Task<List<getBlockByNumberDTO>> getBlockByNumberBatch(List<int> blocks)
+        public async Task<List<getBlockByNumberDTO>> getBlockByNumberBatch(
+            List<int> blocks)
         {
             List<getBlockByNumberDTO> res = new();
             StringBuilder aa = new();
@@ -106,8 +108,42 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadAsStringAsync();
                 res = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
+            }
+
+            return res;
+        }
+
+        public async Task<List<getTransactionReceiptDTO>> getTransactionReceiptBatch(
+            List<string> transactinHash)
+        {
+            List<getTransactionReceiptDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in transactinHash)
+            {
+                aa.Append(EthUrlBuilder.getTransactionReceipt(item));
+
+                if (transactinHash.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                res = await response.Content.ReadFromJsonAsync<List<getTransactionReceiptDTO>>();
             }
 
             return res;

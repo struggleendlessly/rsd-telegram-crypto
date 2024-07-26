@@ -1,0 +1,36 @@
+DBCC SHRINKDATABASE (crypta, TRUNCATEONLY);
+ALTER DATABASE crypta SET RECOVERY SIMPLE
+
+GO
+
+DBCC SHRINKFILE (crypta_log, 5)
+DBCC SHRINKFILE (crypta, 5)
+GO
+
+ALTER DATABASE crypta SET RECOVERY FULL
+
+GO
+
+////////////////////////////////////////////////////////
+
+dotnet tool update --global dotnet-ef
+
+PS H:\rsd-telegram-crypto\src> 
+
+////////////////////////////////////////////////////////
+
+dotnet ef migrations add In26 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
+dotnet ef database update --project Shared --startup-project WorkerServiceRead
+
+dotnet ef  migrations remove  --project Shared --startup-project WorkerServiceRead
+
+////////////////////////////////////////////////////////
+
+dotnet ef migrations add In9 -o Migrations --project Data --startup-project eth/ws_eth_findTokens
+dotnet ef database update --project Data --startup-project eth/ws_eth_findTokens
+
+dotnet ef migrations remove --project Data --startup-project eth/ws_eth_findTokens
+
+dotnet publish src/eth/ws_eth_findTokens/ws_eth_findTokens.csproj -r win-x64 -p:PublishSingleFile=true --self-contained false -c Release -o I:\flw
+
+////////////////////////////////////////////////////////

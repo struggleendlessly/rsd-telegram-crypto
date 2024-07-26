@@ -1,6 +1,9 @@
 ﻿using api_alchemy.Eth.ResponseDTO;
 
+using Data.Models;
+
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace eth_shared.Filters
 {
@@ -56,14 +59,30 @@ namespace eth_shared.Filters
             {
                 var name = item.result.name;
 
-                if (!name.Contains('.') ||
-                    !name.Contains(',') ||
-                    !name.Contains('<') ||
-                    !name.Contains('>') ||
-                    !name.Contains(';') ||
-                    !name.Contains("test", StringComparison.OrdinalIgnoreCase) ||
+                if (!name.Contains('.') &&
+                    !name.Contains(',') &&
+                    !name.Contains('<') &&
+                    !name.Contains('>') &&
+                    !name.Contains(';') &&
+                    !name.Contains("test", StringComparison.OrdinalIgnoreCase) &&
                     !name.Contains('/')
                     )
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
+        }
+
+        public static List<EthTrainData> FilterTotalSupply(
+              List<EthTrainData> ethTrainDatas)
+        {
+            List<EthTrainData> res = new();
+
+            foreach (var item in ethTrainDatas)
+            {
+                if (item.totalSupply >= 1_000_000)
                 {
                     res.Add(item);
                 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.Numerics;
+
 namespace Data.Models
 {
     [Index(nameof(hash), IsUnique = true)]
@@ -10,6 +12,7 @@ namespace Data.Models
         // Custom fields
         public bool isCustomInputStart { get; set; } = false;
         public int blockNumberInt { get; set; } = 0;
+        public long totalSupply { get; set; } = 0;
 
         // TokenMetadata
         public int decimals { get; set; } = default!;

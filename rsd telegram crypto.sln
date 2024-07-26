@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "src\Data\Data.cspro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eth_shared", "src\eth\eth_shared\eth_shared.csproj", "{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nethereum", "src\nethereum\nethereum.csproj", "{9AE16E22-02DE-4B7E-AA51-31ED3B07AB82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AE16E22-02DE-4B7E-AA51-31ED3B07AB82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AE16E22-02DE-4B7E-AA51-31ED3B07AB82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AE16E22-02DE-4B7E-AA51-31ED3B07AB82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AE16E22-02DE-4B7E-AA51-31ED3B07AB82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

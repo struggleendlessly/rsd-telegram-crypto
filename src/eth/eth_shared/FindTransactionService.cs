@@ -11,6 +11,8 @@ using eth_shared.Processors;
 
 using Microsoft.EntityFrameworkCore;
 
+using nethereum;
+
 using System.Collections.Concurrent;
 
 namespace eth_shared
@@ -30,6 +32,7 @@ namespace eth_shared
         private List<EthBlocks> ethBlocks = new();
         private List<EthTrainData> ethTrainDatas = new();
 
+        private readonly ApiWeb3 apiWeb3;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
         private readonly ProcessorGeneral processorGeneral;
@@ -38,11 +41,13 @@ namespace eth_shared
         private readonly int maxDiffToProcess = 250;
 
         public FindTransactionService(
+            ApiWeb3 apiWeb3,
             EthApi apiAlchemy,
             dbContext dbContext,
             ProcessorGeneral processorGeneral
             )
         {
+            this.apiWeb3 = apiWeb3;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
             this.processorGeneral = processorGeneral;
@@ -77,6 +82,8 @@ namespace eth_shared
             ethTrainDatas = await processorGeneral.ProcessTokens(tokens, txnReceiptsFiltered, tokenMetadataFiltered);
             ethBlocks = await processorGeneral.ProcessBlocks(blocksFiltered);
 
+            await GetTotalSupply();
+            ethTrainDatas = FilterTx.FilterTotalSupply(ethTrainDatas);
         }
 
         public async Task End()
@@ -92,6 +99,21 @@ namespace eth_shared
             var res = 20384889;
 
             return res;
+        }
+
+        private async Task GetTotalSupply()
+        {
+            foreach (var item in ethTrainDatas)
+            {
+                var t = await apiWeb3.GetTotalSupply(item.contractAddress);
+
+                for (int i = 0; i < item.decimals; i++)
+                {
+                    t = t / 10;
+                }
+
+                item.totalSupply = (long)t;
+            }
         }
 
         private async Task GetBlocks(

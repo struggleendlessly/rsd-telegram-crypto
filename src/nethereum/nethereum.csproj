@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\api_alchemy\api_alchemy.csproj" />
-    <ProjectReference Include="..\..\Data\Data.csproj" />
-    <ProjectReference Include="..\..\nethereum\nethereum.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    <PackageReference Include="Nethereum.Web3" Version="4.21.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>

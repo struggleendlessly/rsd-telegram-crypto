@@ -114,7 +114,7 @@ namespace eth_shared
 
                 item.totalSupply = t.ToString();
 
-                Thread.Sleep(50);
+                Thread.Sleep(300);
             }
         }
 

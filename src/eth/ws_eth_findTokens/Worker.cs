@@ -1,4 +1,8 @@
+using Data;
+
 using eth_shared;
+
+using Microsoft.EntityFrameworkCore;
 
 using System;
 
@@ -8,12 +12,15 @@ namespace ws_eth_findTokens
     {
         private readonly ILogger<Worker> _logger;
         private readonly FindTransactionService findTransactionService;
+        private readonly dbContext dbContext;
 
         public Worker(
             ILogger<Worker> logger,
+            dbContext dbContext,
             FindTransactionService findTransactionService)
         {
             _logger = logger;
+            this.dbContext = dbContext;
             this.findTransactionService = findTransactionService;
         }
 
@@ -37,7 +44,7 @@ namespace ws_eth_findTokens
 
                 var timeEnd = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker stopped at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker processed blocks: {block}", await dbContext.EthBlock.CountAsync());
                 _logger.LogInformation("Worker running time: {time}", (timeEnd - timeStart).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);

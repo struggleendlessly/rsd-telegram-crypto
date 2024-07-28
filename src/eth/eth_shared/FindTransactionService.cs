@@ -188,7 +188,7 @@ namespace eth_shared
             return res;
         }
 
-        private async Task<int> GetLastProccessedBlockNumber()
+        public async Task<int> GetLastProccessedBlockNumber()
         {
             var res = 18910000;
 

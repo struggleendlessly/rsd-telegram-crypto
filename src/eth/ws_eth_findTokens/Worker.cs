@@ -25,7 +25,16 @@ namespace ws_eth_findTokens
 
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                await findTransactionService.Start();
+                try
+                {
+                    await findTransactionService.Start();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Worker Exception: {message}", ex.Message);
+                    _logger.LogError("Worker Exception: {stack}", ex.StackTrace);
+                }
+
                 var timeEnd = DateTimeOffset.Now;
 
                 _logger.LogInformation("Worker stopped at: {time}", DateTimeOffset.Now);

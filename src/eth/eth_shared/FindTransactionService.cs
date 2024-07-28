@@ -6,7 +6,6 @@ using Data;
 using Data.Models;
 
 using eth_shared.Filters;
-using eth_shared.Map;
 using eth_shared.Processors;
 
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using nethereum;
 
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace eth_shared
 {
@@ -107,7 +105,7 @@ namespace eth_shared
         {
             var diff = tokens.Count();
 
-            Func<List<getTransactionReceiptDTO.Result>, Task<List<getTotalSupplyDTO>>> apiMethod = apiAlchemy.getTotalSupply;
+            Func<List<getTransactionReceiptDTO.Result>, int, Task<List<getTotalSupplyDTO>>> apiMethod = apiAlchemy.getTotalSupplyBatch;
             Func<getTransactionReceiptDTO.Result[], List<getTransactionReceiptDTO.Result>> chunkMethod = (v) => v.ToList();
 
             totalSupplyDTOUnfiltered =
@@ -184,7 +182,7 @@ namespace eth_shared
 
         private async Task<List<getBlockByNumberDTO>> GetTransactionsFromBlockByNumberBatch(List<int> blocks)
         {
-            var res = await apiAlchemy.getBlockByNumberBatch(blocks);
+            var res = await apiAlchemy.getBlockByNumberBatch(blocks, 0);
 
             return res;
         }
@@ -234,7 +232,7 @@ namespace eth_shared
                     {
                         var chunk = rangeChunks[iterator].Select(x => x.hash).ToList();
 
-                        var t = await apiAlchemy.getTransactionReceiptBatch(chunk);
+                        var t = await apiAlchemy.getTransactionReceiptBatch(chunk, 0);
 
                         foreach (var item in t)
                         {
@@ -285,7 +283,7 @@ namespace eth_shared
                     {
                         var chunk = rangeChunks[iterator].ToList();
 
-                        var t = await apiAlchemy.getTokenMetadataBatch(chunk);
+                        var t = await apiAlchemy.getTokenMetadataBatch(chunk, 0);
 
                         foreach (var item in t)
                         {

@@ -17,7 +17,7 @@ namespace api_alchemy.Eth
 
         private readonly HttpClient httpClient;
         private readonly OptionsAlchemy optionsAlchemy;
-        private string vAndApiKey = string.Empty;
+        private string vAndApiKey;
         public EthApi(
             IHttpClientFactory httpClient,
             IOptions<OptionsAlchemy> _optionsAlchemy)
@@ -33,17 +33,24 @@ namespace api_alchemy.Eth
             vAndApiKey = $"/v2/{optionsAlchemy.ApiKeys[apiKeyIndex]}";
         }
 
+        private string GetvAndApiKey(int index)
+        {
+            var key = optionsAlchemy.ApiKeys[index];
+            var res = $"/v2/{key}";
+            return res;
+        }
+
         public async Task<List<Response>> executeBatchCall
             <ChunksItems, ApiInput, Response>(
 
             List<ChunksItems> items,
             Func<ChunksItems[], List<ApiInput>> chunkMethod,
-            Func<List<ApiInput>, Task<List<Response>>> apiMethod,
+            Func<List<ApiInput>, int,  Task<List<Response>>> apiMethod,
             int diff = 0
             )
         {
             ConcurrentBag<Response> res = new();
-
+            var MaxDegreeOfParallelism = 4;
 
             if (diff > 0)
             {
@@ -64,22 +71,39 @@ namespace api_alchemy.Eth
 
                 List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
                 var rangeChunks = items.Chunk(batchSizeLocal).ToList();
+                var rangeForBatchesWithApiKey = new Dictionary<int, int>();
+                var apiKeyParallelIndex = 0;
+
+                for ( int i = 0; i < rangeForBatches.Count(); i++)
+                {
+                    rangeForBatchesWithApiKey.Add(rangeForBatches[i], apiKeyParallelIndex);
+
+                    if (apiKeyParallelIndex + 1 < MaxDegreeOfParallelism)
+                    {
+                        apiKeyParallelIndex++;
+                    }
+                    else
+                    {
+                        apiKeyParallelIndex = 0;
+                    }   
+                }
 
                 await Parallel.ForEachAsync(
-                    rangeForBatches,
-                    new ParallelOptions { MaxDegreeOfParallelism = 4, },
-                    async (iterator, ct) =>
+                    rangeForBatchesWithApiKey,
+                    new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism, },
+                    async (data, ct) =>
                     {
+                        var iterator = data.Key;
+                        var apiKeyIndex = data.Value;
+
                         var chunk = chunkMethod(rangeChunks[iterator]);
 
-                        var t = await apiMethod(chunk);
+                        var t = await apiMethod(chunk, apiKeyIndex);
 
                         foreach (var item in t)
                         {
                             res.Add(item);
                         }
-
-                        Thread.Sleep(50);
                     });
             }
 
@@ -142,8 +166,10 @@ namespace api_alchemy.Eth
         }
 
         public async Task<List<getBlockByNumberDTO>> getBlockByNumberBatch(
-            List<int> blocks)
+            List<int> blocks,
+            int apiKeyIndex)
         {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
             List<getBlockByNumberDTO> res = new();
             StringBuilder aa = new();
 
@@ -166,7 +192,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+            var response = await httpClient.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -182,8 +208,10 @@ namespace api_alchemy.Eth
         }
 
         public async Task<List<getTransactionReceiptDTO>> getTransactionReceiptBatch(
-            List<string> transactinHash)
+            List<string> transactinHash,
+            int apiKeyIndex)
         {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
             List<getTransactionReceiptDTO> res = new();
             StringBuilder aa = new();
 
@@ -206,7 +234,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+            var response = await httpClient.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -222,8 +250,10 @@ namespace api_alchemy.Eth
         }
 
         public async Task<List<getTokenMetadataDTO>> getTokenMetadataBatch(
-            List<getTransactionReceiptDTO.Result> txnReceipts)
+            List<getTransactionReceiptDTO.Result> txnReceipts,
+            int apiKeyIndex)
         {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
             List<getTokenMetadataDTO> res = new();
             StringBuilder aa = new();
 
@@ -248,7 +278,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+            var response = await httpClient.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -263,9 +293,11 @@ namespace api_alchemy.Eth
             return res;
         }    
         
-        public async Task<List<getTotalSupplyDTO>> getTotalSupply(
-            List<getTransactionReceiptDTO.Result> txnReceipts)
+        public async Task<List<getTotalSupplyDTO>> getTotalSupplyBatch(
+            List<getTransactionReceiptDTO.Result> txnReceipts,
+            int apiKeyIndex)
         {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
             var totalSupplyMethodCode = "0x18160ddd";
             List<getTotalSupplyDTO> res = new();
             StringBuilder aa = new();
@@ -292,7 +324,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+            var response = await httpClient.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {

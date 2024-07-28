@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
 
+using System.Collections.Concurrent;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -11,6 +12,9 @@ namespace api_alchemy.Eth
 {
     public class EthApi
     {
+        private readonly int batchSize = 50;
+        private readonly int maxDiffToProcess = 250;
+
         private readonly HttpClient httpClient;
         private readonly OptionsAlchemy optionsAlchemy;
         private string vAndApiKey = string.Empty;
@@ -27,6 +31,59 @@ namespace api_alchemy.Eth
             Random rnd = new Random();
             var apiKeyIndex = rnd.Next(0, optionsAlchemy.ApiKeys.Length - 1);
             vAndApiKey = $"/v2/{optionsAlchemy.ApiKeys[apiKeyIndex]}";
+        }
+
+        public async Task<List<Response>> executeBatchCall
+            <ChunksItems, ApiInput, Response>(
+
+            List<ChunksItems> items,
+            Func<ChunksItems[], List<ApiInput>> chunkMethod,
+            Func<List<ApiInput>, Task<List<Response>>> apiMethod,
+            int diff = 0
+            )
+        {
+            ConcurrentBag<Response> res = new();
+
+
+            if (diff > 0)
+            {
+                var batchSizeLocal = batchSize;
+
+                if (diff > maxDiffToProcess)
+                {
+                    diff = maxDiffToProcess;
+                }
+
+                var rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
+
+                if (rangeOfBatches == 0)
+                {
+                    rangeOfBatches = 1;
+                    batchSizeLocal = diff;
+                }
+
+                List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
+                var rangeChunks = items.Chunk(batchSizeLocal).ToList();
+
+                await Parallel.ForEachAsync(
+                    rangeForBatches,
+                    new ParallelOptions { MaxDegreeOfParallelism = 4, },
+                    async (iterator, ct) =>
+                    {
+                        var chunk = chunkMethod(rangeChunks[iterator]);
+
+                        var t = await apiMethod(chunk);
+
+                        foreach (var item in t)
+                        {
+                            res.Add(item);
+                        }
+
+                        Thread.Sleep(50);
+                    });
+            }
+
+            return res.ToList();
         }
 
         // https://sandbox.alchemy.com/?network=ETH_MAINNET&method=eth_getBlockByNumber&body.id=1&body.jsonrpc=2.0&body.method=eth_getBlockByNumber&body.params%5B0%5D=finalized&body.params%5B1%5D=true
@@ -196,6 +253,50 @@ namespace api_alchemy.Eth
             if (response.IsSuccessStatusCode)
             {
                 var t = await response.Content.ReadFromJsonAsync<List<getTokenMetadataDTO>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
+            }
+
+            return res;
+        }    
+        
+        public async Task<List<getTotalSupplyDTO>> getTotalSupply(
+            List<getTransactionReceiptDTO.Result> txnReceipts)
+        {
+            var totalSupplyMethodCode = "0x18160ddd";
+            List<getTotalSupplyDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in txnReceipts)
+            {
+                aa.Append(EthUrlBuilder.eth_call(
+                    item.contractAddress,
+                    item.txnNumberForMetadata,
+                    totalSupplyMethodCode));
+
+                if (txnReceipts.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
 
                 if (t is not null)
                 {

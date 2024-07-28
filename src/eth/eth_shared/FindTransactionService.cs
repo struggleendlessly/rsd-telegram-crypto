@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using nethereum;
 
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace eth_shared
 {
@@ -22,6 +23,7 @@ namespace eth_shared
         private ConcurrentBag<getBlockByNumberDTO> blocksUnfiltered = new();
         private ConcurrentBag<getTokenMetadataDTO> tokenMetadataUnfiltered = new();
         private ConcurrentBag<getTransactionReceiptDTO.Result> txnReceiptsUnfiltered = new();
+        private List<getTotalSupplyDTO> totalSupplyDTOUnfiltered = new();
 
         private List<Transaction> tokens = new();
         private List<Transaction> others = new();
@@ -103,19 +105,18 @@ namespace eth_shared
 
         private async Task GetTotalSupply()
         {
-            foreach (var item in ethTrainDatas)
-            {
-                var t = await apiWeb3.GetTotalSupply(item.contractAddress);
+            var diff = tokens.Count();
 
-                for (int i = 0; i < item.decimals; i++)
-                {
-                    t = t / 10;
-                }
+            Func<List<getTransactionReceiptDTO.Result>, Task<List<getTotalSupplyDTO>>> apiMethod = apiAlchemy.getTotalSupply;
+            Func<getTransactionReceiptDTO.Result[], List<getTransactionReceiptDTO.Result>> chunkMethod = (v) => v.ToList();
 
-                item.totalSupply = t.ToString();
-
-                Thread.Sleep(300);
-            }
+            totalSupplyDTOUnfiltered =
+                await apiAlchemy.executeBatchCall
+                    (txnReceiptsFiltered,
+                    chunkMethod,
+                    apiMethod,
+                    tokens.Count()
+                    );
         }
 
         private async Task GetBlocks(
@@ -341,7 +342,7 @@ namespace eth_shared
             var endOfEtalonRange = lastProccessedBlock - minBlockNumber;
             var etalonBlockNumbers = Enumerable.Range(minBlockNumber, endOfEtalonRange);
             bool isInSequence = blocks.SequenceEqual(etalonBlockNumbers);
-            var blockDiff = etalonBlockNumbers.Except(blocks).ToList();            
+            var blockDiff = etalonBlockNumbers.Except(blocks).ToList();
 
             var rangeOfBatches = 1;
             var diff = blockDiff.Count();

@@ -1,4 +1,5 @@
 ﻿using api_alchemy.Eth.RequestDTO;
+using api_alchemy.Eth.RequestDTO.Params;
 
 using System.Text.Json;
 
@@ -61,6 +62,30 @@ namespace api_alchemy.Eth
                 jsonrpc = "2.0",
                 method = "alchemy_getTokenMetadata",
                 _params = [$"{contractAddress}"],
+                id = id
+            };
+
+            var res = JsonSerializer.Serialize(request);
+
+            return res;
+        }    
+        
+        public static string eth_call(
+            string contractAddress,
+            int id,
+            string methodCode)
+        {
+            var paramDto = new totalSupplyDTO()
+            {
+                to = contractAddress,
+                data = methodCode
+            };
+
+            var request = new requestBaseDTO()
+            {
+                jsonrpc = "2.0",
+                method = "eth_call",
+                _params = [paramDto],
                 id = id
             };
 

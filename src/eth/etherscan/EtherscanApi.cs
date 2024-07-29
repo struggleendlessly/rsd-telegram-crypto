@@ -4,10 +4,7 @@ using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
 
-using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.Metrics;
-using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace etherscan
@@ -45,44 +42,55 @@ namespace etherscan
             var chunks = requests.Chunk(MaxDegreeOfParallelism).ToList();
 
             await Parallel.ForEachAsync(
-                chunks,
+                requests,
                 new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism, },
                 async (data, ct) =>
                 {
-                    var response = await httpClient.GetAsync(data);
+                    var response = await httpClient.GetAsync(data.Key);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var t = await response.Content.ReadFromJsonAsync<getBlockByNumberDTO>();
-
-                        if (t is not null)
+                        var ee = string.Empty;
+                        try
                         {
-                            res = t;
+
+                            ee = await response.Content.ReadAsStringAsync();
+                            var t = await response.Content.ReadFromJsonAsync<GetSourceCodeDTO>();
+
+                            if (t is not null &&
+                                t.result is not null)
+                            {
+                                t.contractAddress = data.Value;
+                                res.Add(t);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw;
                         }
                     }
 
-                    foreach (var item in t)
-                    {
-                        res.Add(item);
-                    }
+                    //Thread.Sleep(100);
                 });
 
             return res.ToList();
         }
 
-        private List<string> getSourceCodeBatch(List<string> contractAddresses)
+        private Dictionary<string, string> getSourceCodeBatch(List<string> contractAddresses)
         {
-            List<string> res = new();
+            Dictionary<string, string> res = new();
 
             var apiKeyParallelIndex = 0;
 
             for (int i = 0; i < contractAddresses.Count; i++)
             {
+                var item = contractAddresses[i];
                 var apiKey = GetApiKey(apiKeyParallelIndex);
-                var url = UrlBuider.getSourceCode(contractAddresses[i], apiKey);
-                res.Add(url);
+                var url = UrlBuider.getSourceCode(item, apiKey);
+                res.Add(url, item);
 
-                if (apiKeyParallelIndex + 1 < MaxDegreeOfParallelism)
+                if (apiKeyParallelIndex + 1 < 8)
                 {
                     apiKeyParallelIndex++;
                 }

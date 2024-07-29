@@ -4,24 +4,26 @@ using eth_shared;
 
 using Microsoft.EntityFrameworkCore;
 
-using System;
-
 namespace ws_eth_findTokens
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly Step1 findTransactionService;
+        private readonly Step1 step1;
+        private readonly Step2 step2;
         private readonly dbContext dbContext;
 
         public Worker(
             ILogger<Worker> logger,
             dbContext dbContext,
-            Step1 findTransactionService)
+            Step1 step1,
+            Step2 step2
+            )
         {
             _logger = logger;
             this.dbContext = dbContext;
-            this.findTransactionService = findTransactionService;
+            this.step1 = step1;
+            this.step2 = step2;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,7 +36,8 @@ namespace ws_eth_findTokens
 
                 try
                 {
-                    await findTransactionService.Start();
+                    await step1.Start();
+                    await step2.Start();
                 }
                 catch (Exception ex)
                 {

@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\api_alchemy\api_alchemy.csproj" />
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\nethereum\nethereum.csproj" />
+    <ProjectReference Include="..\etherscan\etherscan.csproj" />
   </ItemGroup>
 
   <ItemGroup>

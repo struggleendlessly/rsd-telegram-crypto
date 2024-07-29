@@ -13,7 +13,7 @@ namespace etherscan
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.Append("api/?module=contract");
             urlBuilder.Append("&action=getsourcecode");
-            urlBuilder.Append($"&contractaddress={address}");
+            urlBuilder.Append($"&address={address}");
             urlBuilder.Append($"&apikey={apiKeyToken}");
 
             res = urlBuilder.ToString();

@@ -2,6 +2,8 @@
 
 using Data.Models;
 
+using etherscan.ResponseDTO;
+
 namespace eth_shared.Map
 {
     public static class EthTrainDataMapper
@@ -33,6 +35,27 @@ namespace eth_shared.Map
             };
 
             return res;
+        }   
+        
+        public static EthTrainData Map(this EthTrainData  ethTrainData, GetSourceCodeDTO sourceCodeDTO)
+        {
+            var item = sourceCodeDTO.result.Single();
+
+            ethTrainData.ABI = item.ABI;
+            ethTrainData.ContractName = item.ContractName;
+            ethTrainData.CompilerVersion = item.CompilerVersion;
+            ethTrainData.ConstructorArguments = item.ConstructorArguments;
+            ethTrainData.EVMVersion = item.EVMVersion;
+            ethTrainData.LicenseType = item.LicenseType;
+            ethTrainData.Library = item.Library;
+            ethTrainData.OptimizationUsed = item.OptimizationUsed;
+            ethTrainData.Proxy = item.Proxy;
+            ethTrainData.Runs = item.Runs;
+            ethTrainData.SourceCode = item.SourceCode;
+            ethTrainData.SwarmSource = item.SwarmSource;
+            ethTrainData.Implementation = item.Implementation;
+
+            return ethTrainData;
         }
     }
 }

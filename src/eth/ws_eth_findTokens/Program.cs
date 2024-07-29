@@ -71,11 +71,13 @@ builder.Services.AddTransient<EtherscanApi>();
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<GetBlocks>();
+builder.Services.AddTransient<GetSourceCode>();
 builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();
 builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<Step1>();
+builder.Services.AddTransient<Step2>();
 
 builder.Services.AddHostedService<Worker>();
 

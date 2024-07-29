@@ -13,7 +13,7 @@ namespace api_alchemy.Eth
     public class EthApi
     {
         private readonly int batchSize = 50;
-        private readonly int maxDiffToProcess = 250;
+        private readonly int maxDiffToProcess = 1000;
 
         private readonly HttpClient httpClient;
         private readonly OptionsAlchemy optionsAlchemy;
@@ -41,10 +41,9 @@ namespace api_alchemy.Eth
         }
 
         public async Task<List<Response>> executeBatchCall
-            <ChunksItems, ApiInput, Response>(
+            <ApiInput, Response>(
 
-            List<ChunksItems> items,
-            Func<ChunksItems[], List<ApiInput>> chunkMethod,
+            List<ApiInput> items,
             Func<List<ApiInput>, int,  Task<List<Response>>> apiMethod,
             int diff = 0
             )
@@ -96,7 +95,7 @@ namespace api_alchemy.Eth
                         var iterator = data.Key;
                         var apiKeyIndex = data.Value;
 
-                        var chunk = chunkMethod(rangeChunks[iterator]);
+                        var chunk = rangeChunks[iterator].ToList();
 
                         var t = await apiMethod(chunk, apiKeyIndex);
 

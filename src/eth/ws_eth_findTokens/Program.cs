@@ -67,8 +67,13 @@ builder.Services.AddHttpClient("ApiAlchemy", client =>
 
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
+builder.Services.AddTransient<GetBlocks>();
+builder.Services.AddTransient<GetTokenMetadata>();
+builder.Services.AddTransient<GetTotalSupply>();
+builder.Services.AddTransient<GetTransactions>();
+builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<ProcessorGeneral>();
-builder.Services.AddTransient<FindTransactionService>();
+builder.Services.AddTransient<Step1>();
 
 builder.Services.AddHostedService<Worker>();
 

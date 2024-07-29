@@ -11,13 +11,13 @@ namespace ws_eth_findTokens
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly FindTransactionService findTransactionService;
+        private readonly Step1 findTransactionService;
         private readonly dbContext dbContext;
 
         public Worker(
             ILogger<Worker> logger,
             dbContext dbContext,
-            FindTransactionService findTransactionService)
+            Step1 findTransactionService)
         {
             _logger = logger;
             this.dbContext = dbContext;

@@ -3,7 +3,6 @@ using api_alchemy.Eth;
 using Data;
 
 using eth_shared;
-using eth_shared.Processors;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +28,7 @@ Log.Logger = new LoggerConfiguration().
         x.Protocol = OtlpProtocol.HttpProtobuf;
         x.Headers = new Dictionary<string, string>
         {
-            
+
             ["X-Seq-ApiKey"] = builder.Configuration.GetSection("OpenTelemetry").GetValue<string>("ApiKey")
         };
         x.ResourceAttributes = new Dictionary<string, object>
@@ -68,11 +67,10 @@ builder.Services.AddHttpClient("ApiAlchemy", client =>
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<GetBlocks>();
-builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();
+builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetTransactionReceipt>();
-builder.Services.AddTransient<ProcessorGeneral>();
 builder.Services.AddTransient<Step1>();
 
 builder.Services.AddHostedService<Worker>();

@@ -4,6 +4,8 @@ using Data;
 
 using eth_shared;
 
+using etherscan;
+
 using Microsoft.EntityFrameworkCore;
 
 using nethereum;
@@ -48,8 +50,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<dbContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
 
 builder.Services.Configure<OptionsAlchemy>(builder.Configuration.GetSection(OptionsAlchemy.SectionName));
+builder.Services.Configure<OptionsEtherscan>(builder.Configuration.GetSection(OptionsEtherscan.SectionName));
 
-builder.Services.AddHttpClient("ApiAlchemy", client =>
+builder.Services.AddHttpClient("Api", client =>
 {
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
@@ -64,6 +67,7 @@ builder.Services.AddHttpClient("ApiAlchemy", client =>
 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 
+builder.Services.AddTransient<EtherscanApi>();
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<GetBlocks>();

@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\nethereum\nethereum.csproj" />
     <ProjectReference Include="..\..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\etherscan\etherscan.csproj" />
     <ProjectReference Include="..\eth_shared\eth_shared.csproj" />
   </ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ namespace api_alchemy.Eth
             optionsAlchemy = _optionsAlchemy.Value;
             var url = optionsAlchemy.UrlBase.Replace("{{{chainName}}}", optionsAlchemy.ChainNames.Etherium);
 
-            this.httpClient = httpClient.CreateClient("ApiAlchemy");
+            this.httpClient = httpClient.CreateClient("Api");
             this.httpClient.BaseAddress = new Uri(url);
 
             Random rnd = new Random();

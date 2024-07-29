@@ -30,27 +30,44 @@ namespace ws_eth_findTokens
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var timeStart = DateTimeOffset.Now;
+                var timeStartStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker step1 running at: {time}", DateTimeOffset.Now);
 
                 try
                 {
                     await step1.Start();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Worker step1 Exception: {message}", ex.Message);
+                    _logger.LogError("Worker step1 Exception: {stack}", ex.StackTrace);
+                }
+
+                var timeEndStep1 = DateTimeOffset.Now;
+
+                _logger.LogInformation("Worker step1 processed blocks: {block}", await dbContext.EthBlock.CountAsync());
+                _logger.LogInformation("Worker step1 running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
+
+                var timeStartStep2 = DateTimeOffset.Now;
+                _logger.LogInformation("Worker step2 running at: {time}", DateTimeOffset.Now);
+
+                try
+                {
                     await step2.Start();
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Worker Exception: {message}", ex.Message);
-                    _logger.LogError("Worker Exception: {stack}", ex.StackTrace);
+                    _logger.LogError("Worker step2 Exception: {message}", ex.Message);
+                    _logger.LogError("Worker step2 Exception: {stack}", ex.StackTrace);
                 }
 
-                var timeEnd = DateTimeOffset.Now;
+                var timeEndStep2 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker processed blocks: {block}", await dbContext.EthBlock.CountAsync());
-                _logger.LogInformation("Worker running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                _logger.LogInformation("Worker step2 processed blocks: {block}", await dbContext.EthBlock.CountAsync());
+                _logger.LogInformation("Worker step2 running time: {time}", (timeEndStep2 - timeStartStep2).TotalSeconds);
 
-                await Task.Delay(60000, stoppingToken);
+                await Task.Delay(30000, stoppingToken);
             }
         }
     }

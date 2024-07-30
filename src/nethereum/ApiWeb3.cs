@@ -57,6 +57,11 @@ namespace nethereum
 
             var param = buildInputParameters(function);
 
+            if (param.functionName is null)
+            {
+                return res;
+            }
+
             var functionABI = new FunctionABI(param.functionName, false);
             functionABI.InputParameters = param.Params;
 
@@ -80,14 +85,31 @@ namespace nethereum
             var functionName = function.Split("(")[0];
             var str = function.Split("(")[1].Split(")")[0].Split(",");
 
+            if (str.Length == 0 ||
+                (str.Length == 1 &&
+                string.IsNullOrEmpty(str[0]))
+                )
+            {
+                return (null, 0, null);
+            }
+
             for (int i = 0; i < str.Length; i++)
             {
                 var t = str[i].Trim().Split(" ");
-
-                if (t[1].Contains("token", StringComparison.InvariantCultureIgnoreCase) &&
-                    t[0].Contains("address", StringComparison.InvariantCultureIgnoreCase))
+                Console.WriteLine(t);
+                try
                 {
-                    tokenIndex = i;
+                    if (t[1].Contains("token", StringComparison.InvariantCultureIgnoreCase) &&
+                        t[0].Contains("address", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tokenIndex = i;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
                 }
 
                 res.Add(new Parameter(t[0], t[1], i + 1));

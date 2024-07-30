@@ -35,22 +35,44 @@ namespace eth_shared
 
         public async Task Start()
         {
+            var openTradingStr = "openTrading";
+            var addLiquidityStr = "addLiquidity";
+
             var tokensToProcess = await GetTokensToProcess();
             var unverified = await Get(tokensToProcess);
             var verified = Validate(unverified);
 
-            var openTrading = ProcessOpenTrading(verified["openTrading"]);
-            var addLiquidity = ProcessAddLiquidity(verified["addLiquidity"]);
+            var openTrading = ProcessOpenTrading(verified[openTradingStr]);
+            var addLiquidity = ProcessAddLiquidity(verified[addLiquidityStr]);
 
-            var openTradingReceipts = await GetTransactionReceipts(openTrading, "openTrading");
-            var addLiquidityReceipts = await GetTransactionReceipts(addLiquidity, "addLiquidity");
+            var openTradingReceipts = await GetTransactionReceipts(openTrading, openTradingStr);
+            var addLiquidityReceipts = await GetTransactionReceipts(addLiquidity, addLiquidityStr);
+
+            var toUpdate =
+                openTradingReceipts.
+                Concat(addLiquidityReceipts).
+                ToList();
+
+            await SaveToDB_update(toUpdate);
+
+            List<string> toDelete = new();
+
+            foreach (var item in tokensToProcess)
+            {
+                if (!toUpdate.Any(x => x.tokenAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    toDelete.Add(item.contractAddress);
+                }
+            }
+
+            await SaveToDB_delete(toDelete);
         }
 
         private async Task<List<(string tokenAddress, string pairAddress, string functionName)>> GetTransactionReceipts(
             List<(string tokenAddress, string hashPair)> tokensToProcess, string functionName)
         {
 
-            List<(string tokenAddress, string pairAddress, string functionName)> res = new();
+            List<(string, string, string)> res = new();
 
             var diff = tokensToProcess.Count();
             var items = tokensToProcess.Select(x => x.hashPair).ToList();
@@ -78,26 +100,43 @@ namespace eth_shared
             return res;
         }
 
-        //private async Task<int> SaveToDB_update(List<string> address)
-        //{
-        //    var res = 0;
-        //    var ids = collection.Select(x => x.contractAddress).ToList();
-        //    var ethTrainDataToUpdate = await dbContext.EthTrainData.Where(x => ids.Contains(x.contractAddress)).ToListAsync();
+        private async Task<int> SaveToDB_update(
+            List<(string tokenAddress, string pairAddress, string functionName)> collection)
+        {
+            var res = 0;
+            var ids = collection.Select(x => x.tokenAddress).ToList();
+            var ethTrainDataToUpdate = await dbContext.EthTrainData.Where(x => ids.Contains(x.contractAddress)).ToListAsync();
 
-        //    foreach (var item in ethTrainDataToUpdate)
-        //    {
-        //        var sourceCode = collection.Where(x => x.contractAddress == item.contractAddress).FirstOrDefault();
+            foreach (var item in ethTrainDataToUpdate)
+            {
+                var t = collection.Where(x => x.tokenAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
-        //        if (sourceCode is not null)
-        //        {
-        //            item.Map(sourceCode);
-        //        }
-        //    }
+                item.pairAddress = t.pairAddress;
+                item.pairAddressFunctionName = t.functionName;
+            }
 
-        //    res = await dbContext.SaveChangesAsync();
+            res = await dbContext.SaveChangesAsync();
 
-        //    return res;
-        //}
+            return res;
+        }
+
+        private async Task<int> SaveToDB_delete(
+            List<string> collection)
+        {
+            var res = 0;
+            var ethTrainDataToDelete = await dbContext.EthTrainData.Where(x => collection.Contains(x.contractAddress)).ToListAsync();
+
+            foreach (var item in ethTrainDataToDelete)
+            {
+                item.pairAddress = "no";
+            }
+
+            dbContext.EthTrainData.UpdateRange(ethTrainDataToDelete);
+
+            res = await dbContext.SaveChangesAsync();
+
+            return res;
+        }
 
         public List<(string tokenAddress, string hashPair)> ProcessAddLiquidity(
             List<GetNormalTxnDTO.Result> collection)
@@ -143,7 +182,7 @@ namespace eth_shared
         {
             List<GetNormalTxnDTO> res = new();
 
-            var owners = tokensToProcess.Select(x => x.from).Distinct().ToList();
+            var owners = tokensToProcess.Select(x => (x.from, x.blockNumberInt.ToString())).Distinct().ToList();
 
             res = await etherscanApi.getNormalTxnBatchRequest(owners);
 
@@ -197,7 +236,5 @@ namespace eth_shared
 
             return res;
         }
-
-
     }
 }

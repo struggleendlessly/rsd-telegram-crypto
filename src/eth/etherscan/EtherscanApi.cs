@@ -79,7 +79,7 @@ namespace etherscan
         }
 
         public async Task<List<GetNormalTxnDTO>> getNormalTxnBatchRequest(
-           List<string> ownerAddresses)
+           List<(string from, string blockNumber)> ownerAddresses)
         {
             ConcurrentBag<GetNormalTxnDTO> res = new();
 
@@ -91,6 +91,7 @@ namespace etherscan
                 new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism, },
                 async (data, ct) =>
                 {
+                    
                     var response = await httpClient.GetAsync(data.Key);
 
                     if (response.IsSuccessStatusCode)
@@ -101,6 +102,11 @@ namespace etherscan
 
                             ee = await response.Content.ReadAsStringAsync();
                             var t = await response.Content.ReadFromJsonAsync<GetNormalTxnDTO>();
+
+                            if (t.result.Count() >= 999)
+                            {
+
+                            }
 
                             if (t is not null &&
                                 t.result is not null)
@@ -150,7 +156,7 @@ namespace etherscan
         }      
         
         private Dictionary<string, string> getNormalTxnBatch
-            (List<string> ownerAddresses)
+            (List<(string from, string blockNumber)> ownerAddresses)
         {
             Dictionary<string, string> res = new();
 
@@ -161,7 +167,7 @@ namespace etherscan
                 var item = ownerAddresses[i];
                 var apiKey = GetApiKey(apiKeyParallelIndex);
                 var url = UrlBuider.getNormalTxn(item, apiKey);
-                res.Add(url, item);
+                res.Add(url, item.from);
 
                 Console.WriteLine(item);
 

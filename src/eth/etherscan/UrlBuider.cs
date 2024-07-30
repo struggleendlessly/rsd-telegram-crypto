@@ -22,7 +22,7 @@ namespace etherscan
         }   
         
         public static string getNormalTxn(
-            string ownerAddress, 
+            (string from, string blockNumber) ownerAddress, 
             string apiKeyToken, 
             int page = 1)
         {
@@ -31,12 +31,11 @@ namespace etherscan
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.Append("api/?module=account");
             urlBuilder.Append("&action=txlist");
-            urlBuilder.Append($"&address={ownerAddress}");
-            urlBuilder.Append($"&startblock=0");
+            urlBuilder.Append($"&address={ownerAddress.from}");
+            urlBuilder.Append($"&startblock={ownerAddress.blockNumber}");
             urlBuilder.Append($"&endblock=99999999");
-            urlBuilder.Append($"&startblock=0");
             urlBuilder.Append($"&page={page}");
-            urlBuilder.Append("&offset=999");
+            urlBuilder.Append("&offset=10000");
             urlBuilder.Append("&sort=asc");
             urlBuilder.Append($"&apikey={apiKeyToken}");
 

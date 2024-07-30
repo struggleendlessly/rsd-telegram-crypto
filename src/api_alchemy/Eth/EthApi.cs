@@ -44,7 +44,7 @@ namespace api_alchemy.Eth
             <ApiInput, Response>(
 
             List<ApiInput> items,
-            Func<List<ApiInput>, int,  Task<List<Response>>> apiMethod,
+            Func<List<ApiInput>, int, Task<List<Response>>> apiMethod,
             int diff = 0
             )
         {
@@ -53,29 +53,13 @@ namespace api_alchemy.Eth
 
             if (diff > 0)
             {
-                var batchSizeLocal = batchSize;
-
-                if (diff > maxDiffToProcess)
-                {
-                    diff = maxDiffToProcess;
-                }
-
-                var rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
-
-                if (rangeOfBatches == 0)
-                {
-                    rangeOfBatches = 1;
-                    batchSizeLocal = diff;
-                }
-
-                List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
-                var rangeChunks = items.Chunk(batchSizeLocal).ToList();
+                var rangeChunks = items.Chunk(batchSize).ToList();
                 var rangeForBatchesWithApiKey = new Dictionary<int, int>();
                 var apiKeyParallelIndex = 0;
 
-                for ( int i = 0; i < rangeForBatches.Count(); i++)
+                for (int i = 0; i < rangeChunks.Count(); i++)
                 {
-                    rangeForBatchesWithApiKey.Add(rangeForBatches[i], apiKeyParallelIndex);
+                    rangeForBatchesWithApiKey.Add(i, apiKeyParallelIndex);
 
                     if (apiKeyParallelIndex + 1 < MaxDegreeOfParallelism)
                     {
@@ -84,7 +68,7 @@ namespace api_alchemy.Eth
                     else
                     {
                         apiKeyParallelIndex = 0;
-                    }   
+                    }
                 }
 
                 await Parallel.ForEachAsync(
@@ -261,7 +245,7 @@ namespace api_alchemy.Eth
             foreach (var item in txnReceipts)
             {
                 aa.Append(EthUrlBuilder.getTokenMetadata(
-                    item.contractAddress, 
+                    item.contractAddress,
                     item.txnNumberForMetadata));
 
                 if (txnReceipts.Last() != item)
@@ -290,8 +274,8 @@ namespace api_alchemy.Eth
             }
 
             return res;
-        }    
-        
+        }
+
         public async Task<List<getTotalSupplyDTO>> getTotalSupplyBatch(
             List<getTransactionReceiptDTO.Result> txnReceipts,
             int apiKeyIndex)

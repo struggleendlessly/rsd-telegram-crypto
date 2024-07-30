@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 
+using Nethereum.ABI.FunctionEncoding;
+using Nethereum.ABI.Model;
 using Nethereum.Hex.HexTypes;
 using Nethereum.Web3;
 
@@ -31,7 +33,7 @@ namespace nethereum
 
         // var totalSupplySelector = "0x18160ddd";
         public async Task<BigInteger> GetTotalSupply(
-            string tokenAddress, 
+            string tokenAddress,
             string totalSupplySelector = "0x18160ddd")
         {
             // Create a call input with the function selector for totalSupply()
@@ -47,6 +49,52 @@ namespace nethereum
             // Convert the result from hex to BigInteger
             var totalSupply = new HexBigInteger(result).Value;
             return totalSupply;
+        }
+
+        public string DecodeAddLiquidityInput(string function, string input)
+        {
+            var res = string.Empty;
+
+            var param = buildInputParameters(function);
+
+            var functionABI = new FunctionABI(param.functionName, false);
+            functionABI.InputParameters = param.Params;
+
+            var decoded = functionABI.DecodeInputDataToDefault(input);
+            var tokenAddress = decoded[param.TokenIndex].Result.ToString();
+
+            if (!string.IsNullOrEmpty(tokenAddress))
+            {
+                res = tokenAddress;
+            }
+
+            return res;
+        }
+
+        //addLiquidityETH(address token, uint256 amountTokenDesired, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline)
+        private (string functionName, int TokenIndex, Parameter[] Params) buildInputParameters(string function)
+        {
+            List<Parameter> res = [];
+            var tokenIndex = 0;
+
+            var functionName = function.Split("(")[0];
+            var str = function.Split("(")[1].Split(")")[0].Split(",");
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                var t = str[i].Trim().Split(" ");
+
+                if (t[1].Contains("token", StringComparison.InvariantCultureIgnoreCase) &&
+                    t[0].Contains("address", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    tokenIndex = i;
+                }
+
+                res.Add(new Parameter(t[0], t[1], i + 1));
+
+            }
+
+            return (functionName, tokenIndex, res.ToArray());
         }
     }
 }

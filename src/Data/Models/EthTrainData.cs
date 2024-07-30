@@ -15,6 +15,8 @@ namespace Data.Models
         public int blockNumberInt { get; set; } = 0;
         public string totalSupply { get; set; } = default!;
         public bool exploitsTS { get; set; } = false;
+        public string pairAddress { get; set; } = string.Empty;
+        public string pairAddressFunctionName { get; set; } = string.Empty;
 
         // TokenMetadata
         public int decimals { get; set; } = default!;

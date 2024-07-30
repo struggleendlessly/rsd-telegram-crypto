@@ -68,6 +68,7 @@ builder.Services.AddHttpClient("Api", client =>
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 
 builder.Services.AddTransient<EtherscanApi>();
+builder.Services.AddTransient<GetPair>();
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<GetBlocks>();

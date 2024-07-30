@@ -1,0 +1,203 @@
+﻿using api_alchemy.Eth;
+using api_alchemy.Eth.ResponseDTO;
+
+using Data;
+using Data.Models;
+
+using etherscan;
+using etherscan.ResponseDTO;
+
+using Microsoft.EntityFrameworkCore;
+
+using nethereum;
+
+namespace eth_shared
+{
+    public class GetPair
+    {
+        private readonly ApiWeb3 ApiWeb3;
+        private readonly EthApi apiAlchemy;
+        private readonly dbContext dbContext;
+        private readonly EtherscanApi etherscanApi;
+
+        public GetPair(
+            ApiWeb3 ApiWeb3,
+            EthApi apiAlchemy,
+            dbContext dbContext,
+            EtherscanApi etherscanApi
+            )
+        {
+            this.ApiWeb3 = ApiWeb3;
+            this.dbContext = dbContext;
+            this.apiAlchemy = apiAlchemy;
+            this.etherscanApi = etherscanApi;
+        }
+
+        public async Task Start()
+        {
+            var tokensToProcess = await GetTokensToProcess();
+            var unverified = await Get(tokensToProcess);
+            var verified = Validate(unverified);
+
+            var openTrading = ProcessOpenTrading(verified["openTrading"]);
+            var addLiquidity = ProcessAddLiquidity(verified["addLiquidity"]);
+
+            var openTradingReceipts = await GetTransactionReceipts(openTrading, "openTrading");
+            var addLiquidityReceipts = await GetTransactionReceipts(addLiquidity, "addLiquidity");
+        }
+
+        private async Task<List<(string tokenAddress, string pairAddress, string functionName)>> GetTransactionReceipts(
+            List<(string tokenAddress, string hashPair)> tokensToProcess, string functionName)
+        {
+
+            List<(string tokenAddress, string pairAddress, string functionName)> res = new();
+
+            var diff = tokensToProcess.Count();
+            var items = tokensToProcess.Select(x => x.hashPair).ToList();
+
+            Func<List<string>, int, Task<List<getTransactionReceiptDTO>>> apiMethod = apiAlchemy.getTransactionReceiptBatch;
+
+            var t = await apiAlchemy.executeBatchCall(items, apiMethod, diff);
+
+            foreach (var item in t)
+            {
+                var token = tokensToProcess.Where(x => x.hashPair == item.result.transactionHash).FirstOrDefault();
+
+                foreach (var log in item.result.logs)
+                {
+                    var pairCreated = log.topics.Any(x => x.Contains("0x0000000000000000000000000000000000000000000000000000000000000000"));
+
+                    if (pairCreated)
+                    {
+                        res.Add((token.tokenAddress, log.address, functionName));
+                        break;
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        //private async Task<int> SaveToDB_update(List<string> address)
+        //{
+        //    var res = 0;
+        //    var ids = collection.Select(x => x.contractAddress).ToList();
+        //    var ethTrainDataToUpdate = await dbContext.EthTrainData.Where(x => ids.Contains(x.contractAddress)).ToListAsync();
+
+        //    foreach (var item in ethTrainDataToUpdate)
+        //    {
+        //        var sourceCode = collection.Where(x => x.contractAddress == item.contractAddress).FirstOrDefault();
+
+        //        if (sourceCode is not null)
+        //        {
+        //            item.Map(sourceCode);
+        //        }
+        //    }
+
+        //    res = await dbContext.SaveChangesAsync();
+
+        //    return res;
+        //}
+
+        public List<(string tokenAddress, string hashPair)> ProcessAddLiquidity(
+            List<GetNormalTxnDTO.Result> collection)
+        {
+
+            List<(string, string)> res = new();
+
+            foreach (var item in collection)
+            {
+                if (item.input is not null &&
+                    item.functionName is not null)
+                {
+                    var tokenAddress = ApiWeb3.DecodeAddLiquidityInput(item.functionName, item.input);
+
+                    if (!string.IsNullOrEmpty(tokenAddress))
+                    {
+                        res.Add((tokenAddress, item.hash));
+                    }
+                }
+            }
+
+            return res;
+        }
+        public List<(string tokenAddress, string hashPair)> ProcessOpenTrading(
+            List<GetNormalTxnDTO.Result> collection)
+        {
+            List<(string, string)> res = new();
+
+            foreach (var item in collection)
+            {
+                if (item.to is not null)
+                {
+                    res.Add((item.to, item.hash));
+                }
+            }
+
+            return res;
+        }
+
+
+        public async Task<List<GetNormalTxnDTO>> Get(
+            List<EthTrainData> tokensToProcess)
+        {
+            List<GetNormalTxnDTO> res = new();
+
+            var owners = tokensToProcess.Select(x => x.from).Distinct().ToList();
+
+            res = await etherscanApi.getNormalTxnBatchRequest(owners);
+
+            return res;
+        }
+
+        public Dictionary<string, List<GetNormalTxnDTO.Result>> Validate(
+            List<GetNormalTxnDTO> collection)
+        {
+            Dictionary<string, List<GetNormalTxnDTO.Result>> res = new();
+            List<GetNormalTxnDTO.Result> resO = new();
+            List<GetNormalTxnDTO.Result> resA = new();
+
+            foreach (var item in collection)
+            {
+                if (item.result is null)
+                {
+                    continue;
+                }
+
+                foreach (var t in item.result)
+                {
+                    if (t.functionName.Contains("openTrading", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        resO.Add(t);
+                    }
+
+                    if (t.functionName.Contains("addLiquidity", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        resA.Add(t);
+                    }
+                }
+            }
+
+            res.Add("openTrading", resO);
+            res.Add("addLiquidity", resA);
+
+            return res;
+        }
+
+        public async Task<List<EthTrainData>> GetTokensToProcess()
+        {
+            var lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+
+            var res = await
+                dbContext.
+                EthTrainData.
+                Where(x => string.IsNullOrEmpty(x.pairAddress)).
+                Take(100).
+                ToListAsync();
+
+            return res;
+        }
+
+
+    }
+}

@@ -1,4 +1,6 @@
-﻿using Data;
+﻿using api_alchemy.Eth;
+
+using Data;
 using Data.Models;
 
 using eth_shared.Map;
@@ -12,13 +14,17 @@ namespace eth_shared
 {
     public class GetSourceCode
     {
-        private readonly EtherscanApi etherscanApi;
+        private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
+        private readonly EtherscanApi etherscanApi;
         public GetSourceCode(
-            EtherscanApi etherscanApi,
-            dbContext dbContext)
+             EthApi apiAlchemy,
+             dbContext dbContext,
+             EtherscanApi etherscanApi
+            )
         {
             this.dbContext = dbContext;
+            this.apiAlchemy = apiAlchemy;
             this.etherscanApi = etherscanApi;
         }
 
@@ -148,7 +154,7 @@ namespace eth_shared
 
         public async Task<List<EthTrainData>> GetTokensToProcess()
         {
-            var lastEthBlockNumber = await GetLastEthBlockNumber();
+            var lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
             var diff = 8000;
 
             var res = await
@@ -157,13 +163,6 @@ namespace eth_shared
                 Where(x => string.IsNullOrEmpty(x.ABI) && x.blockNumberInt < (lastEthBlockNumber - diff)).
                 Take(100).
                 ToListAsync();
-
-            return res;
-        }
-        private async Task<int> GetLastEthBlockNumber()
-        {
-            //var res = await apiAlchemy.lastBlockNumber();
-            var res = 20384889;
 
             return res;
         }

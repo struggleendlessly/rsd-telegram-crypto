@@ -1,14 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using static System.Net.Mime.MediaTypeNames;
-using System.Net;
-using System.Text.Json;
-using Shared.Telegram.Models;
-using static System.Net.WebRequestMethods;
-using System.Numerics;
-using Nethereum.ABI.FunctionEncoding.Attributes;
-using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.Eth.DTOs;
+using Nethereum.ABI.FunctionEncoding;
+using Nethereum.ABI.Model;
+using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.Web3;
+using Nethereum.Contracts;
+
+using System.Numerics;
 //await Program1.Main();
 
 var abi = """
@@ -16,161 +13,63 @@ var abi = """
 """;
 
 var web3 = new Web3("https://eth-mainnet.g.alchemy.com/v2/RwGrUoRsvsF9CPWEKUNOsCR_dkM6f4Uz");
-var pairAddress = "0xYourPairContractAddress";
 
-
-//{
-//id: 1,
-//jsonrpc: "2.0",
-//method: "eth_getLogs",
-//params:[
-//{
-//    fromBlock: "0x13773a4",
-//toBlock: "0x137761c",
-//address: [
-//"0xc2eab7d33d3cb97692ecb231a5d0e4a649cb539d"
-//],
-//topics: [
-//"0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1"
-//]
-//}
-//]
-//}
-
-//await CalculateHistoricalPrices(web3, pairAddress, 0, BlockParameter.CreateLatest());
-
-// static async Task CalculateHistoricalPrices(Web3 web3, string pairAddress, ulong fromBlock, BlockParameter toBlock)
-//{
-//    var pairContract = web3.Eth.GetContract(pairAbi, pairAddress);
-
-//    // Fetch swap events
-//    var swapEvent = pairContract.GetEvent("Swap");
-
-//    var filter = swapEvent.CreateFilterInput(new BlockParameter(fromBlock), toBlock);
-//    var swapEvents = await swapEvent.GetAllChangesDefault(filter);
-
-//    foreach (var swapEventLog in swapEvents)
-//    {
-//        var amount0In = (BigInteger)swapEventLog.Event.GetPropertyValue("amount0In");
-//        var amount1In = (BigInteger)swapEventLog.Event.GetPropertyValue("amount1In");
-//        var amount0Out = (BigInteger)swapEventLog.Event.GetPropertyValue("amount0Out");
-//        var amount1Out = (BigInteger)swapEventLog.Event.GetPropertyValue("amount1Out");
-
-//        // Fetch reserves to calculate price
-//        var reservesFunction = pairContract.GetFunction("getReserves");
-//        var reserves = await reservesFunction.CallDeserializingToObjectAsync<Reserves>();
-
-//        decimal price;
-//        if (amount0In > 0)
-//        {
-//            // token0 is being bought with token1
-//            price = (decimal)amount1In / (decimal)amount0In;
-//        }
-//        else
-//        {
-//            // token0 is being sold for token1
-//            price = (decimal)amount1Out / (decimal)amount0Out;
-//        }
-
-//        Console.WriteLine($"Block Number: {swapEventLog.Log.BlockNumber.Value}, Price: {price}");
-//    }
-//}
-
-var contract = web3.Eth.GetContract(abi, "0x9cF1190D71f7c5FCaF2033FfA4b017B1b0591EfD");
-
-//var method = await contract.GetFunction("getReserves").CallAsync<BigInteger>();
-//var getReservesFunction = contract.GetFunction("getReserves");
-//var reserves = await getReservesFunction.CallDeserializingToObjectAsync<ReservesOutput>();
-
-//Console.WriteLine($"Reserve 0: {reserves.Reserve0}");
-//Console.WriteLine($"Reserve 1: {reserves.Reserve1}");
-//Console.WriteLine($"Block Timestamp Last: {reserves.BlockTimestampLast}");
-
-
-//var text ="{\r\n  \"?isRandom\": \"true\",\r\n  \"count\": \"3\"\r\n}"
-//    "TEST MESSAGE!!!123 \n" +
-
-//    "`0xbf769155ff776a717fb96616a567bb898b21bee6` \n" +
-//    "❤️ \n" +
-//    "DB: `11178` | `14163880` | `14190231` | 26351 \n" +
-
-//    "[Owner](https://basescan.org/address/0xc0feb38ca691a7ccd508832571dc26b51de500e3) | [Token](https://basescan.org/token/0xbf769155ff776a717fb96616a567bb898b21bee6) | [DexScreener](https://dexscreener.com/base/0xbf769155ff776a717fb96616a567bb898b21bee6)";
-
-//var ttt = "https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?message_thread_id=2268&chat_id=-1002144699173&text=1111&parse_mode=MarkDown&disable_web_page_preview=true";
-//string urlString = $"https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/sendMessage?message_thread_id=136&chat_id=-1002144699173&text={text}&parse_mode=markdown&disable_web_page_preview=true";
-//string deleteMessage = "https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/deleteMessage?message_thread_id=136&chat_id=-1002144699173&message_id=2802";
-//using (var webclient = new WebClient())
-//{
-//    try
-//    {
-//        var response = await webclient.DownloadStringTaskAsync(urlString);
-//        var ee = JsonSerializer.Deserialize<MessageSend>(response);
-//    }
-//    catch (Exception ee)
-//    {
-
-//        throw;
-//    }
-
-//}
-
-////https://api.telegram.org/bot6721227973:AAHGbb1gjBn9CWh0zF9sOtVKA0g6iPp9KCE/deleteMessage?message_thread_id=136&chat_id=-1002144699173&message_id=2800
-var syncEvent = web3.Eth.GetEvent<SyncEventDTO>("0x9cF1190D71f7c5FCaF2033FfA4b017B1b0591EfD");
-
-// Specify the block range for yesterday (replace with actual block numbers)
-var blockNumberYesterdayStart = new HexBigInteger(20411300);
-var blockNumberYesterdayEnd = new HexBigInteger(20411932);
-
-var filterAll = syncEvent.CreateFilterInput(new BlockParameter(blockNumberYesterdayStart), new BlockParameter(blockNumberYesterdayEnd));
-
-var logs = await syncEvent.GetAllChangesAsync(filterAll);
-
-foreach (var log in logs)
+var inputData = "0xf305d71900000000000000000000000079677cff1476bf20a52aa5f482c3246cd30e45cf0000000000000000000000000000000000000008d5d26dc4fe1ea68a600000000000000000000000000000000000000000000008d5d26dc4fe1ea68a60000000000000000000000000000000000000000000000000000001158e460913d0000000000000000000000000000025fd80d3d812687678eea6ad5928b4e3448519cf000000000000000000000000000000000000000000000000000000006231b805";
+//addLiquidityETH(address token, uint256 amountTokenDesired, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline)
+var decodedParameters = DecodeAddLiquidityInput(inputData);
+Console.WriteLine("Token A: " + decodedParameters.TokenA);
+Console.WriteLine("Token B: " + decodedParameters.TokenB);
+Console.WriteLine("Amount A Desired: " + decodedParameters.AmountADesired);
+Console.WriteLine("Amount B Desired: " + decodedParameters.AmountBDesired);
+Console.WriteLine("Amount A Min: " + decodedParameters.AmountAMin);
+Console.WriteLine("Amount B Min: " + decodedParameters.AmountBMin);
+Console.WriteLine("To: " + decodedParameters.To);
+Console.WriteLine("Deadline: " + decodedParameters.Deadline);
+var functionCallDecoder = new FunctionCallDecoder();
+static AddLiquidityParameters DecodeAddLiquidityInput(string input)
 {
-    Console.WriteLine($"Reserve0: {log.Event.Reserve0}, Reserve1: {log.Event.Reserve1}");
+    var functionABI = new FunctionABI("addLiquidityETH", false)
+    {
+        InputParameters = new[]
+        {
+                new Parameter("address", "token", 1),
+                new Parameter("uint256", "amountTokenDesired", 2),
+                new Parameter("uint256", "amountTokenMin", 3),
+                new Parameter("uint256", "amountETHMin", 4),
+                new Parameter("address", "to", 5),
+                new Parameter("uint256", "deadline", 6)
+            }
+    };
+    var e = functionABI.DecodeInputDataToDefault(input);
+    var functionCallDecoder = new FunctionCallDecoder();
+    var decoded = functionCallDecoder.DecodeFunctionInput(functionABI.Sha3Signature, input);
+
+    return new AddLiquidityParameters();
+    //return new AddLiquidityParameters
+    //{
+    //    TokenA = decoded[0].Result.ToString(),
+    //    TokenB = decoded[1].Result.ToString(),
+    //    AmountADesired = (BigInteger)decoded[2].Result,
+    //    AmountBDesired = (BigInteger)decoded[3].Result,
+    //    AmountAMin = (BigInteger)decoded[4].Result,
+    //    AmountBMin = (BigInteger)decoded[5].Result,
+    //    To = decoded[6].Result.ToString(),
+    //    Deadline = (BigInteger)decoded[7].Result
+    //};
 }
 
-
-//var apiKey = "3ex6KSnDnxa98_q_F6CD26ByLMK4Gga-";
-//var contractAddress = "0xc2eab7d33d3cb97692ecb231a5d0e4a649cb539d"; // Uniswap Pair contract address
-
-//using (var client = new HttpClient())
-//{
-//    var response = await client.GetAsync($"https://eth-mainnet.alchemyapi.io/v2/{apiKey}/getAssetTransfers?fromBlock=0xC35000&toBlock=latest&contractAddresses[]={contractAddress}&category[]=external&category[]=token&category[]=internal");
-
-//    if (response.IsSuccessStatusCode)
-//    {
-//        var content = await response.Content.ReadAsStringAsync();
-//        Console.WriteLine(content);
-//    }
-//}
-
-
-Console.WriteLine("Hello, World!");
-
-[Event("Sync")]
-public class SyncEventDTO : IEventDTO
+public class AddLiquidityParameters
 {
-    [Parameter("uint112", "_reserve0", 1, false)]
-    public BigInteger Reserve0 { get; set; }
-
-    [Parameter("uint112", "_reserve1", 2, false)]
-    public BigInteger Reserve1 { get; set; }
-
+    public string TokenA { get; set; }
+    public string TokenB { get; set; }
+    public BigInteger AmountADesired { get; set; }
+    public BigInteger AmountBDesired { get; set; }
+    public BigInteger AmountAMin { get; set; }
+    public BigInteger AmountBMin { get; set; }
+    public string To { get; set; }
+    public BigInteger Deadline { get; set; }
 }
 
-[FunctionOutput]
-public class ReservesOutput
-{
-    [Parameter("uint112", "_reserve0", 1)]
-    public BigInteger Reserve0 { get; set; }
-
-    [Parameter("uint112", "_reserve1", 2)]
-    public BigInteger Reserve1 { get; set; }
-
-    [Parameter("uint32", "_blockTimestampLast", 3)]
-    public uint BlockTimestampLast { get; set; }
-}
 
 
 

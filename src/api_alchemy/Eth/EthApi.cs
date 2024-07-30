@@ -53,6 +53,11 @@ namespace api_alchemy.Eth
 
             if (diff > 0)
             {
+                if (diff > maxDiffToProcess)
+                {
+                    items = items.Take(maxDiffToProcess).ToList();
+                }
+
                 var rangeChunks = items.Chunk(batchSize).ToList();
                 var rangeForBatchesWithApiKey = new Dictionary<int, int>();
                 var apiKeyParallelIndex = 0;

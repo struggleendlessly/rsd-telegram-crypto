@@ -22,7 +22,7 @@ namespace Data.Models
         public int decimals { get; set; } = default!;
         public string? logo { get; set; } = null;
         public string name { get; set; } = default!;
-        public string symbol { get; set; } = default!;
+        public string? symbol { get; set; } = string.Empty;
 
         // TransactionReceipt
         public string logs { get; set; } = string.Empty;

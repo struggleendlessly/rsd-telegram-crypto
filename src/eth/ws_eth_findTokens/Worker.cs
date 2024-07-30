@@ -36,7 +36,7 @@ namespace ws_eth_findTokens
 
                 try
                 {
-                    //await step1.Start();
+                    await step1.Start();
                 }
                 catch (Exception ex)
                 {

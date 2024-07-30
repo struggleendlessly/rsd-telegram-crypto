@@ -28,8 +28,8 @@ namespace eth_shared
         }
         public async Task Start()
         {
-            await getPair.Start();
             await getSourceCode.Start();
+            await getPair.Start();
         }
 
     }

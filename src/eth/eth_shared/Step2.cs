@@ -3,6 +3,9 @@ using Data.Models;
 
 using etherscan;
 
+using Microsoft.Extensions.Logging;
+using nethereum;
+
 namespace eth_shared
 {
     public class Step2
@@ -11,16 +14,19 @@ namespace eth_shared
 
         private readonly GetPair getPair;
         private readonly dbContext dbContext;
+        private readonly ILogger logger;
         private readonly EtherscanApi etherscanApi;
         private readonly GetSourceCode getSourceCode;
 
         public Step2(
+            ILogger<Step2> logger,
             GetPair getPair,
             dbContext dbContext,
             EtherscanApi etherscanApi,
             GetSourceCode getSourceCode
             )
         {
+            this.logger = logger;
             this.getPair = getPair;
             this.dbContext = dbContext;
             this.etherscanApi = etherscanApi;

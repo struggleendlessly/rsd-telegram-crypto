@@ -1,15 +1,22 @@
 ﻿using api_alchemy.Eth;
 using api_alchemy.Eth.ResponseDTO;
 
+using Microsoft.Extensions.Logging;
+using nethereum;
+
 using System.Text.RegularExpressions;
 
 namespace eth_shared
 {
     public class GetTokenMetadata
     {
+        private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
-        public GetTokenMetadata(EthApi apiAlchemy)
+        public GetTokenMetadata(
+            ILogger<GetTokenMetadata> logger,
+            EthApi apiAlchemy)
         {
+            this.logger = logger;
             this.apiAlchemy = apiAlchemy;
         }
 

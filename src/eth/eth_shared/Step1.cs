@@ -6,6 +6,9 @@ using Data;
 using Data.Models;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using nethereum;
 
 namespace eth_shared
 {
@@ -17,7 +20,8 @@ namespace eth_shared
         private List<getTransactionReceiptDTO.Result> txnReceiptsFiltered = new();
 
         private List<EthTrainData> ethTrainDatas = new();
-
+        
+        private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
         private readonly GetBlocks getBlocks;
@@ -27,6 +31,7 @@ namespace eth_shared
         private readonly GetTransactionReceipt getTransactionReceipt;
 
         public Step1(
+            ILogger<Step1> logger,
             EthApi apiAlchemy,
             dbContext dbContext,
             GetBlocks getBlocks,
@@ -36,6 +41,7 @@ namespace eth_shared
             GetTransactionReceipt getTransactionReceipt
             )
         {
+            this.logger = logger;
             this.getBlocks = getBlocks;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;

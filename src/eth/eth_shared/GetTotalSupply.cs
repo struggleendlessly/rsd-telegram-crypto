@@ -1,6 +1,9 @@
 ﻿using api_alchemy.Eth;
 using api_alchemy.Eth.ResponseDTO;
 
+using Microsoft.Extensions.Logging;
+using nethereum;
+
 using Nethereum.Hex.HexTypes;
 
 using System.Numerics;
@@ -9,9 +12,13 @@ namespace eth_shared
 {
     public class GetTotalSupply
     {
+        private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
-        public GetTotalSupply(EthApi apiAlchemy)
+        public GetTotalSupply(
+            ILogger<GetTotalSupply> logger,
+            EthApi apiAlchemy)
         {
+            this.logger = logger;
             this.apiAlchemy = apiAlchemy;
         }
 

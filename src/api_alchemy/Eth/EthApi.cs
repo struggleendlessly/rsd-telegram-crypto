@@ -1,5 +1,6 @@
 ﻿using api_alchemy.Eth.ResponseDTO;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
@@ -15,13 +16,16 @@ namespace api_alchemy.Eth
         private readonly int batchSize = 50;
         private readonly int maxDiffToProcess = 1000;
 
+        private readonly ILogger logger;
         private readonly HttpClient httpClient;
         private readonly OptionsAlchemy optionsAlchemy;
         private string vAndApiKey;
         public EthApi(
+            ILogger<EthApi> logger,
             IHttpClientFactory httpClient,
             IOptions<OptionsAlchemy> _optionsAlchemy)
         {
+            this.logger = logger;
             optionsAlchemy = _optionsAlchemy.Value;
             var url = optionsAlchemy.UrlBase.Replace("{{{chainName}}}", optionsAlchemy.ChainNames.Etherium);
 

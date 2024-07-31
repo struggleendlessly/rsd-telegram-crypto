@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Nethereum.ABI.FunctionEncoding;
 using Nethereum.ABI.Model;
@@ -15,11 +16,14 @@ namespace nethereum
     {
         private readonly OptionsAlchemy optionsAlchemy;
         private string vAndApiKey = string.Empty;
+        private readonly ILogger<ApiWeb3> logger;
 
         Web3 web3 = new Web3();
         public ApiWeb3(
+            ILogger<ApiWeb3> logger,
             IOptions<OptionsAlchemy> _optionsAlchemy)
         {
+            this.logger = logger;
             optionsAlchemy = _optionsAlchemy.Value;
             var url = optionsAlchemy.UrlBase.Replace("{{{chainName}}}", optionsAlchemy.ChainNames.Etherium);
 
@@ -63,9 +67,18 @@ namespace nethereum
             }
 
             var functionABI = new FunctionABI(param.functionName, false);
+
+
             functionABI.InputParameters = param.Params;
 
             var decoded = functionABI.DecodeInputDataToDefault(input);
+
+            if (decoded is null)
+            {
+                logger.LogWarning("DecodeAddLiquidityInput: decoded is null with function name: {function} and input {input}", function, input);
+                return res;
+            }
+
             var tokenAddress = decoded[param.TokenIndex].Result.ToString();
 
             if (!string.IsNullOrEmpty(tokenAddress))

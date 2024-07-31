@@ -8,6 +8,7 @@ using etherscan;
 using etherscan.ResponseDTO;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using nethereum;
 
@@ -15,18 +16,22 @@ namespace eth_shared
 {
     public class GetPair
     {
+
+        private readonly ILogger logger;
         private readonly ApiWeb3 ApiWeb3;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
         private readonly EtherscanApi etherscanApi;
 
         public GetPair(
+            ILogger<GetPair> logger,
             ApiWeb3 ApiWeb3,
             EthApi apiAlchemy,
             dbContext dbContext,
             EtherscanApi etherscanApi
             )
         {
+            this.logger = logger;
             this.ApiWeb3 = ApiWeb3;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;

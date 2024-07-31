@@ -1,5 +1,6 @@
 ﻿using etherscan.ResponseDTO;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
@@ -12,14 +13,18 @@ namespace etherscan
     public class EtherscanApi
     {
 
+        private readonly ILogger _logger;
         private readonly HttpClient httpClient;
         private readonly OptionsEtherscan optionsEtherscan;
+
         private readonly int MaxDegreeOfParallelism = 4;
 
         public EtherscanApi(
+            ILogger<EtherscanApi> logger,
             IHttpClientFactory httpClient,
             IOptions<OptionsEtherscan> _optionsEtherscan)
         {
+            _logger = logger;
             optionsEtherscan = _optionsEtherscan.Value;
 
             var url = optionsEtherscan.UrlBase;

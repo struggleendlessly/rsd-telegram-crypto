@@ -9,20 +9,26 @@ using etherscan;
 using etherscan.ResponseDTO;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using nethereum;
 
 namespace eth_shared
 {
     public class GetSourceCode
     {
+        private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
         private readonly EtherscanApi etherscanApi;
         public GetSourceCode(
              EthApi apiAlchemy,
              dbContext dbContext,
-             EtherscanApi etherscanApi
+             EtherscanApi etherscanApi,
+             ILogger<GetSourceCode> logger
             )
         {
+            this.logger = logger;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
             this.etherscanApi = etherscanApi;

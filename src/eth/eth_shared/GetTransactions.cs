@@ -6,6 +6,7 @@ using Data.Models;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using System.Text.Json;
 
@@ -14,7 +15,9 @@ namespace eth_shared
     public class GetTransactions
     {
         private readonly dbContext dbContext;
-        public GetTransactions(dbContext dbContext)
+        public GetTransactions(
+            ILogger<GetTransactions> logger,
+            dbContext dbContext)
         {
             this.dbContext = dbContext;
         }
@@ -79,15 +82,20 @@ namespace eth_shared
         {
             List<EthTrainData> res = new();
 
-            foreach (var item in collection)
-            {
-                var isExistInDB = await dbContext.EthTrainData.AnyAsync(x => x.hash == item.hash);
+            var ids = collection.Select(x => x.hash).ToList();
+            var notDistinct = await dbContext.EthTrainData.Where(x => ids.Contains(x.hash)).ToListAsync();
+            res = collection.ExceptBy(notDistinct.Select(v => v.hash), x => x.hash).ToList();
+            // res = res.Where(x => !notDistinct.Select(v=>v.hash).Contains(x.hash)).ToList();
 
-                if (!isExistInDB)
-                {
-                    res.Add(item);
-                }
-            }
+            //foreach (var item in collection)
+            //{
+            //    var isExistInDB = await dbContext.EthTrainData.AnyAsync(x => x.hash == item.hash);
+
+            //    if (!isExistInDB)
+            //    {
+            //        res.Add(item);
+            //    }
+            //}
 
             return res;
         }

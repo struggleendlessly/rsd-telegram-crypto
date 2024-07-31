@@ -7,20 +7,30 @@ using Data.Models;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using nethereum;
+
+using Org.BouncyCastle.Crypto;
+
+using System.Linq;
 
 namespace eth_shared
 {
     public class GetBlocks
     {
+        private readonly ILogger _logger;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
 
         private List<getBlockByNumberDTO> validated = new();
         public GetBlocks(
+            ILogger<ApiWeb3> logger,
             EthApi apiAlchemy,
             dbContext dbContext
             )
         {
+            this._logger = logger;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
         }
@@ -117,13 +127,12 @@ namespace eth_shared
 
                 t.numberInt = Convert.ToInt32(t.number, 16);
 
-                var isExist = await dbContext.EthBlock.AnyAsync(x => x.numberInt == t.numberInt);
-
-                if (!isExist)
-                {
-                    res.Add(t);
-                }
+                res.Add(t);
             }
+
+            var ids = res.Select(x => x.numberInt).ToList();
+            var notDistinct = await dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToListAsync();
+            res = res.ExceptBy(notDistinct.Select(v=>v.numberInt), x => x.numberInt).ToList();
 
             return res;
         }

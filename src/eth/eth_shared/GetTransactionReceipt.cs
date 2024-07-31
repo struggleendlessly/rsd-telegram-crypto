@@ -1,13 +1,20 @@
 ﻿using api_alchemy.Eth;
 using api_alchemy.Eth.ResponseDTO;
 
+using Microsoft.Extensions.Logging;
+using nethereum;
+
 namespace eth_shared
 {
     public class GetTransactionReceipt
     {
+        private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
-        public GetTransactionReceipt(EthApi apiAlchemy)
+        public GetTransactionReceipt(
+            ILogger<GetTransactionReceipt> logger,
+            EthApi apiAlchemy)
         {
+            this.logger = logger;
             this.apiAlchemy = apiAlchemy;
         }
 

@@ -64,7 +64,6 @@ namespace ws_eth_findTokens
 
                 var timeEndStep2 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker step2 processed blocks: {block}", await dbContext.EthBlock.CountAsync());
                 _logger.LogInformation("Worker step2 running time: {time}", (timeEndStep2 - timeStartStep2).TotalSeconds);
 
                 await Task.Delay(30000, stoppingToken);

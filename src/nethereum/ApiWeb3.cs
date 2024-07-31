@@ -71,9 +71,20 @@ namespace nethereum
 
             functionABI.InputParameters = param.Params;
 
-            var decoded = functionABI.DecodeInputDataToDefault(input);
+            List<ParameterOutput> decoded = new();
 
-            if (decoded is null)
+            try
+            {
+                decoded = functionABI.DecodeInputDataToDefault(input);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("DecodeInputDataToDefault {input}", input);
+                logger.LogWarning("DecodeInputDataToDefault {mes}", ex.Message);
+            }
+
+            if (decoded is null ||
+                decoded.Count == 0)
             {
                 logger.LogWarning("DecodeAddLiquidityInput: decoded is null with function name: {function} and input {input}", function, input);
                 return res;
@@ -109,25 +120,20 @@ namespace nethereum
             for (int i = 0; i < str.Length; i++)
             {
                 var t = str[i].Trim().Split(" ");
-                Console.WriteLine(t);
-                try
-                {
-                    if (t[1].Contains("token", StringComparison.InvariantCultureIgnoreCase) &&
-                        t[0].Contains("address", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tokenIndex = i;
-                    }
+                logger.LogInformation("new Parameter values {t}", t);
 
-                }
-                catch (Exception ex)
+                if (t[1].Contains("token", StringComparison.InvariantCultureIgnoreCase) &&
+                    t[0].Contains("address", StringComparison.InvariantCultureIgnoreCase))
                 {
-
-                    throw;
+                    tokenIndex = i;
                 }
 
                 res.Add(new Parameter(t[0], t[1], i + 1));
 
             }
+
+
+
 
             return (functionName, tokenIndex, res.ToArray());
         }

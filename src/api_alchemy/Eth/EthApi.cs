@@ -1,5 +1,7 @@
 ﻿using api_alchemy.Eth.ResponseDTO;
 
+using Data.Models;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -8,6 +10,7 @@ using Shared.ConfigurationOptions;
 using System.Collections.Concurrent;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace api_alchemy.Eth
 {
@@ -54,6 +57,13 @@ namespace api_alchemy.Eth
         {
             ConcurrentBag<Response> res = new();
             var MaxDegreeOfParallelism = 4;
+            var batchSizeLocal = batchSize;
+
+            if (apiMethod.Method.Name.Equals("getAssetTransfers", StringComparison.InvariantCultureIgnoreCase))
+            {
+                batchSizeLocal = 1;
+            }
+
 
             if (diff > 0)
             {
@@ -62,7 +72,7 @@ namespace api_alchemy.Eth
                     items = items.Take(maxDiffToProcess).ToList();
                 }
 
-                var rangeChunks = items.Chunk(batchSize).ToList();
+                var rangeChunks = items.Chunk(batchSizeLocal).ToList();
                 var rangeForBatchesWithApiKey = new Dictionary<int, int>();
                 var apiKeyParallelIndex = 0;
 
@@ -325,6 +335,38 @@ namespace api_alchemy.Eth
                 if (t is not null)
                 {
                     res = t;
+                }
+            }
+
+            return res;
+        }
+
+        public async Task<List<getAssetTransfersDTO>> getAssetTransfers(
+            List<EthTrainData> EthTrainData,
+            int apiKeyIndex)
+        {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
+            var item = EthTrainData.First();    
+
+            List<getAssetTransfersDTO> res = new();
+            var data = EthUrlBuilder.alchemy_getAssetTransfers(
+                                item.from,
+                                item.blockNumber);
+
+            StringContent httpContent = new StringContent(
+                data,
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(apiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
+
+                if (t is not null)
+                {
+                    res.Add(t);
                 }
             }
 

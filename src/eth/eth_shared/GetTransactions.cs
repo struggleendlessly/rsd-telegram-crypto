@@ -15,10 +15,12 @@ namespace eth_shared
     public class GetTransactions
     {
         private readonly dbContext dbContext;
+        private readonly ILogger logger;
         public GetTransactions(
             ILogger<GetTransactions> logger,
             dbContext dbContext)
         {
+            this.logger = logger;
             this.dbContext = dbContext;
         }
 

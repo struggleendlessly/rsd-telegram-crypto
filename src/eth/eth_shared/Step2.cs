@@ -11,10 +11,11 @@ namespace eth_shared
     {
         private List<EthTrainData> ethTrainDatas = new();
 
+        private readonly ILogger logger;
         private readonly GetPair getPair;
         private readonly dbContext dbContext;
-        private readonly ILogger logger;
         private readonly EtherscanApi etherscanApi;
+        private readonly GetWalletAge getWalletAge;
         private readonly GetSourceCode getSourceCode;
 
         public Step2(
@@ -22,12 +23,14 @@ namespace eth_shared
             GetPair getPair,
             dbContext dbContext,
             EtherscanApi etherscanApi,
+            GetWalletAge getWalletAge,
             GetSourceCode getSourceCode
             )
         {
             this.logger = logger;
             this.getPair = getPair;
             this.dbContext = dbContext;
+            this.getWalletAge = getWalletAge;
             this.etherscanApi = etherscanApi;
             this.getSourceCode = getSourceCode;
         }
@@ -35,6 +38,7 @@ namespace eth_shared
         {
             await getSourceCode.Start();
             await getPair.Start();
+            await getWalletAge.Start();
         }
 
     }

@@ -68,8 +68,8 @@ namespace api_alchemy.Eth
             var res = JsonSerializer.Serialize(request);
 
             return res;
-        }    
-        
+        }
+
         public static string eth_call(
             string contractAddress,
             int id,
@@ -87,6 +87,34 @@ namespace api_alchemy.Eth
                 method = "eth_call",
                 _params = [paramDto],
                 id = id
+            };
+
+            var res = JsonSerializer.Serialize(request);
+
+            return res;
+        }
+
+        public static string alchemy_getAssetTransfers(
+            string fromAddress,
+            string blockNumber)
+        {
+            var paramDto = new getAssetTransfersDTO()
+            {
+                category = ["external"],
+                excludeZeroValue = true,
+                fromBlock = blockNumber,
+                maxCount = "0x1",
+                fromAddress = fromAddress,
+                withMetadata = true,
+                toBlock = "latest"
+            };
+
+            var request = new requestBaseDTO()
+            {
+                jsonrpc = "2.0",
+                method = "alchemy_getAssetTransfers",
+                _params = [paramDto],
+                id = 1
             };
 
             var res = JsonSerializer.Serialize(request);

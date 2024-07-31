@@ -66,7 +66,7 @@ namespace ws_eth_findTokens
 
                 _logger.LogInformation("Worker step2 running time: {time}", (timeEndStep2 - timeStartStep2).TotalSeconds);
 
-                await Task.Delay(30000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

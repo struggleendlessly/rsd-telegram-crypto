@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.ComponentModel;
 using System.Numerics;
 
 namespace Data.Models
@@ -12,6 +13,10 @@ namespace Data.Models
 
         // Custom fields
         public bool isCustomInputStart { get; set; } = false;
+        public DateTime walletCreated { get; set; }
+
+        [DefaultValue(-1)]
+        public int BalanceOnCreating { get; set; } = -1;
         public int blockNumberInt { get; set; } = 0;
         public string totalSupply { get; set; } = default!;
         public bool exploitsTS { get; set; } = false;

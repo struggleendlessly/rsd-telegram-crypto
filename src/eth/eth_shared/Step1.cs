@@ -76,6 +76,7 @@ namespace eth_shared
                 txnReceiptsFiltered,
                 tokenMetadataFiltered,
                 totalSupplyDTOFiltered);
+
         }
 
         public async Task End()

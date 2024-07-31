@@ -72,6 +72,7 @@ builder.Services.AddTransient<GetPair>();
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<GetBlocks>();
+builder.Services.AddTransient<GetWalletAge>();
 builder.Services.AddTransient<GetSourceCode>();
 builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();

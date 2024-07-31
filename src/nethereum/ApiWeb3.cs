@@ -120,7 +120,7 @@ namespace nethereum
             for (int i = 0; i < str.Length; i++)
             {
                 var t = str[i].Trim().Split(" ");
-                logger.LogInformation("new Parameter values {t}", t);
+                //logger.LogInformation("new Parameter values {t}", t);
 
                 if (t[1].Contains("token", StringComparison.InvariantCultureIgnoreCase) &&
                     t[0].Contains("address", StringComparison.InvariantCultureIgnoreCase))

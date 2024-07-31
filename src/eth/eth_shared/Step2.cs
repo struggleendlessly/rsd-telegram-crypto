@@ -4,7 +4,6 @@ using Data.Models;
 using etherscan;
 
 using Microsoft.Extensions.Logging;
-using nethereum;
 
 namespace eth_shared
 {

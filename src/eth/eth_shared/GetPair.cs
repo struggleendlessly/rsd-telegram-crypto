@@ -23,6 +23,7 @@ namespace eth_shared
         private readonly dbContext dbContext;
         private readonly EtherscanApi etherscanApi;
 
+        int lastEthBlockNumber = 0;
         public GetPair(
             ILogger<GetPair> logger,
             ApiWeb3 ApiWeb3,
@@ -40,6 +41,8 @@ namespace eth_shared
 
         public async Task Start()
         {
+            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+
             var openTradingStr = "openTrading";
             var addLiquidityStr = "addLiquidity";
 
@@ -88,6 +91,11 @@ namespace eth_shared
 
             foreach (var item in t)
             {
+                if (item.result is null)
+                {
+                    continue;
+                }
+
                 var token = tokensToProcess.Where(x => x.hashPair == item.result.transactionHash).FirstOrDefault();
 
                 foreach (var log in item.result.logs)
@@ -129,7 +137,11 @@ namespace eth_shared
             List<string> collection)
         {
             var res = 0;
-            var ethTrainDataToDelete = await dbContext.EthTrainData.Where(x => collection.Contains(x.contractAddress)).ToListAsync();
+            var ethTrainDataToDelete = await 
+                dbContext.
+                EthTrainData.
+                Where(x => collection.Contains(x.contractAddress) && (lastEthBlockNumber - x.blockNumberInt) > 20000).
+                ToListAsync();
 
             foreach (var item in ethTrainDataToDelete)
             {
@@ -230,8 +242,6 @@ namespace eth_shared
 
         public async Task<List<EthTrainData>> GetTokensToProcess()
         {
-            var lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
-
             var res = await
                 dbContext.
                 EthTrainData.

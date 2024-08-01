@@ -5,10 +5,7 @@ using Data;
 using Data.Models;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-
-using System.ComponentModel.DataAnnotations;
 
 namespace eth_shared
 {
@@ -38,11 +35,38 @@ namespace eth_shared
             var tokensToProcess = await GetTokensToProcess();
             var unverified = await Get(tokensToProcess);
             var verified = Validate(unverified);
-            var processed = await Process(tokensToProcess, verified);
-            var res = await SaveToDB(processed);
+
+            var ids = verified.Select(x => x.from).ToList();
+            var toUpdate = tokensToProcess.Where(x => ids.Contains(x.from)).ToList();
+
+            var processedUpdate = await ProcessUpdate(toUpdate, verified);
+
+            var updated = await SaveToDB_update(processedUpdate);
+
+            List<EthTrainData> toDelete = new();
+
+            foreach (var item in tokensToProcess)
+            {
+                if (!toUpdate.Any(x => x.contractAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    toDelete.Add(item);
+                }
+            }
+
+            var processedDelete = await ProcessDelete(toDelete, verified);
+            var deleted = await SaveToDB_delete(processedDelete);
         }
 
-        private async Task<int> SaveToDB(List<EthTrainData> ethTrainDatas)
+        private async Task<int> SaveToDB_delete(List<EthTrainData> ethTrainDatas)
+        {
+            var res = 0;
+
+            dbContext.EthTrainData.UpdateRange(ethTrainDatas);
+            res = await dbContext.SaveChangesAsync();
+
+            return res;
+        }
+        private async Task<int> SaveToDB_update(List<EthTrainData> ethTrainDatas)
         {
             var res = 0;
 
@@ -52,15 +76,28 @@ namespace eth_shared
             return res;
         }
 
-        public async Task<List<EthTrainData>> Process(
-            List<EthTrainData> ethTrainDatas,
+        public async Task<List<EthTrainData>> ProcessDelete(
+            List<EthTrainData> toUpdate,
             List<getAssetTransfersDTO.Transfer> getAssetTransfersDTOs
             )
         {
             List<EthTrainData> res = new();
 
-            var ids = ethTrainDatas.Select(x => x.hash).ToList();
-            var toUpdate = await dbContext.EthTrainData.Where(x => ids.Contains(x.hash)).ToListAsync();
+            foreach (var item in toUpdate)
+            {
+                item.walletCreated = item.walletCreated.AddDays(1);
+                res.Add(item);
+            }
+
+            return res;
+        }
+
+        public async Task<List<EthTrainData>> ProcessUpdate(
+            List<EthTrainData> toUpdate,
+            List<getAssetTransfersDTO.Transfer> getAssetTransfersDTOs
+            )
+        {
+            List<EthTrainData> res = new();
 
             foreach (var item in toUpdate)
             {
@@ -114,8 +151,8 @@ namespace eth_shared
             var res = await
                 dbContext.
                 EthTrainData.
-                Where(x => x.BalanceOnCreating == -1).
-                Take(100).
+                Where(x => x.walletCreated == default).
+                Take(30).
                 ToListAsync();
 
             return res;

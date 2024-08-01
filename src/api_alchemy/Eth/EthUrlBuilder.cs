@@ -123,5 +123,23 @@ namespace api_alchemy.Eth
 
             return res;
         }
+
+        public static string getBalance(
+            string fromAddress,
+            int id,
+            string blockNumber)
+        {
+            var request = new requestBaseDTO()
+            {
+                jsonrpc = "2.0",
+                method = "eth_getBalance",
+                _params = [$"{fromAddress}", $"{blockNumber}"],
+                id = id
+            };
+
+            var res = JsonSerializer.Serialize(request);
+
+            return res;
+        }
     }
 }

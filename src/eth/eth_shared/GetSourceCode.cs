@@ -11,8 +11,6 @@ using etherscan.ResponseDTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using nethereum;
-
 namespace eth_shared
 {
     public class GetSourceCode

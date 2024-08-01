@@ -295,6 +295,51 @@ namespace api_alchemy.Eth
             return res;
         }
 
+        public async Task<List<getBalance>> getBalance(
+            List<EthTrainData> EthTrainData,
+            int apiKeyIndex)
+        {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
+            List<getBalance> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in EthTrainData)
+            {
+                aa.Append(EthUrlBuilder.getBalance(
+                    item.from,
+                    item.Id,
+                    item.blockNumber));
+
+                if (EthTrainData.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(apiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<List<getBalance>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
+            }
+
+            return res;
+        }
+
         public async Task<List<getTotalSupplyDTO>> getTotalSupplyBatch(
             List<getTransactionReceiptDTO.Result> txnReceipts,
             int apiKeyIndex)
@@ -346,7 +391,7 @@ namespace api_alchemy.Eth
             int apiKeyIndex)
         {
             var apiKey = GetvAndApiKey(apiKeyIndex);
-            var item = EthTrainData.First();    
+            var item = EthTrainData.First();
 
             List<getAssetTransfersDTO> res = new();
             var data = EthUrlBuilder.alchemy_getAssetTransfers(

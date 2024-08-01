@@ -53,7 +53,7 @@ namespace eth_shared
                 }
             }
 
-            var processedDelete = await ProcessDelete(toDelete, verified);
+            var processedDelete = await ProcessDelete(toDelete);
             var deleted = await SaveToDB_delete(processedDelete);
         }
 
@@ -77,8 +77,7 @@ namespace eth_shared
         }
 
         public async Task<List<EthTrainData>> ProcessDelete(
-            List<EthTrainData> toUpdate,
-            List<getAssetTransfersDTO.Transfer> getAssetTransfersDTOs
+            List<EthTrainData> toUpdate
             )
         {
             List<EthTrainData> res = new();

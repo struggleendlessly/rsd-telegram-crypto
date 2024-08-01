@@ -76,6 +76,9 @@ namespace eth_shared
         {
             List<EthTrainData> res = new();
 
+            try
+            {
+
             foreach (var item in toUpdate)
             {
                 var t = getBalanceDTOs.Where(x => x.id == item.Id).FirstOrDefault();
@@ -93,6 +96,12 @@ namespace eth_shared
 
                     res.Add(item);
                 }
+            }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
 
             return res;

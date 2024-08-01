@@ -19,6 +19,8 @@ namespace eth_shared
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
         private readonly EtherscanApi etherscanApi;
+
+        int lastEthBlockNumber = 0;
         public GetSourceCode(
              EthApi apiAlchemy,
              dbContext dbContext,
@@ -34,6 +36,8 @@ namespace eth_shared
 
         public async Task Start()
         {
+            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+
             var tokensToProcess = await GetTokensToProcess();
             var unverified = await Get(tokensToProcess);
             var verified = Validate(unverified);
@@ -43,7 +47,6 @@ namespace eth_shared
 
             await SaveToDB_new(filtered);
             await SaveToDB_delete(toDelete);
-
         }
 
         public async Task<List<GetSourceCodeDTO>> Get(List<EthTrainData> tokensToProcess)
@@ -77,7 +80,7 @@ namespace eth_shared
         {
             var res = 0;
             var ids = collection.Select(x => x.contractAddress).ToList();
-            var ethTrainDataToDelete = await dbContext.EthTrainData.Where(x => ids.Contains(x.contractAddress)).ToListAsync();
+            var ethTrainDataToDelete = await dbContext.EthTrainData.Where(x => ids.Contains(x.contractAddress) && (lastEthBlockNumber - x.blockNumberInt) > 8000).ToListAsync();
 
             dbContext.EthTrainData.RemoveRange(ethTrainDataToDelete);
             res = await dbContext.SaveChangesAsync();

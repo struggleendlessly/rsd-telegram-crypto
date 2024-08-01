@@ -40,7 +40,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eth_shared", "src\eth\eth_s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nethereum", "src\nethereum\nethereum.csproj", "{9AE16E22-02DE-4B7E-AA51-31ED3B07AB82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "etherscan", "src\eth\etherscan\etherscan.csproj", "{4FF14FE1-9B63-48FC-9F15-61CF22616BEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "etherscan", "src\eth\etherscan\etherscan.csproj", "{4FF14FE1-9B63-48FC-9F15-61CF22616BEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "telegram", "src\eth\telegram\telegram.csproj", "{D847ADCB-1BCB-44AE-8C52-5340F65086EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,6 +106,10 @@ Global
 		{4FF14FE1-9B63-48FC-9F15-61CF22616BEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FF14FE1-9B63-48FC-9F15-61CF22616BEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FF14FE1-9B63-48FC-9F15-61CF22616BEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D847ADCB-1BCB-44AE-8C52-5340F65086EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D847ADCB-1BCB-44AE-8C52-5340F65086EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D847ADCB-1BCB-44AE-8C52-5340F65086EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D847ADCB-1BCB-44AE-8C52-5340F65086EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +118,7 @@ Global
 		{05CB0B71-E051-4FD5-8A9E-CA3336BEB4C9} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 		{4FF14FE1-9B63-48FC-9F15-61CF22616BEF} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
+		{D847ADCB-1BCB-44AE-8C52-5340F65086EC} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D54AC4D8-ED12-40CF-BD73-23C6CD5E0CF1}

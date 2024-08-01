@@ -28,5 +28,6 @@
     <ProjectReference Include="..\..\Shared\Shared.csproj" />
     <ProjectReference Include="..\etherscan\etherscan.csproj" />
     <ProjectReference Include="..\eth_shared\eth_shared.csproj" />
+    <ProjectReference Include="..\tlgrmApi\tlgrmApi.csproj" />
   </ItemGroup>
 </Project>

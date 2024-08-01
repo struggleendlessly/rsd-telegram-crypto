@@ -51,6 +51,7 @@ builder.Services.AddDbContext<dbContext>(options => options.UseSqlServer(connect
 
 builder.Services.Configure<OptionsAlchemy>(builder.Configuration.GetSection(OptionsAlchemy.SectionName));
 builder.Services.Configure<OptionsEtherscan>(builder.Configuration.GetSection(OptionsEtherscan.SectionName));
+builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(OptionsTelegram.SectionName));
 
 builder.Services.AddHttpClient("Api", client =>
 {
@@ -71,6 +72,7 @@ builder.Services.AddTransient<EtherscanApi>();
 builder.Services.AddTransient<GetPair>();
 builder.Services.AddTransient<EthApi>();
 builder.Services.AddTransient<ApiWeb3>();
+builder.Services.AddTransient<tlgrmApi.tlgrmApi>();
 builder.Services.AddTransient<GetBlocks>();
 builder.Services.AddTransient<GetWalletAge>();
 builder.Services.AddTransient<GetSourceCode>();

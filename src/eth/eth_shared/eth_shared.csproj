@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\nethereum\nethereum.csproj" />
     <ProjectReference Include="..\etherscan\etherscan.csproj" />
+    <ProjectReference Include="..\tlgrmApi\tlgrmApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

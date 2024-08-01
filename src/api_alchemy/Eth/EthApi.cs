@@ -80,7 +80,7 @@ namespace api_alchemy.Eth
                 {
                     rangeForBatchesWithApiKey.Add(i, apiKeyParallelIndex);
 
-                    if (apiKeyParallelIndex + 1 < MaxDegreeOfParallelism)
+                    if (apiKeyParallelIndex + 1 < 8)
                     {
                         apiKeyParallelIndex++;
                     }
@@ -329,6 +329,7 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
+                var t1 = await response.Content.ReadAsStringAsync();
                 var t = await response.Content.ReadFromJsonAsync<List<getBalance>>();
 
                 if (t is not null)

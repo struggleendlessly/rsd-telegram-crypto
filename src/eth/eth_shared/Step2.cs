@@ -5,6 +5,10 @@ using etherscan;
 
 using Microsoft.Extensions.Logging;
 
+using tlgrmApi;
+
+
+
 namespace eth_shared
 {
     public class Step2
@@ -14,6 +18,7 @@ namespace eth_shared
         private readonly ILogger logger;
         private readonly GetPair getPair;
         private readonly dbContext dbContext;
+        private readonly tlgrmApi.tlgrmApi tlgrmApi;
         private readonly EtherscanApi etherscanApi;
         private readonly GetWalletAge getWalletAge;
         private readonly GetSourceCode getSourceCode;
@@ -22,6 +27,7 @@ namespace eth_shared
         public Step2(
             ILogger<Step2> logger,
             GetPair getPair,
+            tlgrmApi.tlgrmApi tlgrmApi,
             dbContext dbContext,
             EtherscanApi etherscanApi,
             GetWalletAge getWalletAge,
@@ -36,13 +42,20 @@ namespace eth_shared
             this.etherscanApi = etherscanApi;
             this.getSourceCode = getSourceCode;
             this.getBalanceOnCreating = getBalanceOnCreating;
+            this.tlgrmApi = tlgrmApi;
         }
         public async Task Start()
         {
-            await getBalanceOnCreating.Start();
-            await getSourceCode.Start();
-            await getPair.Start();
-            await getWalletAge.Start();
+            //await getBalanceOnCreating.Start();
+            //await getSourceCode.Start();
+            //await getPair.Start();
+            //await getWalletAge.Start();
+
+            var notDefault = default(DateTime).AddDays(1);
+            var mes = dbContext.EthTrainData.Where(x => x.walletCreated > notDefault && x.BalanceOnCreating>=0).Take(2).ToList();
+            var ids = mes.Select(x => x.blockNumberInt).ToList();
+            var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
+            await tlgrmApi.SendPO(mes, blocks);
         }
 
     }

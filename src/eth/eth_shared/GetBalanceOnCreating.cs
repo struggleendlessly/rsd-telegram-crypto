@@ -142,8 +142,8 @@ namespace eth_shared
             {
                 input = input.PadLeft(18, '0');
             }
-
-            return input.Insert(input.Length - 18, ",");
+            var res = input.Insert(input.Length - 18, ",");
+            return res;
         }
 
         private List<getBalance> Validate(

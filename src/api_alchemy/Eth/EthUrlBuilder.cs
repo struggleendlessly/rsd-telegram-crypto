@@ -119,7 +119,7 @@ namespace api_alchemy.Eth
 
             var res = JsonSerializer.Serialize(request);
 
-            Thread.Sleep(500);
+            //Thread.Sleep(500);
 
             return res;
         }

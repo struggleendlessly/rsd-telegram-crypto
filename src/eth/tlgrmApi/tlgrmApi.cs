@@ -50,7 +50,7 @@ namespace tlgrmApi
 
                 val.walletAge = (-1).ToString();
 
-                if (block == null)
+                if (block is not null)
                 {
                     var age = dateTimeBlock - item.walletCreated;
                     val.walletAge = age.Days.ToString();
@@ -78,8 +78,8 @@ namespace tlgrmApi
                 $"" +
                 $"📌 [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
                 $"{isABI}`{val.contractAddress}` \n " +
-                $"😉`{val.totalSupply}` \n " +
-                $"[Deployer]({optionsTelegram.etherscanUrl}address/{val.from}) / {val.walletAge} / {val.balanceOnCreating}  \n" +
+                $"💰`{val.totalSupply}` \n " +
+                $"\U0001f9d1‍💻 [Deployer]({optionsTelegram.etherscanUrl}address/{val.from}) / {val.walletAge} / {val.balanceOnCreating}  \n" +
                 $"";
 
 

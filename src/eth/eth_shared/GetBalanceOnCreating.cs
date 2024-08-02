@@ -140,10 +140,19 @@ namespace eth_shared
         static string GetFirstThreeAfterComma(string input)
         {
             int commaIndex = input.IndexOf(',');
+
             if (commaIndex != -1 && commaIndex + 4 <= input.Length)
             {
-                return input.Substring(0, commaIndex + 4);
+                var res = input.Substring(0, commaIndex + 4);
+
+                if (res[0] == ',')
+                {
+                    res = "0" + res;
+                }
+
+                return res;
             }
+
             return input; // Return the original string if comma not found or not enough characters after comma
         }
 

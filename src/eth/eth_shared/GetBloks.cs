@@ -11,10 +11,6 @@ using Microsoft.Extensions.Logging;
 
 using nethereum;
 
-using Org.BouncyCastle.Crypto;
-
-using System.Linq;
-
 namespace eth_shared
 {
     public class GetBlocks
@@ -39,6 +35,7 @@ namespace eth_shared
             int lastBlockNumber,
             int lastProcessedBlock)
         {
+            //var unfiltered = await GetTransactionsFromBlockByNumber(19883020);
             var unfiltered = await Get(lastBlockNumber, lastProcessedBlock);
             validated = Validate(unfiltered);
             var res = Filter(validated);
@@ -132,7 +129,7 @@ namespace eth_shared
 
             var ids = res.Select(x => x.numberInt).ToList();
             var notDistinct = await dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToListAsync();
-            res = res.ExceptBy(notDistinct.Select(v=>v.numberInt), x => x.numberInt).ToList();
+            res = res.ExceptBy(notDistinct.Select(v => v.numberInt), x => x.numberInt).ToList();
 
             return res;
         }

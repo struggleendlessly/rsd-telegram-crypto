@@ -55,7 +55,6 @@ namespace eth_shared
             var lastBlockNumber = await apiAlchemy.lastBlockNumber();
             var lastProccessedBlock = await GetLastProccessedBlockNumber();
 
-            //var test = await GetTransactionsFromBlockByNumber(20350220);
             tokens = await getBlocks.Start(lastBlockNumber, lastProccessedBlock);
 
             await Middle();
@@ -85,19 +84,6 @@ namespace eth_shared
             await getBlocks.End();
         }
 
-        private async Task<getBlockByNumberDTO> GetTransactionsFromBlockByNumber(int block)
-        {
-            var res = await apiAlchemy.getBlockByNumber(block);
-
-            return res;
-        }
-
-        private async Task<List<getBlockByNumberDTO>> GetTransactionsFromBlockByNumberBatch(List<int> blocks)
-        {
-            var res = await apiAlchemy.getBlockByNumberBatch(blocks, 0);
-
-            return res;
-        }
 
         public async Task<int> GetLastProccessedBlockNumber()
         {

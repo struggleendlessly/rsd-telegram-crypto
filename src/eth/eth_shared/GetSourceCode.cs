@@ -82,7 +82,13 @@ namespace eth_shared
             var ids = collection.Select(x => x.contractAddress).ToList();
             var ethTrainDataToDelete = await dbContext.EthTrainData.Where(x => ids.Contains(x.contractAddress) && (lastEthBlockNumber - x.blockNumberInt) > 8000).ToListAsync();
 
-            dbContext.EthTrainData.RemoveRange(ethTrainDataToDelete);
+            foreach (var item in ethTrainDataToDelete)
+            {
+                item.ABI = "no";
+                item.SourceCode = "no";
+            }
+
+            dbContext.EthTrainData.UpdateRange(ethTrainDataToDelete);
             res = await dbContext.SaveChangesAsync();
 
             return res;
@@ -162,12 +168,12 @@ namespace eth_shared
         public async Task<List<EthTrainData>> GetTokensToProcess()
         {
             var lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
-            var diff = 8000;
 
             var res = await
                 dbContext.
                 EthTrainData.
-                Where(x => string.IsNullOrEmpty(x.ABI) && x.blockNumberInt < (lastEthBlockNumber - diff)).
+                //Where(x => x.contractAddress == "0x69420e3a3aa9e17dea102bb3a9b3b73dcddb9528").
+                Where(x => string.IsNullOrEmpty(x.ABI)).
                 Take(100).
                 ToListAsync();
 

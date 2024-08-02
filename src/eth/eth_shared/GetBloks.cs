@@ -35,7 +35,7 @@ namespace eth_shared
             int lastBlockNumber,
             int lastProcessedBlock)
         {
-            //var unfiltered = await GetTransactionsFromBlockByNumber(19883020);
+            //var unfiltered = await GetTransactionsFromBlockByNumber(19723619);
             var unfiltered = await Get(lastBlockNumber, lastProcessedBlock);
             validated = Validate(unfiltered);
             var res = Filter(validated);
@@ -51,6 +51,14 @@ namespace eth_shared
             return res;
         }
 
+        private async Task<List<getBlockByNumberDTO>> GetTransactionsFromBlockByNumber(int blockNumber)
+        {
+            List<getBlockByNumberDTO> res = new();
+            var t = await apiAlchemy.getBlockByNumber(blockNumber);
+            res.Add(t);
+
+            return res;
+        }
         private async Task<List<getBlockByNumberDTO>> Get(
             int lastBlockNumber,
             int lastProcessedBlock)

@@ -76,9 +76,8 @@ namespace tlgrmApi
                 if (block is not null)
                 {
                     var age = item.walletCreated - dateTimeBlock;
-                    var years = age.Days / 365;
-                    var daysLeft = age.Days % 365;
-                    val.walletAge = $"Y:{years} D:{daysLeft} M:{age.Minutes}";
+                    var ageStr = age.ToString(@"d\.hh\:mm");
+                    val.walletAge = ageStr;
                 }
 
                 string readableTotalSupply = Regex.Replace(item.totalSupply, @"(?<=\d)(?=(\d{3})+$)", "_");

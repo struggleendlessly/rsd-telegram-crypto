@@ -59,6 +59,10 @@ namespace eth_shared
             var ethTrainData =
                 dbContext.
                 EthTrainData.
+                //Where(
+                //    x => x.walletCreated > notDefault &&
+                //    x.BalanceOnCreating >= 0).
+                //Take(2).
                 Where(
                     x => x.walletCreated > notDefault &&
                     x.BalanceOnCreating >= 0 &&

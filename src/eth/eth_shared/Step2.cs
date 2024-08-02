@@ -59,7 +59,11 @@ namespace eth_shared
             var ethTrainData =
                 dbContext.
                 EthTrainData.
-                Where(x => x.walletCreated > notDefault && x.BalanceOnCreating >= 0 && x.tlgrmNewTokens == 0 && x.blockNumberInt > 20420936).
+                Where(
+                    x => x.walletCreated > notDefault &&
+                    x.BalanceOnCreating >= 0 &&
+                    x.tlgrmNewTokens == 0 &&
+                    x.blockNumberInt > 20420936).
                 ToList();
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();

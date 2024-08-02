@@ -24,7 +24,7 @@ namespace Data.Models
         public string pairAddressFunctionName { get; set; } = string.Empty;
 
         // Telegram
-        public string tlgrmNewTokens { get; set; } = string.Empty;
+        public int tlgrmNewTokens { get; set; } = 0;
 
         // TokenMetadata
         public int decimals { get; set; } = default!;

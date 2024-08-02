@@ -2,14 +2,16 @@
 {
     public class P0_DTO
     {
-        public string name { get; set; }
-        public string symbol { get; set; }
-        public string contractAddress { get; set; }
-        public string from { get; set; }
-        public string totalSupply { get; set; }
-        public string walletAge { get; set; }
-        public string balanceOnCreating { get; set; }
-        public string threadId { get; set; }
-        public string ABI { get; set; }
+        public int tlgrmMsgId { get; set; } = 0;
+        public string name { get; set; } = string.Empty;
+        public string symbol { get; set; } = string.Empty;
+        public string contractAddress { get; set; } = string.Empty;
+        public string from { get; set; } = string.Empty;
+        public string totalSupply { get; set; } = string.Empty;
+        public string walletAge { get; set; } = string.Empty;
+        public string balanceOnCreating { get; set; } = string.Empty;
+        public string threadId { get; set; } = string.Empty;
+        public string ABI { get; set; } = string.Empty;
+        public string messageText { get; set; } = string.Empty;
     }
 }

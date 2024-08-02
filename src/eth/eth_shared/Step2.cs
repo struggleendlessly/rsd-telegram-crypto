@@ -46,17 +46,38 @@ namespace eth_shared
         }
         public async Task Start()
         {
-            //await getBalanceOnCreating.Start();
-            //await getSourceCode.Start();
-            //await getPair.Start();
-            //await getWalletAge.Start();
-
-            var notDefault = default(DateTime).AddDays(1);
-            var mes = dbContext.EthTrainData.Where(x => x.walletCreated > notDefault && x.BalanceOnCreating>=0).Take(2).ToList();
-            var ids = mes.Select(x => x.blockNumberInt).ToList();
-            var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
-            await tlgrmApi.SendPO(mes, blocks);
+            await getBalanceOnCreating.Start();
+            await getSourceCode.Start();
+            await getPair.Start();
+            await getWalletAge.Start();
+            await SendTlgrmMessage();
         }
 
+        public async Task SendTlgrmMessage()
+        {
+            var notDefault = default(DateTime).AddDays(1);
+            var ethTrainData =
+                dbContext.
+                EthTrainData.
+                Where(x => x.walletCreated > notDefault && x.BalanceOnCreating >= 0 && x.tlgrmNewTokens != 0 && x.blockNumberInt > 20432000).
+                ToList();
+
+            var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
+            var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
+
+            var t = await tlgrmApi.SendPO(ethTrainData, blocks);
+
+            foreach (var item in ethTrainData)
+            {
+                var resp = t.FirstOrDefault(x => x.contractAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase));
+
+                if (resp is not null)
+                {
+                    item.tlgrmNewTokens = resp.tlgrmMsgId;
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

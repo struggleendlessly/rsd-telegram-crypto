@@ -6,11 +6,8 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 using Shared.Telegram.Models;
 
-using System;
-using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
+using System.Text.RegularExpressions;
 
 using tlgrmApi.Models;
 
@@ -35,14 +32,40 @@ namespace tlgrmApi
             this.httpClient.BaseAddress = new Uri(optionsTelegram.UrlBase);
         }
 
-        public async Task<int> SendPO(
+        public async Task<int> SendSequest(
+            string threadId,
+            string text)
+        {
+            var res = 0;
+
+            string urlString = $"bot{optionsTelegram.bot_hash}/" +
+                $"sendMessage?" +
+                $"message_thread_id={threadId}&" +
+                $"chat_id={optionsTelegram.chat_id_coins}&" +
+                $"text={text}&" +
+                $"parse_mode=MarkDown&" +
+                $"disable_web_page_preview=true";
+
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
+            var response = await httpClient.GetFromJsonAsync<MessageSend>(urlString);
+            res = response.result.message_id;
+
+            await Task.Delay(optionsTelegram.api_delay_forech);
+
+            return res;
+        }
+
+        public async Task<List<P0_DTO>> SendPO(
             List<EthTrainData> ethTrainDatas,
             List<EthBlocks> ethBlocks)
         {
-            P0_DTO val = new();
+            List<P0_DTO> collection = new();
+            var threadId = optionsTelegram.message_thread_id_p0;
 
             foreach (var item in ethTrainDatas)
             {
+                P0_DTO val = new();
+
                 var block = ethBlocks.FirstOrDefault(x => x.numberInt == item.blockNumberInt);
                 int intUnix = Convert.ToInt32(block.timestamp, 16);
                 DateTime dateTimeBlock = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
@@ -52,61 +75,49 @@ namespace tlgrmApi
 
                 if (block is not null)
                 {
-                    var age = dateTimeBlock - item.walletCreated;
-                    val.walletAge = age.Days.ToString();
+                    var age = item.walletCreated - dateTimeBlock;
+                    var years = age.Days / 365;
+                    var daysLeft = age.Days % 365;
+                    val.walletAge = $"Y:{years} D:{daysLeft} M:{age.Minutes}";
                 }
 
+                string readableTotalSupply = Regex.Replace(item.totalSupply, @"(?<=\d)(?=(\d{3})+$)", "_");
+
                 val.from = item.from;
-                val.totalSupply = item.totalSupply;
+                val.totalSupply = readableTotalSupply;
                 val.ABI = item.ABI;
                 val.contractAddress = item.contractAddress;
                 val.balanceOnCreating = item.BalanceOnCreating.ToString();
                 val.name = item.name;
                 val.symbol = item.symbol;
+
+                var res = 0;
+                var isABI = "❤";
+                if (!string.IsNullOrEmpty(val.ABI))
+                {
+                    isABI = "💚";
+                }
+
+                var text =
+                    $"" +
+                    $"📌 [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
+                    $"{isABI}`{val.contractAddress}` \n " +
+                    $"💰`{val.totalSupply}` \n " +
+                    $"\U0001f9d1‍💻 [{val.walletAge} / {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
+                    $"";
+
+                val.messageText = text;
+
+                collection.Add(val);
             }
 
-
-            var res = 0;
-            var threadId = optionsTelegram.message_thread_id_p0;
-            var isABI = "❤";
-            if (!string.IsNullOrEmpty(val.ABI))
+            foreach (var item in collection)
             {
-                isABI = "💚";
+                var t = await SendSequest(threadId, item.messageText);
+                item.tlgrmMsgId = t;
             }
 
-            var text =
-                $"" +
-                $"📌 [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
-                $"{isABI}`{val.contractAddress}` \n " +
-                $"💰`{val.totalSupply}` \n " +
-                $"\U0001f9d1‍💻 [Deployer]({optionsTelegram.etherscanUrl}address/{val.from}) / {val.walletAge} / {val.balanceOnCreating}  \n" +
-                $"";
-
-
-            string urlString = $"bot{optionsTelegram.bot_hash}/" +
-            $"sendMessage?" +
-                $"message_thread_id={threadId}&" +
-                $"chat_id={optionsTelegram.chat_id_coins}&" +
-                $"text={text}&" +
-                $"parse_mode=MarkDown&" +
-                $"disable_web_page_preview=true";
-            try
-            {
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-                var response = await httpClient.GetFromJsonAsync<MessageSend>(urlString);
-
-
-                await Task.Delay(optionsTelegram.api_delay_forech);
-            }
-            catch (Exception t)
-            {
-
-                throw;
-            }
-
-
-
-            return res;
+            return collection;
         }
     }
 }

@@ -151,7 +151,7 @@ namespace eth_shared
                 dbContext.
                 EthTrainData.
                 Where(x => x.walletCreated == default).
-                Take(16).
+                Take(24).
                 ToListAsync();
 
             return res;

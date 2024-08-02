@@ -108,11 +108,6 @@ namespace etherscan
                             ee = await response.Content.ReadAsStringAsync();
                             var t = await response.Content.ReadFromJsonAsync<GetNormalTxnDTO>();
 
-                            if (t.result.Count() >= 999)
-                            {
-
-                            }
-
                             if (t is not null &&
                                 t.result is not null)
                             {

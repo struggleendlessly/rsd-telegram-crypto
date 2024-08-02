@@ -19,6 +19,9 @@ namespace eth_shared
         private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
+
+        CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+        string decimalCeparator = ",";
         public GetBalanceOnCreating(
              EthApi apiAlchemy,
              dbContext dbContext,
@@ -28,6 +31,8 @@ namespace eth_shared
             this.logger = logger;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
+
+            decimalCeparator = currentCulture.NumberFormat.NumberDecimalSeparator;
         }
 
         public async Task Start()
@@ -87,14 +92,14 @@ namespace eth_shared
                     if (t is not null)
                     {
                         BigInteger balanceBI = 0;
-                       
+
                         balanceBI = new HexBigInteger(t.result).Value;
                         var balanceStrFull = FormatString(balanceBI.ToString());
                         var balanceStrShort = GetFirstThreeAfterComma(balanceStrFull);
-                        var balanceStrShortLLL = Convert.ToString(balanceStrShort, CultureInfo.InvariantCulture);
+
                         var balance = 0.0;
 
-                        balance = double.Parse(balanceStrShort);
+                        balance = double.Parse(balanceStrShort, NumberStyles.Any, currentCulture);
 
                         item.BalanceOnCreating = balance;
 
@@ -130,11 +135,8 @@ namespace eth_shared
             return res;
         }
 
-        static string GetFirstThreeAfterComma(string input)
+        private string GetFirstThreeAfterComma(string input)
         {
-            CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
-            var decimalCeparator = currentCulture.NumberFormat.NumberDecimalSeparator;
-
             int commaIndex = input.IndexOf(decimalCeparator);
 
             if (commaIndex != -1 && commaIndex + 4 <= input.Length)
@@ -147,16 +149,14 @@ namespace eth_shared
             return input; // Return the original string if comma not found or not enough characters after comma
         }
 
-        static string FormatString(string input)
+        private string FormatString(string input)
         {
-            CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
-            var decimalCeparator = currentCulture.NumberFormat.NumberDecimalSeparator;
-
             if (input.Length < 18)
             {
                 input = input.PadLeft(18, '0');
             }
             var res = input.Insert(input.Length - 18, decimalCeparator);
+
             return res;
         }
 

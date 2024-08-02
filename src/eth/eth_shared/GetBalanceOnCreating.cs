@@ -87,19 +87,12 @@ namespace eth_shared
                     if (t is not null)
                     {
                         BigInteger balanceBI = 0;
-
+                       
                         balanceBI = new HexBigInteger(t.result).Value;
                         var balanceStrFull = FormatString(balanceBI.ToString());
                         var balanceStrShort = GetFirstThreeAfterComma(balanceStrFull);
                         var balanceStrShortLLL = Convert.ToString(balanceStrShort, CultureInfo.InvariantCulture);
                         var balance = 0.0;
-
-                        if (!double.TryParse(balanceStrShortLLL, out balance))
-                        {
-                            CultureInfo info = new CultureInfo("en-GB");
-                            info.NumberFormat.NumberDecimalSeparator = ",";
-                            double.TryParse(balanceStrShortLLL, NumberStyles.Any, info, out balance);
-                        }
 
                         balance = double.Parse(balanceStrShort);
 
@@ -139,16 +132,14 @@ namespace eth_shared
 
         static string GetFirstThreeAfterComma(string input)
         {
-            int commaIndex = input.IndexOf(',');
+            CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+            var decimalCeparator = currentCulture.NumberFormat.NumberDecimalSeparator;
+
+            int commaIndex = input.IndexOf(decimalCeparator);
 
             if (commaIndex != -1 && commaIndex + 4 <= input.Length)
             {
                 var res = input.Substring(0, commaIndex + 4);
-
-                if (res[0] == ',')
-                {
-                    res = "0" + res;
-                }
 
                 return res;
             }
@@ -158,11 +149,14 @@ namespace eth_shared
 
         static string FormatString(string input)
         {
+            CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+            var decimalCeparator = currentCulture.NumberFormat.NumberDecimalSeparator;
+
             if (input.Length < 18)
             {
                 input = input.PadLeft(18, '0');
             }
-            var res = input.Insert(input.Length - 18, ",");
+            var res = input.Insert(input.Length - 18, decimalCeparator);
             return res;
         }
 

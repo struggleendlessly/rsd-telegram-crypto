@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using Nethereum.Hex.HexTypes;
 
+using System.Globalization;
 using System.Numerics;
 
 namespace eth_shared
@@ -79,24 +80,34 @@ namespace eth_shared
             try
             {
 
-            foreach (var item in toUpdate)
-            {
-                var t = getBalanceDTOs.Where(x => x.id == item.Id).FirstOrDefault();
-
-                if (t is not null)
+                foreach (var item in toUpdate)
                 {
-                    BigInteger balanceBI = 0;
+                    var t = getBalanceDTOs.Where(x => x.id == item.Id).FirstOrDefault();
 
-                    balanceBI = new HexBigInteger(t.result).Value;
-                    var balanceStrFull = FormatString(balanceBI.ToString());
-                    var balanceStrShort = GetFirstThreeAfterComma(balanceStrFull);
-                    var balance = double.Parse(balanceStrShort);
+                    if (t is not null)
+                    {
+                        BigInteger balanceBI = 0;
 
-                    item.BalanceOnCreating = balance;
+                        balanceBI = new HexBigInteger(t.result).Value;
+                        var balanceStrFull = FormatString(balanceBI.ToString());
+                        var balanceStrShort = GetFirstThreeAfterComma(balanceStrFull);
+                        var balanceStrShortLLL = Convert.ToString(balanceStrShort, CultureInfo.InvariantCulture);
+                        var balance = 0.0;
 
-                    res.Add(item);
+                        if (!double.TryParse(balanceStrShortLLL, out balance))
+                        {
+                            CultureInfo info = new CultureInfo("en-GB");
+                            info.NumberFormat.NumberDecimalSeparator = ",";
+                            double.TryParse(balanceStrShortLLL, NumberStyles.Any, info, out balance);
+                        }
+
+                        balance = double.Parse(balanceStrShort);
+
+                        item.BalanceOnCreating = balance;
+
+                        res.Add(item);
+                    }
                 }
-            }
             }
             catch (Exception ex)
             {

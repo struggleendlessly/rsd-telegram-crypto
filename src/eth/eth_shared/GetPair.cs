@@ -246,7 +246,7 @@ namespace eth_shared
                 dbContext.
                 EthTrainData.
                 Where(x => string.IsNullOrEmpty(x.pairAddress)).
-                Take(100).
+                Take(1000).
                 ToListAsync();
 
             return res;

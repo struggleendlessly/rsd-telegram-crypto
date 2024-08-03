@@ -174,7 +174,7 @@ namespace eth_shared
                 EthTrainData.
                 //Where(x => x.contractAddress == "0x69420e3a3aa9e17dea102bb3a9b3b73dcddb9528").
                 Where(x => string.IsNullOrEmpty(x.ABI)).
-                Take(100).
+                Take(1000).
                 ToListAsync();
 
             return res;

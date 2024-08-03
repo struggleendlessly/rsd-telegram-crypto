@@ -23,6 +23,6 @@
   FROM [crypta].[dbo].[EthTrainData]
   where blockNumberInt > 20420936 
   and tlgrmNewTokens = 0
-  and BalanceOnCreating > 0
+  and BalanceOnCreating > -1
   and walletCreated <> '0001-01-01 00:00:00.0000000'
   and walletCreated <> '0001-01-02 00:00:00.0000000'

@@ -14,6 +14,10 @@
   FROM [crypta].[dbo].[EthTrainData]
   where ABI is null
 
+  SELECT count(*) as ABIisNO
+  FROM [crypta].[dbo].[EthTrainData]
+  where ABI = 'no'
+
   SELECT count(*) as walletCreated
   FROM [crypta].[dbo].[EthTrainData]
   where walletCreated = '0001-01-01 00:00:00.0000000'

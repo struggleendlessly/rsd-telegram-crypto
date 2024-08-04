@@ -65,6 +65,7 @@ namespace eth_shared
                 //Take(2).
                 Where(
                     x => x.walletCreated > notDefault &&
+                    x.ABI != "no" &&
                     x.BalanceOnCreating >= 0 &&
                     x.tlgrmNewTokens == 0 &&
                     x.blockNumberInt > 20420936).

@@ -118,7 +118,7 @@ namespace eth_shared
 
                 if (resp is not null)
                 {
-                    item.tlgrmNewTokens = resp.tlgrmMsgId;
+                    item.tlgrmLivePairs = resp.tlgrmMsgId;
                 }
             }
 

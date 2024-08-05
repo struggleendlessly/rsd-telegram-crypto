@@ -25,6 +25,8 @@ namespace Data.Models
 
         // Telegram
         public int tlgrmNewTokens { get; set; } = 0;
+        public int tlgrmLivePairs { get; set; } = 0;
+        public int tlgrmVolume { get; set; } = 0;
 
         // TokenMetadata
         public int decimals { get; set; } = default!;

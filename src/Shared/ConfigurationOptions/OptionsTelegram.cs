@@ -17,5 +17,6 @@
         public string message_thread_id_p10 { get; set; } = "";
         public string message_thread_id_p20 { get; set; } = "";
         public string etherscanUrl { get; set; } = "";
+        public string dextoolsUrl { get; set; } = "";
     }
 }

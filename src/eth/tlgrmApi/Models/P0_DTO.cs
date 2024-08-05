@@ -6,6 +6,7 @@
         public string name { get; set; } = string.Empty;
         public string symbol { get; set; } = string.Empty;
         public string contractAddress { get; set; } = string.Empty;
+        public string pairAddress { get; set; } = string.Empty;
         public string from { get; set; } = string.Empty;
         public string totalSupply { get; set; } = string.Empty;
         public string walletAge { get; set; } = string.Empty;

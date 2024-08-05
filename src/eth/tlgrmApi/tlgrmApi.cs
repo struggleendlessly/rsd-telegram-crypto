@@ -77,6 +77,12 @@ namespace tlgrmApi
                 if (block is not null)
                 {
                     var ageStr = age.ToString(@"d\.hh\:mm");
+
+                    if (age.Days < 0)
+                    {
+                        ageStr = "-1";
+                    }
+
                     val.walletAge = ageStr;
                 }
 
@@ -196,7 +202,7 @@ namespace tlgrmApi
                 {
                     walletIcon = "🔴";
                 }
-                
+
                 if (item.BalanceOnCreating > 1)
                 {
                     balanceIcon = "\t\U0001f7e0";
@@ -205,7 +211,7 @@ namespace tlgrmApi
                 if (item.BalanceOnCreating > 10)
                 {
                     balanceIcon = "🔴";
-                }  
+                }
 
                 var text =
                     $"" +

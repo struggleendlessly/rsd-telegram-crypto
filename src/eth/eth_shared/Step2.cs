@@ -60,16 +60,17 @@ namespace eth_shared
             var ethTrainData =
                 dbContext.
                 EthTrainData.
+                Where(x=>x.contractAddress == "0x3f4e95bf39bc676c4f7eaccd4d2d353fa2891190").
                 //Where(
                 //    x => x.walletCreated > notDefault &&
                 //    x.BalanceOnCreating >= 0).
                 //Take(2).
-                Where(
-                    x => x.walletCreated > notDefault &&
-                    x.ABI != "no" &&
-                    x.BalanceOnCreating >= 0 &&
-                    x.tlgrmNewTokens == 0 &&
-                    x.blockNumberInt > 20420936).
+                //Where(
+                //    x => x.walletCreated > notDefault &&
+                //    x.ABI != "no" &&
+                //    x.BalanceOnCreating >= 0 &&
+                //    x.tlgrmNewTokens == 0 &&
+                //    x.blockNumberInt > 20420936).
                 ToList();
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();

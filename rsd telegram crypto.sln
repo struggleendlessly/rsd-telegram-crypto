@@ -44,6 +44,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "etherscan", "src\eth\ethers
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tlgrmApi", "src\eth\tlgrmApi\tlgrmApi.csproj", "{45340CF2-26A2-4AE3-9FB4-0988CC171AD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api_tokenSniffer", "src\api_tokenSniffer\api_tokenSniffer.csproj", "{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{45340CF2-26A2-4AE3-9FB4-0988CC171AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45340CF2-26A2-4AE3-9FB4-0988CC171AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45340CF2-26A2-4AE3-9FB4-0988CC171AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

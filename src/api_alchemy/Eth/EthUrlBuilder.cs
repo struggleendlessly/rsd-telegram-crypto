@@ -3,6 +3,8 @@ using api_alchemy.Eth.RequestDTO.Params;
 
 using System.Text.Json;
 
+using TL.Methods;
+
 namespace api_alchemy.Eth
 {
     public static class EthUrlBuilder
@@ -135,6 +137,33 @@ namespace api_alchemy.Eth
                 method = "eth_getBalance",
                 _params = [$"{fromAddress}", $"{blockNumber}"],
                 id = id
+            };
+
+            var res = JsonSerializer.Serialize(request);
+
+            return res;
+        }
+        public static string getSwapLogs(
+            string pairAddress,
+            string topic,
+            string blockNumberStart,
+            string blockNumberEnd)
+        {
+            var paramDto = new getSwapDTO()
+            {
+                topics = [topic],
+                address = [pairAddress],
+                fromBlock = blockNumberStart,
+                toBlock = blockNumberEnd
+            };
+
+
+            var request = new requestBaseDTO()
+            {
+                jsonrpc = "2.0",
+                method = "eth_getBalance",
+                _params = [paramDto],
+                id = 1
             };
 
             var res = JsonSerializer.Serialize(request);

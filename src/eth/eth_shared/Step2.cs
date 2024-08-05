@@ -46,11 +46,11 @@ namespace eth_shared
         }
         public async Task Start()
         {
-            //await getBalanceOnCreating.Start();
-            //await getSourceCode.Start();
-            //await getPair.Start();
-            //await getWalletAge.Start();
-            //await SendTlgrmMessageP0();
+            await getBalanceOnCreating.Start();
+            await getSourceCode.Start();
+            await getPair.Start();
+            await getWalletAge.Start();
+            await SendTlgrmMessageP0();
             await SendTlgrmMessageP10();
         }
 

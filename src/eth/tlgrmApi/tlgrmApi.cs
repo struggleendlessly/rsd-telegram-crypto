@@ -181,16 +181,16 @@ namespace tlgrmApi
                 {
                     walletIcon = "🔴";
                 }
-
-                if (item.BalanceOnCreating > 10)
-                {
-                    balanceIcon = "🔴";
-                }  
                 
                 if (item.BalanceOnCreating > 1)
                 {
                     balanceIcon = "\t\U0001f7e0";
                 }
+
+                if (item.BalanceOnCreating > 10)
+                {
+                    balanceIcon = "🔴";
+                }  
 
                 var text =
                     $"" +

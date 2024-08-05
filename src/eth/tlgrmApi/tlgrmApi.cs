@@ -92,17 +92,27 @@ namespace tlgrmApi
 
                 var res = 0;
                 var ABIICon = "❤";
-                var walletIcon = "\U0001f9d1‍💻";
-                var balanceIcon = "⚪";
+                var walletIcon = "\U0001f9d1‍💻"; // man
+                var balanceIcon = "⚪"; // grey
 
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
                     ABIICon = "💚";
                 }
 
-                if (age.TotalDays > 0)
+                if (age.Hours > 1)
                 {
-                    walletIcon = "🔴";
+                    walletIcon = "\t\U0001f7e0"; // orange
+                }
+
+                if (age.Days > 0)
+                {
+                    walletIcon = "🔴"; // red
+                }
+
+                if (item.BalanceOnCreating > 1)
+                {
+                    balanceIcon = "\t\U0001f7e0";
                 }
 
                 if (item.BalanceOnCreating > 10)
@@ -175,6 +185,11 @@ namespace tlgrmApi
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
                     ABIICon = "💚";
+                }
+
+                if (age.Hours > 1)
+                {
+                    walletIcon = "\t\U0001f7e0";
                 }
 
                 if (age.Days > 0)

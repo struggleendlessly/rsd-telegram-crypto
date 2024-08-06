@@ -98,7 +98,7 @@ namespace tlgrmApi
 
                 var res = 0;
                 var ABIICon = "❤";
-                var walletIcon = "\U0001f9d1‍💻"; // man
+                var walletIcon = "⚪"; // man
                 var balanceIcon = "⚪"; // grey
 
                 if (!string.IsNullOrEmpty(val.ABI))
@@ -185,7 +185,7 @@ namespace tlgrmApi
 
                 var res = 0;
                 var ABIICon = "❤";
-                var walletIcon = "\U0001f9d1‍💻";
+                var walletIcon = "⚪";
                 var balanceIcon = "⚪";
 
                 if (!string.IsNullOrEmpty(val.ABI))

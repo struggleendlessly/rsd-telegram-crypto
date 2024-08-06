@@ -196,7 +196,7 @@ namespace api_alchemy.Eth
 
             var response = await httpClient.PostAsync(apiKey, httpContent);
 
-            if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode) 
             {
                 var t = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
 

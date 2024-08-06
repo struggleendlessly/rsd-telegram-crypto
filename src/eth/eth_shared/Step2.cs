@@ -16,6 +16,7 @@ namespace eth_shared
         private List<EthTrainData> ethTrainDatas = new();
 
         private readonly ILogger logger;
+        private readonly IsDead isDead;
         private readonly GetPair getPair;
         private readonly dbContext dbContext;
         private readonly tlgrmApi.tlgrmApi tlgrmApi;
@@ -26,16 +27,18 @@ namespace eth_shared
 
         public Step2(
             ILogger<Step2> logger,
+            IsDead isDead,
             GetPair getPair,
-            tlgrmApi.tlgrmApi tlgrmApi,
             dbContext dbContext,
             EtherscanApi etherscanApi,
             GetWalletAge getWalletAge,
+            tlgrmApi.tlgrmApi tlgrmApi,
             GetSourceCode getSourceCode,
             GetBalanceOnCreating getBalanceOnCreating
             )
         {
             this.logger = logger;
+            this.isDead = isDead;
             this.getPair = getPair;
             this.dbContext = dbContext;
             this.getWalletAge = getWalletAge;
@@ -46,6 +49,7 @@ namespace eth_shared
         }
         public async Task Start()
         {
+            await isDead.Start();
             await getBalanceOnCreating.Start();
             await getSourceCode.Start();
             await getPair.Start();
@@ -60,17 +64,18 @@ namespace eth_shared
             var ethTrainData =
                 dbContext.
                 EthTrainData.
-                Where(x=>x.contractAddress == "0x3f4e95bf39bc676c4f7eaccd4d2d353fa2891190").
+                //Where(x=>x.contractAddress == "0x3f4e95bf39bc676c4f7eaccd4d2d353fa2891190").
                 //Where(
                 //    x => x.walletCreated > notDefault &&
                 //    x.BalanceOnCreating >= 0).
                 //Take(2).
-                //Where(
-                //    x => x.walletCreated > notDefault &&
-                //    x.ABI != "no" &&
-                //    x.BalanceOnCreating >= 0 &&
-                //    x.tlgrmNewTokens == 0 &&
-                //    x.blockNumberInt > 20420936).
+                Where(
+                    x => x.walletCreated > notDefault &&
+                    x.ABI != "no" &&
+                    x.BalanceOnCreating >= 0 &&
+                    x.tlgrmNewTokens == 0 &&
+                    x.isDead == false &&
+                    x.blockNumberInt > 20420936).
                 ToList();
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
@@ -105,6 +110,7 @@ namespace eth_shared
                     x =>
                     x.pairAddress != "" &&
                     x.tlgrmLivePairs == 0 &&
+                    x.isDead == false &&
                     x.blockNumberInt > 20456589).
                 ToList();
 

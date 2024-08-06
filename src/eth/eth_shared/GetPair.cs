@@ -166,7 +166,7 @@ namespace eth_shared
                 if (item.input is not null &&
                     item.functionName is not null)
                 {
-                    var tokenAddress = ApiWeb3.DecodeAddLiquidityInput(item.functionName, item.input);
+                    var tokenAddress = ApiWeb3.DecodeLiquidityInput(item.functionName, item.input);
 
                     if (!string.IsNullOrEmpty(tokenAddress))
                     {

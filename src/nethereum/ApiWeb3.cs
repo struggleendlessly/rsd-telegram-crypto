@@ -77,7 +77,7 @@ namespace nethereum
             return totalSupply;
         }
 
-        public string DecodeAddLiquidityInput(string function, string input)
+        public string DecodeLiquidityInput(string function, string input)
         {
             var res = string.Empty;
 

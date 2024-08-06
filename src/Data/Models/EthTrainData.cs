@@ -22,8 +22,9 @@ namespace Data.Models
         public bool exploitsTS { get; set; } = false;
         public string pairAddress { get; set; } = string.Empty;
         public string pairAddressFunctionName { get; set; } = string.Empty;
-        //public bool isDead { get; set; } = false;
-        //public int DeadBlockNumber { get; set; } = 0;
+        public bool isDead { get; set; } = false;
+        public int isDeadInt { get; set; }
+        public int DeadBlockNumber { get; set; } = 0;
 
         // Telegram
         public int tlgrmNewTokens { get; set; } = 0;

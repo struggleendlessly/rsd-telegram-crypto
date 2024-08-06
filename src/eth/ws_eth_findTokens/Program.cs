@@ -71,6 +71,7 @@ builder.Services.AddHttpClient("Api", client =>
 builder.Services.AddTransient<EtherscanApi>();
 builder.Services.AddTransient<GetPair>();
 builder.Services.AddTransient<EthApi>();
+builder.Services.AddTransient<IsDead>();
 builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<tlgrmApi.tlgrmApi>();
 builder.Services.AddTransient<GetBlocks>();

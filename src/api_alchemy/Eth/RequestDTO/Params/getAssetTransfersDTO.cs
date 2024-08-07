@@ -4,7 +4,7 @@
     {
         public string fromBlock { get; set; } = string.Empty;
         public string toBlock { get; set; } = string.Empty;
-        public string fromAddress { get; set; } = string.Empty;
+        public string toAddress { get; set; } = string.Empty;
         public string[] category { get; set; } = [];
         public bool withMetadata { get; set; }
         public bool excludeZeroValue { get; set; }

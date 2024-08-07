@@ -26,6 +26,8 @@ namespace Data.Models
         public int isDeadInt { get; set; }
         public int DeadBlockNumber { get; set; } = 0;
 
+        public virtual List<EthSwapEvents> EthSwapEvents { get; set; } = new();
+
         // Telegram
         public int tlgrmNewTokens { get; set; } = 0;
         public int tlgrmLivePairs { get; set; } = 0;

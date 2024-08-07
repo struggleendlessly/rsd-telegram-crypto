@@ -104,11 +104,11 @@ namespace api_alchemy.Eth
             {
                 category = ["external"],
                 excludeZeroValue = true,
-                fromBlock = blockNumber,
+                toBlock = blockNumber,
                 maxCount = "0x1",
-                fromAddress = fromAddress,
+                toAddress = fromAddress,
                 withMetadata = true,
-                toBlock = "latest"
+                fromBlock = "0x0"
             };
 
             var request = new requestBaseDTO()

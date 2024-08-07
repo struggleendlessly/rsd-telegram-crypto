@@ -36,7 +36,7 @@ namespace eth_shared
             var unverified = await Get(tokensToProcess);
             var verified = Validate(unverified);
 
-            var ids = verified.Select(x => x.from).ToList();
+            var ids = verified.Select(x => x.to).ToList();
             var toUpdate = tokensToProcess.Where(x => ids.Contains(x.from)).ToList();
 
             var processedUpdate = await ProcessUpdate(toUpdate, verified);
@@ -100,7 +100,7 @@ namespace eth_shared
 
             foreach (var item in toUpdate)
             {
-                var t = getAssetTransfersDTOs.Where(x => x.from == item.from).FirstOrDefault();
+                var t = getAssetTransfersDTOs.Where(x => x.to == item.from).FirstOrDefault();
 
                 if (t is not null)
                 {

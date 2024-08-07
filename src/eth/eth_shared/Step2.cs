@@ -49,9 +49,9 @@ namespace eth_shared
         }
         public async Task Start()
         {
-            await isDead.Start();
-            await getBalanceOnCreating.Start();
-            await getSourceCode.Start();
+            //await isDead.Start();
+            //await getBalanceOnCreating.Start();
+            //await getSourceCode.Start();
             await getWalletAge.Start();
             await getPair.Start();
             await SendTlgrmMessageP0();

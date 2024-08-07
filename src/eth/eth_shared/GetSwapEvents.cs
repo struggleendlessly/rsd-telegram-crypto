@@ -4,10 +4,18 @@ using api_alchemy.Eth.ResponseDTO;
 using Data;
 using Data.Models;
 
+using eth_shared.Map;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using nethereum;
+
+using Nethereum.ABI.FunctionEncoding;
+using Nethereum.Contracts;
+using Nethereum.Util;
+
+using System.Numerics;
 
 namespace eth_shared
 {
@@ -70,16 +78,64 @@ namespace eth_shared
                 }
                 else
                 {
+                    var decoded = DecodeSwapEvents(validated);
+                    var processed = ProcessDecoded(decoded);
 
                 }
-                var logs = validated.FirstOrDefault().result;
-                var logsJson = System.Text.Json.JsonSerializer.Serialize(logs);
-                var ee = ApiWeb3.DecodeSwapEvents(logsJson);
+
             }
             //var validated = Validate(unfiltered);
             //var res = Filter(validated);
 
             //await SaveToDB(res);
+        }
+
+        public List<EthSwapEvents> ProcessDecoded(List<EventLog<List<ParameterOutput>>> decoded)
+        {
+            List<EthSwapEvents> res = new();
+
+            foreach (var item in decoded)
+            {
+                var logs = item.Log;
+                var events = item.Event;
+
+                var ethSwapEvents = events.Map();
+
+                ethSwapEvents.pairAddress = logs.Address;
+                ethSwapEvents.blockNumberInt = Convert.ToInt32(logs.BlockNumber.ToString(), 16);
+
+                var amount0in = BigInteger.Parse(ethSwapEvents.amount0in);
+                var amount1in = BigInteger.Parse(ethSwapEvents.amount1in);
+                var amount0out = BigInteger.Parse(ethSwapEvents.amount0out);
+                var amount1out = BigInteger.Parse(ethSwapEvents.amount1out);
+
+                BigDecimal price = 0.0;
+
+                if (amount0out > 0)
+                {
+                    // token0 is being bought with token1
+                    price = amount0out / amount1in;
+                    ethSwapEvents.isBuy = true;
+                }
+                else
+                {
+                    // token0 is being sold for token1
+                    price = amount1out / amount0out;
+                }
+
+                ethSwapEvents.priceEth = (decimal)price;
+            }
+
+            return res;
+        }
+
+        public List<EventLog<List<ParameterOutput>>> DecodeSwapEvents(List<getSwapDTO> validated)
+        {
+            var logs = validated.SelectMany(x => x.result);
+            var logsJson = System.Text.Json.JsonSerializer.Serialize(logs);
+            var res = ApiWeb3.DecodeSwapEvents(logsJson);
+
+            return res;
         }
 
         public List<getSwapDTO> Validate(List<getSwapDTO> collection)

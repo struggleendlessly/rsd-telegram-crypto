@@ -76,6 +76,7 @@ builder.Services.AddTransient<ApiWeb3>();
 builder.Services.AddTransient<tlgrmApi.tlgrmApi>();
 builder.Services.AddTransient<GetBlocks>();
 builder.Services.AddTransient<GetWalletAge>();
+builder.Services.AddTransient<GetSwapEvents>();
 builder.Services.AddTransient<GetSourceCode>();
 builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();

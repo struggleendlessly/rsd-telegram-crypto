@@ -21,7 +21,7 @@
   SELECT count(*) as walletCreated
   FROM [crypta].[dbo].[EthTrainData]
   where walletCreated = '0001-01-01 00:00:00.0000000'
-  and  walletCreated = '0001-01-02 00:00:00.0000000'
+  or  walletCreated = '0001-01-02 00:00:00.0000000'
 
   SELECT count(*) as tlgrm
   FROM [crypta].[dbo].[EthTrainData]

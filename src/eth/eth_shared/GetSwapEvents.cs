@@ -2,7 +2,9 @@
 using api_alchemy.Eth.ResponseDTO;
 
 using Data;
+using Data.Models;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using nethereum;
@@ -21,6 +23,11 @@ namespace eth_shared
         private readonly ApiWeb3 ApiWeb3;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
+
+        int lastEthBlockNumber = 0;
+        int lastProcessedBlock = 18911035;
+        int lastBlockToProcess = 0;
+
         public GetSwapEvents(
             ILogger<GetSwapEvents> logger,
             ApiWeb3 ApiWeb3,
@@ -37,18 +44,41 @@ namespace eth_shared
 
         public async Task Start()
         {
-            //var lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
-            //var lastProcessedBlock = await dbContext.Blocks.MaxAsync(x => x.BlockNumber);
+            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
 
+            if (await dbContext.EthSwapEvents.AnyAsync())
+            {
+                lastProcessedBlock = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
+            }
+
+            lastBlockToProcess = lastProcessedBlock + 2000;
+
+            var tokensToProcess = await GetTokensToProcess();
             //var unfiltered = await Get(lastEthBlockNumber, lastProcessedBlock);
             //var validated = Validate(unfiltered);
             //var res = Filter(validated);
 
             //await SaveToDB(res);
         }
+        public async Task<List<EthTrainData>> GetTokensToProcess()
+        {
+            var res = await
+                dbContext.
+                EthTrainData.
+                Where(
+                    x => 
+                    x.pairAddress != "no" &&
+                    x.DeadBlockNumber > lastBlockToProcess &&
+                    x.blockNumberInt < lastBlockToProcess
+                    ).
+                OrderBy(x => x.blockNumberInt).
+                ToListAsync();
+
+            return res;
+        }
 
         //public async Task<List<getSwapDTO>> Get(
-        //    int lastEthBlockNumber, 
+        //    int lastEthBlockNumber,
         //    int lastProcessedBlock)
         //{
         //    List<getSwapDTO> res = new();

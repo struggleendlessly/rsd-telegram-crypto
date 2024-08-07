@@ -23,6 +23,7 @@ namespace eth_shared
         private readonly EtherscanApi etherscanApi;
         private readonly GetWalletAge getWalletAge;
         private readonly GetSourceCode getSourceCode;
+        private readonly GetSwapEvents getSwapEvents;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
         public Step2(
@@ -34,6 +35,7 @@ namespace eth_shared
             GetWalletAge getWalletAge,
             tlgrmApi.tlgrmApi tlgrmApi,
             GetSourceCode getSourceCode,
+            GetSwapEvents getSwapEvents,
             GetBalanceOnCreating getBalanceOnCreating
             )
         {
@@ -44,18 +46,20 @@ namespace eth_shared
             this.getWalletAge = getWalletAge;
             this.etherscanApi = etherscanApi;
             this.getSourceCode = getSourceCode;
+            this.getSwapEvents = getSwapEvents;
             this.getBalanceOnCreating = getBalanceOnCreating;
             this.tlgrmApi = tlgrmApi;
         }
         public async Task Start()
         {
+            await getSwapEvents.Start();
             //await isDead.Start();
             //await getBalanceOnCreating.Start();
             //await getSourceCode.Start();
-            await getWalletAge.Start();
-            await getPair.Start();
-            await SendTlgrmMessageP0();
-            await SendTlgrmMessageP10();
+            //await getWalletAge.Start();
+            //await getPair.Start();
+            //await SendTlgrmMessageP0();
+            //await SendTlgrmMessageP10();
         }
 
         public async Task SendTlgrmMessageP0()

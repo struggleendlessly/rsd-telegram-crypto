@@ -161,7 +161,7 @@ namespace api_alchemy.Eth
             var request = new requestBaseDTO()
             {
                 jsonrpc = "2.0",
-                method = "eth_getBalance",
+                method = "eth_getLogs",
                 _params = [paramDto],
                 id = 1
             };

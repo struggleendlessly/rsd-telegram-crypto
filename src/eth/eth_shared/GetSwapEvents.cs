@@ -9,12 +9,6 @@ using Microsoft.Extensions.Logging;
 
 using nethereum;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace eth_shared
 {
     public class GetSwapEvents
@@ -44,21 +38,64 @@ namespace eth_shared
 
         public async Task Start()
         {
-            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
-
-            if (await dbContext.EthSwapEvents.AnyAsync())
+            while (true)
             {
-                lastProcessedBlock = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
+
+
+                lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+
+                if (await dbContext.EthSwapEvents.AnyAsync())
+                {
+                    lastProcessedBlock = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
+                }
+
+                lastBlockToProcess = lastProcessedBlock + 2000;
+
+                if (lastBlockToProcess > lastEthBlockNumber)
+                {
+                    lastBlockToProcess = lastEthBlockNumber;
+                }
+
+                var tokensToProcess = await GetTokensToProcess();
+                var unfiltered = await Get(tokensToProcess);
+                var validated = Validate(unfiltered);
+
+                if (validated.Count == 0)
+                {
+                    var t = new EthSwapEvents();
+                    t.blockNumberInt = lastBlockToProcess;
+
+                    dbContext.EthSwapEvents.Add(t);
+                    // await dbContext.SaveChangesAsync();
+                }
+                else
+                {
+
+                }
+                var logs = validated.FirstOrDefault().result;
+                var logsJson = System.Text.Json.JsonSerializer.Serialize(logs);
+                var ee = ApiWeb3.DecodeSwapEvents(logsJson);
             }
-
-            lastBlockToProcess = lastProcessedBlock + 2000;
-
-            var tokensToProcess = await GetTokensToProcess();
-            //var unfiltered = await Get(lastEthBlockNumber, lastProcessedBlock);
             //var validated = Validate(unfiltered);
             //var res = Filter(validated);
 
             //await SaveToDB(res);
+        }
+
+        public List<getSwapDTO> Validate(List<getSwapDTO> collection)
+        {
+            List<getSwapDTO> res = new();
+
+            foreach (var item in collection)
+            {
+                if (item.result is not null &&
+                    item.result.Count() > 0)
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
         }
         public async Task<List<EthTrainData>> GetTokensToProcess()
         {
@@ -66,26 +103,37 @@ namespace eth_shared
                 dbContext.
                 EthTrainData.
                 Where(
-                    x => 
+                    x =>
                     x.pairAddress != "no" &&
                     x.DeadBlockNumber > lastBlockToProcess &&
                     x.blockNumberInt < lastBlockToProcess
                     ).
                 OrderBy(x => x.blockNumberInt).
+                Where(x => x.pairAddress == "0xb1b665fb26d29934a678e79de4d95edb0bf2c33e").
                 ToListAsync();
 
             return res;
         }
 
-        //public async Task<List<getSwapDTO>> Get(
-        //    int lastEthBlockNumber,
-        //    int lastProcessedBlock)
-        //{
-        //    List<getSwapDTO> res = new();
-        //    var block = await apiAlchemy.getSwapLogs(lastEthBlockNumber);
-        //    res.Add(block);
+        public async Task<List<getSwapDTO>> Get(List<EthTrainData> ethTrainDatas)
+        {
+            List<getSwapDTO> res = new();
 
-        //    return res;
-        //}
+            var diff = ethTrainDatas.Count();
+            var items = ethTrainDatas;
+
+            List<(string, string, string)> t = new();
+
+            foreach (var item in ethTrainDatas)
+            {
+                t.Add((item.pairAddress, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
+            }
+
+            Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
+
+            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff);
+
+            return res;
+        }
     }
 }

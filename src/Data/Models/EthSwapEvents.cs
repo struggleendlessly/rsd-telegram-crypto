@@ -14,6 +14,6 @@
         public string price { get; set; } = string.Empty;
         public int blockNumberInt { get; set; }
 
-        public virtual EthTrainData EthTrainData { get; set; }
+        public EthTrainData? EthTrainData { get; set; }
     }
 }

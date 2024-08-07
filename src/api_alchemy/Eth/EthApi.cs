@@ -420,9 +420,7 @@ namespace api_alchemy.Eth
         }
 
         public async Task<List<getSwapDTO>> getSwapLogs(
-            List<EthTrainData> EthTrainData,
-            string blockNumberStart,
-            string blockNumberEnd,
+            List<(string pairAddress, string start, string end)> EthTrainData,
             int apiKeyIndex)
         {
             var apiKey = GetvAndApiKey(apiKeyIndex);
@@ -434,11 +432,14 @@ namespace api_alchemy.Eth
 
             foreach (var item in EthTrainData)
             {
-                aa.Append(EthUrlBuilder.getSwapLogs(
+                var t = EthUrlBuilder.getSwapLogs(
                     item.pairAddress,
                     topic,
-                    blockNumberStart,
-                    blockNumberEnd));
+                    item.start,
+                    item.end);
+                logger.LogInformation(t);
+
+                aa.Append(t);
 
                 if (EthTrainData.Last() != item)
                 {

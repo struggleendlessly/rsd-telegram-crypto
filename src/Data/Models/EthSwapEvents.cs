@@ -11,7 +11,7 @@
         public string amount1in { get; set; } = string.Empty;
         public string amount0out { get; set; } = string.Empty;
         public string amount1out { get; set; } = string.Empty;
-        public decimal priceEth { get; set; }
+        public double priceEth { get; set; }
         public bool isBuy { get; set; }
         public int blockNumberInt { get; set; }
 

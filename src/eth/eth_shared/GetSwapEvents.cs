@@ -4,6 +4,7 @@ using api_alchemy.Eth.ResponseDTO;
 using Data;
 using Data.Models;
 
+using eth_shared.Extensions;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using Nethereum.ABI.FunctionEncoding;
 using Nethereum.Contracts;
 using Nethereum.Util;
 
+using System.Globalization;
 using System.Numerics;
 
 namespace eth_shared
@@ -30,6 +32,8 @@ namespace eth_shared
         int lastProcessedBlock = 18911035;
         int lastBlockToProcess = 0;
 
+        CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+        string decimalCeparator = ".";
         public GetSwapEvents(
             ILogger<GetSwapEvents> logger,
             ApiWeb3 ApiWeb3,
@@ -46,51 +50,55 @@ namespace eth_shared
 
         public async Task Start()
         {
-            while (true)
+            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+
+            if (await dbContext.EthSwapEvents.AnyAsync())
             {
-
-
-                lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
-
-                if (await dbContext.EthSwapEvents.AnyAsync())
-                {
-                    lastProcessedBlock = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
-                }
-
-                lastBlockToProcess = lastProcessedBlock + 2000;
-
-                if (lastBlockToProcess > lastEthBlockNumber)
-                {
-                    lastBlockToProcess = lastEthBlockNumber;
-                }
-
-                var tokensToProcess = await GetTokensToProcess();
-                var unfiltered = await Get(tokensToProcess);
-                var validated = Validate(unfiltered);
-
-                if (validated.Count == 0)
-                {
-                    var t = new EthSwapEvents();
-                    t.blockNumberInt = lastBlockToProcess;
-
-                    dbContext.EthSwapEvents.Add(t);
-                    // await dbContext.SaveChangesAsync();
-                }
-                else
-                {
-                    var decoded = DecodeSwapEvents(validated);
-                    var processed = ProcessDecoded(decoded);
-
-                }
-
+                lastProcessedBlock = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
             }
-            //var validated = Validate(unfiltered);
-            //var res = Filter(validated);
 
-            //await SaveToDB(res);
+            lastBlockToProcess = lastProcessedBlock + 2000;
+
+            if (lastBlockToProcess > lastEthBlockNumber)
+            {
+                lastBlockToProcess = lastEthBlockNumber;
+            }
+
+            var tokensToProcess = await GetTokensToProcess();
+            var unfiltered = await Get(tokensToProcess);
+            var validated = Validate(unfiltered);
+
+            if (validated.Count == 0)
+            {
+                var t = new EthSwapEvents();
+                t.blockNumberInt = lastBlockToProcess;
+
+                dbContext.EthSwapEvents.Add(t);
+                await dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                var decoded = DecodeSwapEvents(validated);
+                var processed = ProcessDecoded(decoded, tokensToProcess);
+                var saved = await SaveToDB_update(processed);
+            }
         }
 
-        public List<EthSwapEvents> ProcessDecoded(List<EventLog<List<ParameterOutput>>> decoded)
+        private async Task<int> SaveToDB_update
+            (List<EthSwapEvents> ethSwapEvents)
+        {
+            var res = 0;
+
+            dbContext.EthSwapEvents.AddRange(ethSwapEvents);
+            res = await dbContext.SaveChangesAsync();
+
+            return res;
+        }
+
+        public List<EthSwapEvents> ProcessDecoded(
+            List<EventLog<List<ParameterOutput>>> decoded,
+            List<EthTrainData> ethTrainDatas
+            )
         {
             List<EthSwapEvents> res = new();
 
@@ -98,32 +106,36 @@ namespace eth_shared
             {
                 var logs = item.Log;
                 var events = item.Event;
+                var ethTrainData = ethTrainDatas.Where(x => x.pairAddress.Equals(logs.Address, StringComparison.InvariantCultureIgnoreCase)).Single();
 
                 var ethSwapEvents = events.Map();
 
                 ethSwapEvents.pairAddress = logs.Address;
-                ethSwapEvents.blockNumberInt = Convert.ToInt32(logs.BlockNumber.ToString(), 16);
+                ethSwapEvents.blockNumberInt = Convert.ToInt32(logs.BlockNumber.ToString());
 
-                var amount0in = BigInteger.Parse(ethSwapEvents.amount0in);
-                var amount1in = BigInteger.Parse(ethSwapEvents.amount1in);
-                var amount0out = BigInteger.Parse(ethSwapEvents.amount0out);
-                var amount1out = BigInteger.Parse(ethSwapEvents.amount1out);
+                var amount0in = BigDecimal.Parse(ethSwapEvents.amount0in.InsertComma(ethTrainData.decimals, decimalCeparator));
+                var amount1in = BigDecimal.Parse(ethSwapEvents.amount1in.FormatTo18(decimalCeparator));
+                var amount0out = BigDecimal.Parse(ethSwapEvents.amount0out.InsertComma(ethTrainData.decimals, decimalCeparator));
+                var amount1out = BigDecimal.Parse(ethSwapEvents.amount1out.FormatTo18(decimalCeparator));
 
                 BigDecimal price = 0.0;
 
-                if (amount0out > 0)
+                if (amount1in > 0)
                 {
                     // token0 is being bought with token1
-                    price = amount0out / amount1in;
+                    price = amount1in / amount0out;
                     ethSwapEvents.isBuy = true;
                 }
                 else
                 {
                     // token0 is being sold for token1
-                    price = amount1out / amount0out;
+                    price = amount1out / amount0in;
                 }
 
-                ethSwapEvents.priceEth = (decimal)price;
+                ethSwapEvents.priceEth = (double)price;
+                ethSwapEvents.EthTrainData = ethTrainData;
+
+                res.Add(ethSwapEvents);
             }
 
             return res;
@@ -165,7 +177,7 @@ namespace eth_shared
                     x.blockNumberInt < lastBlockToProcess
                     ).
                 OrderBy(x => x.blockNumberInt).
-                Where(x => x.pairAddress == "0xb1b665fb26d29934a678e79de4d95edb0bf2c33e").
+                //Where(x => x.pairAddress == "0xb1b665fb26d29934a678e79de4d95edb0bf2c33e").
                 ToListAsync();
 
             return res;

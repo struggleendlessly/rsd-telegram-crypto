@@ -4,6 +4,8 @@ using api_alchemy.Eth.ResponseDTO;
 using Data;
 using Data.Models;
 
+using eth_shared.Extensions;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -94,8 +96,8 @@ namespace eth_shared
                         BigInteger balanceBI = 0;
 
                         balanceBI = new HexBigInteger(t.result).Value;
-                        var balanceStrFull = FormatString(balanceBI.ToString());
-                        var balanceStrShort = GetFirstThreeAfterComma(balanceStrFull);
+                        var balanceStrFull = balanceBI.ToString().FormatTo18(decimalCeparator);
+                        var balanceStrShort = balanceStrFull.GetFirstThreeAfterComma(decimalCeparator);
 
                         var balance = 0.0;
 
@@ -131,31 +133,6 @@ namespace eth_shared
 
             dbContext.EthTrainData.UpdateRange(ethTrainDatas);
             res = await dbContext.SaveChangesAsync();
-
-            return res;
-        }
-
-        private string GetFirstThreeAfterComma(string input)
-        {
-            int commaIndex = input.IndexOf(decimalCeparator);
-
-            if (commaIndex != -1 && commaIndex + 4 <= input.Length)
-            {
-                var res = input.Substring(0, commaIndex + 4);
-
-                return res;
-            }
-
-            return input; // Return the original string if comma not found or not enough characters after comma
-        }
-
-        private string FormatString(string input)
-        {
-            if (input.Length < 18)
-            {
-                input = input.PadLeft(18, '0');
-            }
-            var res = input.Insert(input.Length - 18, decimalCeparator);
 
             return res;
         }

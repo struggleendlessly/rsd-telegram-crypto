@@ -1,5 +1,7 @@
 using api_alchemy.Eth;
 
+using api_tokenSniffer;
+
 using Data;
 
 using eth_shared;
@@ -80,6 +82,7 @@ builder.Services.AddTransient<GetSwapEvents>();
 builder.Services.AddTransient<GetSourceCode>();
 builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();
+builder.Services.AddTransient<GetTokenSniffer>();
 builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();

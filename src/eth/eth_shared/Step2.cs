@@ -1,4 +1,6 @@
-﻿using Data;
+﻿using api_tokenSniffer;
+
+using Data;
 using Data.Models;
 
 using etherscan;
@@ -24,6 +26,7 @@ namespace eth_shared
         private readonly GetWalletAge getWalletAge;
         private readonly GetSourceCode getSourceCode;
         private readonly GetSwapEvents getSwapEvents;
+        private readonly GetTokenSniffer getTokenSniffer;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
         public Step2(
@@ -36,27 +39,30 @@ namespace eth_shared
             tlgrmApi.tlgrmApi tlgrmApi,
             GetSourceCode getSourceCode,
             GetSwapEvents getSwapEvents,
+            GetTokenSniffer getTokenSniffer,
             GetBalanceOnCreating getBalanceOnCreating
             )
         {
             this.logger = logger;
             this.isDead = isDead;
             this.getPair = getPair;
+            this.tlgrmApi = tlgrmApi;
             this.dbContext = dbContext;
             this.getWalletAge = getWalletAge;
             this.etherscanApi = etherscanApi;
             this.getSourceCode = getSourceCode;
             this.getSwapEvents = getSwapEvents;
+            this.getTokenSniffer = getTokenSniffer;
             this.getBalanceOnCreating = getBalanceOnCreating;
-            this.tlgrmApi = tlgrmApi;
         }
         public async Task Start()
         {
-            await getSwapEvents.Start();
+            await getTokenSniffer.Start();
+            // await getSwapEvents.Start();
             //await isDead.Start();
             //await getBalanceOnCreating.Start();
             //await getSourceCode.Start();
-            await getWalletAge.Start();
+            //await getWalletAge.Start();
             //await getPair.Start();
             //await SendTlgrmMessageP0();
             //await SendTlgrmMessageP10();

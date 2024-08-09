@@ -17,7 +17,6 @@ using Nethereum.Contracts;
 using Nethereum.Util;
 
 using System.Globalization;
-using System.Numerics;
 
 namespace eth_shared
 {
@@ -119,17 +118,25 @@ namespace eth_shared
                 var amount1out = BigDecimal.Parse(ethSwapEvents.amount1out.FormatTo18(decimalCeparator));
 
                 BigDecimal price = 0.0;
+                try
+                {
 
-                if (amount1in > 0)
-                {
-                    // token0 is being bought with token1
-                    price = amount1in / amount0out;
-                    ethSwapEvents.isBuy = true;
+                    if (amount1in > 0)
+                    {
+                        // token0 is being bought with token1
+                        price = amount1in / amount0out;
+                        ethSwapEvents.isBuy = true;
+                    }
+                    else
+                    {
+                        // token0 is being sold for token1
+                        price = amount1out / amount0in;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // token0 is being sold for token1
-                    price = amount1out / amount0in;
+
+                    throw;
                 }
 
                 ethSwapEvents.priceEth = (double)price;

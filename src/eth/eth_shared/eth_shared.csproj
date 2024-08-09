@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\api_alchemy\api_alchemy.csproj" />
+    <ProjectReference Include="..\..\api_tokenSniffer\api_tokenSniffer.csproj" />
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\nethereum\nethereum.csproj" />
     <ProjectReference Include="..\etherscan\etherscan.csproj" />

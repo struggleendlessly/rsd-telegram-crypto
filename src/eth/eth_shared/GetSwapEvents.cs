@@ -33,6 +33,7 @@ namespace eth_shared
 
         CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
         string decimalCeparator = ".";
+
         public GetSwapEvents(
             ILogger<GetSwapEvents> logger,
             ApiWeb3 ApiWeb3,
@@ -107,38 +108,38 @@ namespace eth_shared
                 var events = item.Event;
                 var ethTrainData = ethTrainDatas.Where(x => x.pairAddress.Equals(logs.Address, StringComparison.InvariantCultureIgnoreCase)).Single();
 
-                var ethSwapEvents = events.Map();
+                var ethSwapEvents = events.Map(ethTrainData, decimalCeparator);
 
                 ethSwapEvents.pairAddress = logs.Address;
                 ethSwapEvents.blockNumberInt = Convert.ToInt32(logs.BlockNumber.ToString());
 
-                var amount0in = BigDecimal.Parse(ethSwapEvents.amount0in.InsertComma(ethTrainData.decimals, decimalCeparator));
-                var amount1in = BigDecimal.Parse(ethSwapEvents.amount1in.FormatTo18(decimalCeparator));
-                var amount0out = BigDecimal.Parse(ethSwapEvents.amount0out.InsertComma(ethTrainData.decimals, decimalCeparator));
-                var amount1out = BigDecimal.Parse(ethSwapEvents.amount1out.FormatTo18(decimalCeparator));
+                BigDecimal EthIn = BigDecimal.Parse(ethSwapEvents.EthIn);
+                BigDecimal EthOut = BigDecimal.Parse(ethSwapEvents.EthOut);
+                BigDecimal TokenIn = BigDecimal.Parse(ethSwapEvents.TokenIn);
+                BigDecimal TokenOut = BigDecimal.Parse(ethSwapEvents.TokenOut);
 
                 BigDecimal price = 0.0;
                 try
                 {
 
-                    if (amount1in > 0)
+                    if (EthIn > 0)
                     {
                         // token0 is being bought with token1
-                        price = amount1in / amount0out;
+                        price = EthIn / TokenOut;
                         ethSwapEvents.isBuy = true;
                     }
                     else
                     {
                         // token0 is being sold for token1
-                        price = amount1out / amount0in;
+                        price = EthOut / TokenIn;
                     }
                 }
                 catch (Exception ex)
                 {
-
-                    throw;
+                    continue;
                 }
 
+                ethSwapEvents.txsHash = logs.TransactionHash;
                 ethSwapEvents.priceEth = (double)price;
                 ethSwapEvents.EthTrainData = ethTrainData;
 

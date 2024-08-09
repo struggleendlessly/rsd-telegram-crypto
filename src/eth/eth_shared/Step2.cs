@@ -57,8 +57,9 @@ namespace eth_shared
         }
         public async Task Start()
         {
-            await getTokenSniffer.Start();
-            // await getSwapEvents.Start();
+            //await getTokenSniffer.Start();
+
+              await getSwapEvents.Start();
             //await isDead.Start();
             //await getBalanceOnCreating.Start();
             //await getSourceCode.Start();

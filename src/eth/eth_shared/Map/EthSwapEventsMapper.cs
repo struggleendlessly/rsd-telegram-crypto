@@ -1,14 +1,19 @@
 ﻿using Data.Models;
 
-using Nethereum.ABI.FunctionEncoding;
+using eth_shared.Extensions;
 
-using System.Numerics;
+using Nethereum.ABI.FunctionEncoding;
+using Nethereum.Util;
 
 namespace eth_shared.Map
 {
-    public static class EthSwapEventsMapper
+    public static class Mapper
     {
-        public static EthSwapEvents Map(this List<ParameterOutput> collection)
+        static string EthAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+        public static EthSwapEvents Map(
+            this List<ParameterOutput> collection,
+            EthTrainData ethTrainData,
+            string decimalCeparator)
         {
             EthSwapEvents res = new();
 
@@ -19,12 +24,35 @@ namespace eth_shared.Map
             var amount0out = collection.Where(x => x.Parameter.Name.Equals("amount0out", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().Result.ToString();
             var amount1out = collection.Where(x => x.Parameter.Name.Equals("amount1out", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().Result.ToString();
 
+            List<string> listToOrder = [EthAddress, ethTrainData.contractAddress];
+            listToOrder.Sort();
+
+            BigDecimal EthIn = 0.0;
+            BigDecimal EthOut = 0.0;
+            BigDecimal TokenIn = 0.0;
+            BigDecimal TokenOut = 0.0;
+
+            if (listToOrder[0].Equals(EthAddress))
+            {
+                EthIn = BigDecimal.Parse(amount0in.FormatTo18(decimalCeparator));
+                EthOut = BigDecimal.Parse(amount0out.FormatTo18(decimalCeparator));
+                TokenIn = BigDecimal.Parse(amount1in.InsertComma(ethTrainData.decimals, decimalCeparator));
+                TokenOut = BigDecimal.Parse(amount1out.InsertComma(ethTrainData.decimals, decimalCeparator));
+            }
+            else
+            {
+                EthIn = BigDecimal.Parse(amount1in.FormatTo18(decimalCeparator));
+                EthOut = BigDecimal.Parse(amount1out.FormatTo18(decimalCeparator));
+                TokenIn = BigDecimal.Parse(amount0in.InsertComma(ethTrainData.decimals, decimalCeparator));
+                TokenOut = BigDecimal.Parse(amount0out.InsertComma(ethTrainData.decimals, decimalCeparator));
+            }
+
             res.from = sender;
             res.to = to;
-            res.amount0in = BigInteger.Parse(amount0in).ToString();
-            res.amount1in = BigInteger.Parse(amount1in).ToString();
-            res.amount0out = BigInteger.Parse(amount0out).ToString();
-            res.amount1out = BigInteger.Parse(amount1out).ToString();
+            res.EthIn = EthIn.ToString();
+            res.EthOut = EthOut.ToString();
+            res.TokenIn = TokenIn.ToString();
+            res.TokenOut = TokenOut.ToString();
 
             return res;
         }

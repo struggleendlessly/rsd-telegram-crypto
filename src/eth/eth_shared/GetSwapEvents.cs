@@ -119,24 +119,21 @@ namespace eth_shared
                 BigDecimal TokenOut = BigDecimal.Parse(ethSwapEvents.TokenOut);
 
                 BigDecimal price = 0.0;
-                try
-                {
 
-                    if (EthIn > 0)
-                    {
-                        // token0 is being bought with token1
-                        price = EthIn / TokenOut;
-                        ethSwapEvents.isBuy = true;
-                    }
-                    else
-                    {
-                        // token0 is being sold for token1
-                        price = EthOut / TokenIn;
-                    }
-                }
-                catch (Exception ex)
+                if (EthIn > 0 &&
+                    TokenOut > 0)
                 {
-                    continue;
+                    // token0 is being bought with token1
+                    price = EthIn / TokenOut;
+                    ethSwapEvents.isBuy = true;
+                }
+
+                if (EthOut > 0 &&
+                    TokenIn > 0)
+
+                {
+                    // token0 is being sold for token1
+                    price = EthOut / TokenIn;
                 }
 
                 ethSwapEvents.txsHash = logs.TransactionHash;

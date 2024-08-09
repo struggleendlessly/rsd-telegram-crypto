@@ -120,6 +120,7 @@ namespace eth_shared
                 Where(
                     x =>
                     x.pairAddress != "" &&
+                    x.pairAddress != "no" &&
                     x.tlgrmLivePairs == 0 &&
                     x.isDead == false &&
                     x.blockNumberInt > 20456589).

@@ -60,13 +60,13 @@ namespace eth_shared
             //await getTokenSniffer.Start();
 
             await getSwapEvents.Start();
-            //await isDead.Start();
-            //await getBalanceOnCreating.Start();
-            //await getSourceCode.Start();
+            await isDead.Start();
+            await getBalanceOnCreating.Start();
+            await getSourceCode.Start();
             await getWalletAge.Start();
-            //await getPair.Start();
-            //await SendTlgrmMessageP0();
-            //await SendTlgrmMessageP10();
+            await getPair.Start();
+            await SendTlgrmMessageP0();
+            await SendTlgrmMessageP10();
         }
 
         public async Task SendTlgrmMessageP0()

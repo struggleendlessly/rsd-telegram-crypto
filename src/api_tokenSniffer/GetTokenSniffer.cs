@@ -41,21 +41,34 @@ namespace api_tokenSniffer
             var tokensToProcess = await GetTokensToProcess();
             var unfiltered = await Get(tokensToProcess);
             var processed = await Process(tokensToProcess, unfiltered);
-            var res = SaveToDB_update(processed);
+            var res = await SaveToDB_update(processed);
         }
 
         public async Task<List<EthTrainData>> Process(
             List<EthTrainData> ethTrainDatas,
             List<GetTokenDTO> getTokenDTOs)
         {
+            var res = new List<EthTrainData>();
+
             foreach (var item in ethTrainDatas)
             {
-                var t = getTokenDTOs.Where(x => x.address == item.contractAddress).Single();
-                item.tsExploits = string.Join(",", t.exploits);
-                item.tsFullResponse = JsonSerializer.Serialize(t);
+                var t = getTokenDTOs.Where(x => x.address == item.contractAddress).FirstOrDefault();
+
+                if (t is not null)
+                {
+                    item.tsExploits = string.Join(",", t.exploits);
+                    item.tsFullResponse = JsonSerializer.Serialize(t);
+
+                }
+                else
+                {
+                    item.tsFullResponse = "no";
+                }
+
+                res.Add(item);
             }
 
-            return ethTrainDatas;
+            return res;
         }
 
         private async Task<int> SaveToDB_update
@@ -63,7 +76,7 @@ namespace api_tokenSniffer
         {
             var res = 0;
 
-            dbContext.EthTrainData.UpdateRange(ethTrainDatas);
+            //dbContext.EthTrainData.UpdateRange(ethTrainDatas);
             res = await dbContext.SaveChangesAsync();
 
             return res;
@@ -76,9 +89,10 @@ namespace api_tokenSniffer
                 EthTrainData.
                 Where(
                     x =>
-                    x.pairAddress != "no"
+                    x.pairAddress != "no" &&
+                    x.tsFullResponse == ""
                     ).
-                Take(100).
+                Take(90).
                 ToListAsync();
 
             return res;
@@ -90,13 +104,13 @@ namespace api_tokenSniffer
 
             var apiKey = "db6457b1da76d753cdd3ab22bdec40d29523ac9f";
 
-            try
+            foreach (var item in ethTrainDatas)
             {
-                foreach (var item in ethTrainDatas)
-                {
-                    var tokenAddress = item.contractAddress;
-                    var url = $"api/v2/tokens/1/{tokenAddress}?apikey={apiKey}&include_metrics=true&include_tests=true&include_similar=true&block_until_ready=true";
+                var tokenAddress = item.contractAddress;
+                var url = $"api/v2/tokens/1/{tokenAddress}?apikey={apiKey}&include_metrics=true&include_tests=true&include_similar=true&block_until_ready=true";
 
+                try
+                {
                     var response = await httpClient.GetFromJsonAsync<GetTokenDTO>(url);
 
                     if (response is not null)
@@ -104,12 +118,12 @@ namespace api_tokenSniffer
                         res.Add(response);
                     }
                 }
+                catch (Exception ex)
+                {
+                    continue;
+                }
 
-            }
-            catch (Exception ex)
-            {
-
-                throw;
+                Thread.Sleep(100);
             }
 
             return res;

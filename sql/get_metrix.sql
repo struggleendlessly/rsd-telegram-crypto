@@ -1,10 +1,15 @@
   SELECT count(*) as allCount
   FROM [crypta].[dbo].[EthTrainData]
 
+  SELECT count(*) as EthSwapEvents
+  FROM [crypta].[dbo].[EthSwapEvents]
+
+  SELECT max(blockNumberInt) as EthSwapEventsMax
+  FROM [crypta].[dbo].[EthSwapEvents]
+
   SELECT count(*) as [BalanceOnCreating]
   FROM [crypta].[dbo].[EthTrainData]
   where [BalanceOnCreating] = -1
-
 
   SELECT count(*) as pairAddress
   FROM [crypta].[dbo].[EthTrainData]

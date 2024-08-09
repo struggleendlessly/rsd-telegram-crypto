@@ -9,7 +9,7 @@
         public long refreshed_at { get; set; }
         public string name { get; set; }
         public string symbol { get; set; }
-        public long total_supply { get; set; }
+        public double total_supply { get; set; }
         public int decimals { get; set; }
         public long created_at { get; set; }
         public string deployer_addr { get; set; }
@@ -90,7 +90,7 @@
         public string version { get; set; }
         public string base_symbol { get; set; }
         public string base_address { get; set; }
-        public long total_supply { get; set; }
+        public double total_supply { get; set; }
         public int decimals { get; set; }
         public float base_reserve { get; set; }
         public float initial_base_reserve { get; set; }

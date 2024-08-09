@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using System.ComponentModel;
-using System.Numerics;
 
 namespace Data.Models
 {
     [Index(nameof(hash), IsUnique = true)]
+    [Index(nameof(blockNumberInt))]
     [Index(nameof(contractAddress), IsUnique = true)]
     public class EthTrainData
     {
@@ -19,7 +19,8 @@ namespace Data.Models
         public double BalanceOnCreating { get; set; } = -1;
         public int blockNumberInt { get; set; } = 0;
         public string totalSupply { get; set; } = default!;
-        public bool exploitsTS { get; set; } = false;
+        public string tsExploits { get; set; } = string.Empty;
+        public string tsFullResponse { get; set; } = string.Empty;
         public string pairAddress { get; set; } = string.Empty;
         public string pairAddressFunctionName { get; set; } = string.Empty;
         public bool isDead { get; set; } = false;

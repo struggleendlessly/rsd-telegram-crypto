@@ -9,7 +9,7 @@
         public long refreshed_at { get; set; }
         public string name { get; set; }
         public string symbol { get; set; }
-        public int total_supply { get; set; }
+        public long total_supply { get; set; }
         public int decimals { get; set; }
         public long created_at { get; set; }
         public string deployer_addr { get; set; }
@@ -38,7 +38,7 @@
 
     public class Permissions
     {
-        public object owner_address { get; set; }
+        public string owner_address { get; set; }
         public bool is_ownership_renounced { get; set; }
     }
 
@@ -51,17 +51,17 @@
 
     public class Balances
     {
-        public int burn_balance { get; set; }
-        public int lock_balance { get; set; }
-        public float deployer_balance { get; set; }
-        public int owner_balance { get; set; }
+        public double burn_balance { get; set; }
+        public double lock_balance { get; set; }
+        public double deployer_balance { get; set; }
+        public double owner_balance { get; set; }
         public Top_Holders[] top_holders { get; set; }
     }
 
     public class Top_Holders
     {
         public string address { get; set; }
-        public float balance { get; set; }
+        public double balance { get; set; }
         public bool is_contract { get; set; }
     }
 
@@ -79,7 +79,7 @@
     public class Datum
     {
         public string address { get; set; }
-        public float balance { get; set; }
+        public double balance { get; set; }
         public bool is_contract { get; set; }
     }
 
@@ -90,14 +90,14 @@
         public string version { get; set; }
         public string base_symbol { get; set; }
         public string base_address { get; set; }
-        public int total_supply { get; set; }
+        public long total_supply { get; set; }
         public int decimals { get; set; }
         public float base_reserve { get; set; }
         public float initial_base_reserve { get; set; }
-        public int owner_balance { get; set; }
-        public int deployer_balance { get; set; }
-        public int burn_balance { get; set; }
-        public int lock_balance { get; set; }
+        public double owner_balance { get; set; }
+        public double deployer_balance { get; set; }
+        public double burn_balance { get; set; }
+        public double lock_balance { get; set; }
         public object[] top_holders { get; set; }
         public object[] locks { get; set; }
     }
@@ -108,5 +108,4 @@
         public string address { get; set; }
         public int stcore { get; set; }
     }
-
 }

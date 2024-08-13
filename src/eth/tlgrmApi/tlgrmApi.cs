@@ -55,12 +55,11 @@ namespace tlgrmApi
             return res;
         }
 
-        public async Task<List<P0_DTO>> SendPO(
+        private List<P0_DTO> ProcessDataForMessage(
             List<EthTrainData> ethTrainDatas,
             List<EthBlocks> ethBlocks)
         {
-            List<P0_DTO> collection = new();
-            var threadId = optionsTelegram.message_thread_id_p0;
+            List<P0_DTO> res = new();
 
             foreach (var item in ethTrainDatas)
             {
@@ -72,99 +71,7 @@ namespace tlgrmApi
                 dateTimeBlock = dateTimeBlock.AddSeconds(intUnix);
 
                 val.walletAge = (-1).ToString();
-                var age = item.walletCreated - dateTimeBlock;
-
-                if (block is not null)
-                {
-                    var ageStr = age.ToString(@"d\.hh\:mm");
-
-                    if (age.Days < 0)
-                    {
-                        ageStr = "-1";
-                    }
-
-                    val.walletAge = ageStr;
-                }
-
-                string readableTotalSupply = Regex.Replace(item.totalSupply, @"(?<=\d)(?=(\d{3})+$)", "_");
-
-                val.from = item.from;
-                val.totalSupply = readableTotalSupply;
-                val.ABI = item.ABI;
-                val.contractAddress = item.contractAddress;
-                val.balanceOnCreating = item.BalanceOnCreating.ToString();
-                val.name = item.name;
-                val.symbol = item.symbol;
-
-                var res = 0;
-                var ABIICon = "❤";
-                var walletIcon = "⚪"; // man
-                var balanceIcon = "⚪"; // grey
-
-                if (!string.IsNullOrEmpty(val.ABI))
-                {
-                    ABIICon = "💚";
-                }
-
-                if (age.Hours > 1)
-                {
-                    walletIcon = "\t\U0001f7e0"; // orange
-                }
-
-                if (age.Days > 0)
-                {
-                    walletIcon = "🔴"; // red
-                }
-
-                if (item.BalanceOnCreating > 1)
-                {
-                    balanceIcon = "\t\U0001f7e0";
-                }
-
-                if (item.BalanceOnCreating > 10)
-                {
-                    balanceIcon = "🔴";
-                }
-
-                var text =
-                    $"" +
-                    $"📌 [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
-                    $"{ABIICon}`{val.contractAddress}` \n " +
-                    $"💰`{val.totalSupply}` \n " +
-                    $"{walletIcon} [{val.walletAge} / {balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
-                    $"";
-
-                val.messageText = text;
-
-                collection.Add(val);
-            }
-
-            foreach (var item in collection)
-            {
-                var t = await SendSequest(threadId, item.messageText);
-                item.tlgrmMsgId = t;
-            }
-
-            return collection;
-        }
-        public async Task<List<P0_DTO>> SendP1O(
-            List<EthTrainData> ethTrainDatas,
-            List<EthBlocks> ethBlocks)
-        {
-            List<P0_DTO> collection = new();
-            var threadId = optionsTelegram.message_thread_id_p10;
-
-            foreach (var item in ethTrainDatas)
-            {
-                P0_DTO val = new();
-
-                var block = ethBlocks.FirstOrDefault(x => x.numberInt == item.blockNumberInt);
-                int intUnix = Convert.ToInt32(block.timestamp, 16);
-                DateTime dateTimeBlock = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                dateTimeBlock = dateTimeBlock.AddSeconds(intUnix);
-
-                val.walletAge = (-1).ToString();
-                var age = item.walletCreated - dateTimeBlock;
+                var age = dateTimeBlock - item.walletCreated;
 
                 if (block is not null)
                 {
@@ -189,48 +96,81 @@ namespace tlgrmApi
                 val.symbol = item.symbol;
                 val.pairAddress = item.pairAddress;
 
-                var res = 0;
-                var ABIICon = "❤";
-                var walletIcon = "⚪";
-                var balanceIcon = "⚪";
+                val.ABIICon = "❤";
+                val.walletIcon = "⚪"; // man
+                val.balanceIcon = "⚪"; // grey
 
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
-                    ABIICon = "💚";
+                    val.ABIICon = "💚";
                 }
 
                 if (age.Hours > 1)
                 {
-                    walletIcon = "\t\U0001f7e0"; // orange
+                    val.walletIcon = "\t\U0001f7e0"; // orange
                 }
 
                 if (age.Days > 0)
                 {
-                    walletIcon = "🔴"; // red
+                    val.walletIcon = "🔴"; // red
+                }
+
+                if (age.Days > 4000)
+                {
+                    val.walletIcon = "-1";
                 }
 
                 if (item.BalanceOnCreating > 1)
                 {
-                    balanceIcon = "\t\U0001f7e0";
+                    val.balanceIcon = "\t\U0001f7e0";
                 }
 
                 if (item.BalanceOnCreating > 10)
                 {
-                    balanceIcon = "🔴";
+                    val.balanceIcon = "🔴";
                 }
 
                 var text =
                     $"" +
                     $"📌 [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
-                    $"{ABIICon}`{val.contractAddress}` \n " +
+                    $"{val.ABIICon}`{val.contractAddress}` \n " +
                     $"💰`{val.totalSupply}` \n " +
-                    $"{walletIcon} [{val.walletAge} / {balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
-                    $"📈 [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{val.pairAddress}) \n" +
+                    $"{val.walletIcon} [{val.walletAge} / {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
                     $"";
 
                 val.messageText = text;
 
-                collection.Add(val);
+                res.Add(val);
+            }
+
+            return res;
+        }
+        public async Task<List<P0_DTO>> SendPO(
+            List<EthTrainData> ethTrainDatas,
+            List<EthBlocks> ethBlocks)
+        {
+            List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
+            var threadId = optionsTelegram.message_thread_id_p0;
+
+            foreach (var item in collection)
+            {
+                var t = await SendSequest(threadId, item.messageText);
+                item.tlgrmMsgId = t;
+            }
+
+            return collection;
+        }
+        public async Task<List<P0_DTO>> SendP1O(
+            List<EthTrainData> ethTrainDatas,
+            List<EthBlocks> ethBlocks)
+        {
+            List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
+            var threadId = optionsTelegram.message_thread_id_p10;
+
+            foreach (var item in collection)
+            {
+                item.messageText = item.messageText +
+                    $"📈 [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) \n";
             }
 
             foreach (var item in collection)

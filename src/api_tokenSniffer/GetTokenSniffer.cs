@@ -90,9 +90,10 @@ namespace api_tokenSniffer
                 Where(
                     x =>
                     x.pairAddress != "no" &&
-                    x.tsFullResponse == ""
+                    x.tsFullResponse == "" &&
+                    x.tsFullResponse != "no"
                     ).
-                Take(90).
+                Take(410).
                 ToListAsync();
 
             return res;

@@ -14,5 +14,8 @@
         public string threadId { get; set; } = string.Empty;
         public string ABI { get; set; } = string.Empty;
         public string messageText { get; set; } = string.Empty;
+        public string ABIICon { get; set; } = string.Empty;
+        public string walletIcon { get; set; } = string.Empty;
+        public string balanceIcon { get; set; } = string.Empty;
     }
 }

@@ -75,7 +75,8 @@ namespace eth_shared
                 var name = item.result.name;
                 var decimals = item.result.decimals;
 
-                string pattern = @"^[A-Za-z0-9 ]+$";
+                // English letters, numbers, spaces, '
+                string pattern = @"^[A-Za-z0-9\s']+$";
 
                 if (decimals is not null &&
                     name is not null &&

@@ -196,7 +196,7 @@ namespace api_alchemy.Eth
 
             var response = await httpClient.PostAsync(apiKey, httpContent);
 
-            if (response.IsSuccessStatusCode) 
+            if (response.IsSuccessStatusCode)
             {
                 var t = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
 
@@ -412,7 +412,35 @@ namespace api_alchemy.Eth
 
                 if (t is not null)
                 {
-                    res.Add(t);
+                    if (t.result is not null &&
+                        t.result.transfers is not null &&
+                        t.result.transfers.Count() > 0)
+                    {
+                        res.Add(t);
+                    }
+                    else
+                    {
+                        Thread.Sleep(500);
+
+                        data = EthUrlBuilder.alchemy_getAssetTransfers(
+                                    item.from,
+                                    item.blockNumber,
+                                    "internal");
+
+                        httpContent = new StringContent(
+                            data,
+                            Encoding.UTF8,
+                            "application/json");
+
+                        response = await httpClient.PostAsync(apiKey, httpContent);
+
+                        t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
+
+                        if (t is not null)
+                        {
+                            res.Add(t);
+                        }
+                    }
                 }
             }
 

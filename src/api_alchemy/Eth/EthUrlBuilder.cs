@@ -98,11 +98,12 @@ namespace api_alchemy.Eth
 
         public static string alchemy_getAssetTransfers(
             string fromAddress,
-            string blockNumber)
+            string blockNumber,
+            string category = "external")
         {
             var paramDto = new getAssetTransfersDTO()
             {
-                category = ["external"],
+                category = [category],
                 excludeZeroValue = true,
                 toBlock = blockNumber,
                 maxCount = "0x1",

@@ -20,101 +20,29 @@ public class JsonRpcClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<TResponse> SendRequest<TRequest, TResponse>(string method, TRequest request)
+    public async Task<string> SendRequest()
     {
-        var jsonRequest = new
-        {
-            jsonrpc = "2.0",
-            method = method,
-            @params = """
-            "params": [{"address":"0x4200000000000000000000000000000000000006","fromBlock":"0xBC5C7B","toBlock":"0xBC5C7D","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"]}]
-            """,
-            id = requestId++
-        };
-        var e = """{"id": 2, "jsonrpc": "2.0", "method": "eth_getLogs", "params": [{"address":"0x4200000000000000000000000000000000000006","fromBlock":"0xBC5C7B","toBlock":"0xBC5C7D","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"]}]}""";
-        var tt = JsonSerializer.Serialize(jsonRequest);
-        var content = new StringContent(e, Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync("", content);
+        var jsonRequest =
+        """
+            {
+              "id": 1,
+              "jsonrpc": "2.0",
+              "method": "eth_call",
+              "params": [
+                {
+                  "to": "0xc45a81bc23a64ea556ab4cdf08a86b61cdceea8b",
+                  "data": "0x0902f1ac"
+                },
+                "0x139545E"
+              ]
+            }
+            """;
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception($"Request failed with status code {response.StatusCode}");
-        }
+        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+        var response = await httpClient.PostAsync("v2/3ex6KSnDnxa98_q_F6CD26ByLMK4Gga-", content);
+        var t = await response.Content.ReadAsStringAsync();
 
-        var jsonResponse = await response.Content.ReadAsStringAsync();
-        var jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        var rpcResponse = JsonSerializer.Deserialize<JsonRpcResponse<TResponse>>(jsonResponse, jsonOptions);
-
-        if (rpcResponse.Error != null)
-        {
-            throw new Exception($"Request failed with error: {rpcResponse.Error.Message}");
-        }
-
-        return rpcResponse.Result;
+        return t;
     }
 }
 
-public class Rootobject
-{
-    public Class1[] Property1 { get; set; }
-}
-
-public class Class1
-{
-    public string address { get; set; }
-    public string fromBlock { get; set; }
-    public string toBlock { get; set; }
-    public string[] topics { get; set; }
-}
-
-
-public class JsonRpcResponse<T>
-{
-    public T Result { get; set; }
-    public JsonRpcError Error { get; set; }
-}
-
-public class JsonRpcError
-{
-    public int Code { get; set; }
-    public string Message { get; set; }
-}
-
-// Usage example
-public class Program1
-{
-    public static async Task Main()
-    {
-        var rpcClient = new JsonRpcClient("https://base-mainnet.g.alchemy.com/v2/auVywuqgowX5rF1_h3CODjaIO6Lj32o9");
-
-        var params1 = """[{"address":"0x4200000000000000000000000000000000000006","fromBlock":"0xBC5C7B","toBlock":"0xBC5C7D","topics":["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"]}]""";
-        var e = new Rootobject();
-        e.Property1 = new Class1[1];
-
-        var c = new Class1();
-        c.address = "0x4200000000000000000000000000000000000006";
-        c.fromBlock = "0xBC5C7B";
-        c.toBlock = "0xBC5C7D";
-        c.topics = new string[1] ;
-        c.topics[0] = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
-        var request = new
-        {
-
-            // Request parameters
-        };
-
-        try
-        {
-            var response = await rpcClient.SendRequest<object, object>("eth_getLogs", c);
-            Console.WriteLine(JsonSerializer.Serialize(response));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
-    }
-}

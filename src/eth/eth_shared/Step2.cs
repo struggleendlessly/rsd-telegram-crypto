@@ -27,6 +27,7 @@ namespace eth_shared
         private readonly GetSourceCode getSourceCode;
         private readonly GetSwapEvents getSwapEvents;
         private readonly GetTokenSniffer getTokenSniffer;
+        private readonly GetReservesLogs getReservesLogs;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
         public Step2(
@@ -40,6 +41,7 @@ namespace eth_shared
             GetSourceCode getSourceCode,
             GetSwapEvents getSwapEvents,
             GetTokenSniffer getTokenSniffer,
+            GetReservesLogs getReservesLogs,
             GetBalanceOnCreating getBalanceOnCreating
             )
         {
@@ -52,12 +54,14 @@ namespace eth_shared
             this.etherscanApi = etherscanApi;
             this.getSourceCode = getSourceCode;
             this.getSwapEvents = getSwapEvents;
+            this.getReservesLogs = getReservesLogs;
             this.getTokenSniffer = getTokenSniffer;
             this.getBalanceOnCreating = getBalanceOnCreating;
         }
         public async Task Start()
         {
             //await getTokenSniffer.Start();
+            //await getReservesLogs.Start();
 
             await getSwapEvents.Start();
             await isDead.Start();

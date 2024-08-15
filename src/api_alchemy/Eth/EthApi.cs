@@ -497,5 +497,57 @@ namespace api_alchemy.Eth
 
             return res;
         }
+
+        public async Task<List<getSwapDTO>> getReservesLogs(
+            List<(string pairAddress, string start, string end)> EthTrainData,
+            int apiKeyIndex)
+        {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
+            //var topic = "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1";
+            var topic = "0xa121227ab5c7f49a15d8f83218c48dd01cd393c7ac4998dfbd327d684069317a";
+            List<getSwapDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in EthTrainData)
+            {
+                var t = EthUrlBuilder.getSwapLogs(
+                    item.pairAddress,
+                    topic,
+                    item.start,
+                    item.end);
+                logger.LogInformation(t);
+
+                aa.Append(t);
+
+                if (EthTrainData.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(apiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadAsStringAsync();
+                //var t = await response.Content.ReadFromJsonAsync<List<getSwapDTO>>();
+
+                //if (t is not null)
+                //{
+                //    res = t;
+                //}
+            }
+
+            return res;
+        }
     }
 }

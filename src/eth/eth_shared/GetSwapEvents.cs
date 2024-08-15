@@ -45,7 +45,6 @@ namespace eth_shared
             this.ApiWeb3 = ApiWeb3;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
-
         }
 
         public async Task Start()

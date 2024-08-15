@@ -84,6 +84,7 @@ builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();
 builder.Services.AddTransient<GetTokenSniffer>();
 builder.Services.AddTransient<GetTokenMetadata>();
+builder.Services.AddTransient<GetReservesLogs>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<Step1>();

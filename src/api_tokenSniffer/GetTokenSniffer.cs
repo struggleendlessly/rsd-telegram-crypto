@@ -93,7 +93,7 @@ namespace api_tokenSniffer
                     x.tsFullResponse == "" &&
                     x.tsFullResponse != "no"
                     ).
-                Take(410).
+                Take(500).
                 ToListAsync();
 
             return res;

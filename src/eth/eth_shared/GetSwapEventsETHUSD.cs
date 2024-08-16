@@ -4,7 +4,6 @@ using api_alchemy.Eth.ResponseDTO;
 using Data;
 using Data.Models;
 
-using eth_shared.Extensions;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ using System.Globalization;
 
 namespace eth_shared
 {
-    public class GetSwapEvents
+    public class GetSwapEventsETHUSD
     {
         private readonly ILogger logger;
         private readonly ApiWeb3 ApiWeb3;
@@ -28,13 +27,16 @@ namespace eth_shared
         private readonly dbContext dbContext;
 
         int lastEthBlockNumber = 0;
-        int lastProcessedBlock = 18911035;
+        int lastProcessedBlock = 12376729;
         int lastBlockToProcess = 0;
+
+        string contractAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+        string pairAddressETHUSD = "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11";
 
         CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
         string decimalCeparator = ".";
 
-        public GetSwapEvents(
+        public GetSwapEventsETHUSD(
             ILogger<GetSwapEvents> logger,
             ApiWeb3 ApiWeb3,
             EthApi apiAlchemy,
@@ -51,9 +53,9 @@ namespace eth_shared
         {
             lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
 
-            if (await dbContext.EthSwapEvents.AnyAsync())
+            if (await dbContext.EthSwapEventsETHUSD.AnyAsync())
             {
-                lastProcessedBlock = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt) + 1;
+                lastProcessedBlock = await dbContext.EthSwapEventsETHUSD.MaxAsync(x => x.blockNumberInt) + 1;
             }
 
             lastBlockToProcess = lastProcessedBlock + 2000;
@@ -63,51 +65,51 @@ namespace eth_shared
                 lastBlockToProcess = lastEthBlockNumber;
             }
 
-            var tokensToProcess = await GetTokensToProcess();
-            var unfiltered = await Get(tokensToProcess);
+            var unfiltered = await Get();
             var validated = Validate(unfiltered);
 
             if (validated.Count == 0)
             {
-                var t = new EthSwapEvents();
+                var t = new EthSwapEventsETHUSD();
                 t.blockNumberInt = lastBlockToProcess;
 
-                dbContext.EthSwapEvents.Add(t);
+                dbContext.EthSwapEventsETHUSD.Add(t);
                 await dbContext.SaveChangesAsync();
             }
             else
             {
                 var decoded = DecodeSwapEvents(validated);
-                var processed = ProcessDecoded(decoded, tokensToProcess);
+                var processed = ProcessDecoded(decoded);
                 var saved = await SaveToDB_update(processed);
             }
         }
 
         private async Task<int> SaveToDB_update
-            (List<EthSwapEvents> ethSwapEvents)
+            (List<EthSwapEventsETHUSD> ethSwapEvents)
         {
             var res = 0;
 
-            dbContext.EthSwapEvents.AddRange(ethSwapEvents);
+            dbContext.EthSwapEventsETHUSD.AddRange(ethSwapEvents);
             res = await dbContext.SaveChangesAsync();
 
             return res;
         }
 
-        public List<EthSwapEvents> ProcessDecoded(
-            List<EventLog<List<ParameterOutput>>> decoded,
-            List<EthTrainData> ethTrainDatas
+        public List<EthSwapEventsETHUSD> ProcessDecoded(
+            List<EventLog<List<ParameterOutput>>> decoded
             )
         {
-            List<EthSwapEvents> res = new();
+            List<EthSwapEventsETHUSD> res = new();
 
             foreach (var item in decoded)
             {
                 var logs = item.Log;
                 var events = item.Event;
-                var ethTrainData = ethTrainDatas.Where(x => x.pairAddress.Equals(logs.Address, StringComparison.InvariantCultureIgnoreCase)).Single();
 
-                var ethSwapEvents = events.Map(ethTrainData, decimalCeparator);
+                var ethSwapEvents = events.Map(
+                    contractAddress,
+                    18,
+                    decimalCeparator);
 
                 ethSwapEvents.pairAddress = logs.Address;
                 ethSwapEvents.blockNumberInt = Convert.ToInt32(logs.BlockNumber.ToString());
@@ -122,22 +124,20 @@ namespace eth_shared
                 if (EthIn > 0 &&
                     TokenOut > 0)
                 {
-                    // token0 is being bought with token1
-                    price = EthIn / TokenOut;
-                    ethSwapEvents.isBuy = true;
+                    price = TokenOut / EthIn;
+                    ethSwapEvents.isBuyDai = true;
                 }
 
                 if (EthOut > 0 &&
                     TokenIn > 0)
 
                 {
-                    // token0 is being sold for token1
-                    price = EthOut / TokenIn;
+                    ethSwapEvents.isBuyEth = true;
+                    price = TokenIn / EthOut;
                 }
 
                 ethSwapEvents.txsHash = logs.TransactionHash;
-                ethSwapEvents.priceEth = (double)price;
-                ethSwapEvents.EthTrainData = ethTrainData;
+                ethSwapEvents.priceEthInUsd = (double)price;
 
                 res.Add(ethSwapEvents);
             }
@@ -169,41 +169,18 @@ namespace eth_shared
 
             return res;
         }
-        public async Task<List<EthTrainData>> GetTokensToProcess()
-        {
-            var res = await
-                dbContext.
-                EthTrainData.
-                Where(
-                    x =>
-                    x.pairAddress != "no" &&
-                    x.DeadBlockNumber > lastBlockToProcess &&
-                    x.blockNumberInt < lastBlockToProcess
-                    ).
-                OrderBy(x => x.blockNumberInt).
-                //Where(x => x.pairAddress == "0xb1b665fb26d29934a678e79de4d95edb0bf2c33e").
-                ToListAsync();
 
-            return res;
-        }
-
-        public async Task<List<getSwapDTO>> Get(List<EthTrainData> ethTrainDatas)
+        public async Task<List<getSwapDTO>> Get()
         {
             List<getSwapDTO> res = new();
 
-            var diff = ethTrainDatas.Count();
-            var items = ethTrainDatas;
-
             List<(string, string, string)> t = new();
 
-            foreach (var item in ethTrainDatas)
-            {
-                t.Add((item.pairAddress, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
-            }
+            t.Add((pairAddressETHUSD, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
 
             Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
 
-            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff);
+            res = await apiAlchemy.executeBatchCall(t, apiMethod, 1);
 
             return res;
         }

@@ -20,7 +20,7 @@ TRUNCATE TABLE [crypta].[dbo].[EthBlock]
 
 dotnet tool update --global dotnet-ef
 
-PS H:\rsd-telegram-crypto\src> 
+cd H:\rsd-telegram-crypto\src
 
 ////////////////////////////////////////////////////////
 
@@ -31,7 +31,7 @@ dotnet ef migrations remove  --project Shared --startup-project WorkerServiceRea
 
 ////////////////////////////////////////////////////////
 
-dotnet ef migrations add In31 -o Migrations --project Data --startup-project eth/ws_eth_findTokens
+dotnet ef migrations add In32 -o Migrations --project Data --startup-project eth/ws_eth_findTokens
 dotnet ef database update --project Data --startup-project eth/ws_eth_findTokens
 
 dotnet ef migrations remove --project Data --startup-project eth/ws_eth_findTokens

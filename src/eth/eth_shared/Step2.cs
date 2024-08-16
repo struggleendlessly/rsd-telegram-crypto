@@ -28,6 +28,7 @@ namespace eth_shared
         private readonly GetSwapEvents getSwapEvents;
         private readonly GetTokenSniffer getTokenSniffer;
         private readonly GetReservesLogs getReservesLogs;
+        private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
         public Step2(
@@ -42,6 +43,7 @@ namespace eth_shared
             GetSwapEvents getSwapEvents,
             GetTokenSniffer getTokenSniffer,
             GetReservesLogs getReservesLogs,
+            GetSwapEventsETHUSD getSwapEventsETHUSD,
             GetBalanceOnCreating getBalanceOnCreating
             )
         {
@@ -56,6 +58,7 @@ namespace eth_shared
             this.getSwapEvents = getSwapEvents;
             this.getReservesLogs = getReservesLogs;
             this.getTokenSniffer = getTokenSniffer;
+            this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
         }
         public async Task Start()
@@ -69,6 +72,7 @@ namespace eth_shared
             await getSourceCode.Start();
             await getWalletAge.Start();
             await getPair.Start();
+            await getSwapEventsETHUSD.Start();
             await SendTlgrmMessageP0();
             await SendTlgrmMessageP10();
         }

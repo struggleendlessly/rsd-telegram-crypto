@@ -32,7 +32,6 @@ Log.Logger = new LoggerConfiguration().
         x.Protocol = OtlpProtocol.HttpProtobuf;
         x.Headers = new Dictionary<string, string>
         {
-
             ["X-Seq-ApiKey"] = builder.Configuration.GetSection("OpenTelemetry").GetValue<string>("ApiKey")
         };
         x.ResourceAttributes = new Dictionary<string, object>
@@ -87,6 +86,7 @@ builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetReservesLogs>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();
+builder.Services.AddTransient<GetSwapEventsETHUSD>();
 builder.Services.AddTransient<Step1>();
 builder.Services.AddTransient<Step2>();
 

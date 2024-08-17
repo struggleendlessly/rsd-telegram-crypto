@@ -44,11 +44,11 @@ async Task Main6()
 async Task<string> PerformEthCall(Web3 web3)
 {
     // Example of using eth_call to get data from a smart contract
-    string contractAddress = "0x3885fbe4cd8aed7b7e9625923927fa1ce30662a3"; // Replace with your contract address
-    string functionSignature = "0x0902f1ac"; // Example: getReserves() function signature
+    string contractAddress = "0xb3014e8171155e90aa2d9ca995db069a89aabe06"; // Replace with your contract address
+    string functionSignature = "0dfe1681";// "0x0902f1ac"; // Example: getReserves() function signature
 
     var contract = web3.Eth.GetContract(pairAbi, contractAddress);
-    var function = contract.GetFunction("getReserves");
+    var function = contract.GetFunction("token1");
 
     var callInput = new Nethereum.RPC.Eth.DTOs.CallInput
     {

@@ -39,3 +39,6 @@
   SELECT count(*) as a10_CountOfProcessed_Sniffer
   FROM [crypta].[dbo].[EthTrainData]
   where tsFullResponse <> ''
+
+  SELECT count(*) as EthSwapEventsETHUSD
+  FROM [crypta].[dbo].[EthSwapEventsETHUSD]

@@ -142,7 +142,7 @@ namespace etherscan
                 var url = UrlBuider.getSourceCode(item, apiKey);
                 res.Add(url, item);
 
-                if (apiKeyParallelIndex + 1 < 8)
+                if (apiKeyParallelIndex + 1 < 12)
                 {
                     apiKeyParallelIndex++;
                 }
@@ -171,7 +171,7 @@ namespace etherscan
 
                 Console.WriteLine(item);
 
-                if (apiKeyParallelIndex + 1 < 8)
+                if (apiKeyParallelIndex + 1 < 12)
                 {
                     apiKeyParallelIndex++;
                 }

@@ -156,7 +156,7 @@ namespace eth_shared
                 res.token1 = t1.result.Replace("0x", "").TrimStart('0');
                 res.token1 = "0x" + res.token1;
 
-                token0AndToken1Cache.Add(item.v, res);
+                token0AndToken1Cache.TryAdd(item.v, res);
             }
         }
 

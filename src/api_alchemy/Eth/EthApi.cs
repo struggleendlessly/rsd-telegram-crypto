@@ -386,6 +386,102 @@ namespace api_alchemy.Eth
             return res;
         }
 
+        public async Task<List<getTotalSupplyDTO>> eth_callToken0(
+            List<(string, int)> addresses,
+            int apiKeyIndex)
+        {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
+            var total0_MethodCode = "0x0dfe1681";
+            var total1_MethodCode = "0xd21220a7";
+
+            List<getTotalSupplyDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in addresses)
+            {
+                aa.Append(EthUrlBuilder.eth_call(
+                    item.Item1,
+                    item.Item2,
+                    total0_MethodCode));
+
+                if (addresses.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(apiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
+            }
+
+            return res;
+        }
+
+        public async Task<List<getTotalSupplyDTO>> eth_callToken1(
+            List<(string, int)> addresses,
+            int apiKeyIndex)
+        {
+            var apiKey = GetvAndApiKey(apiKeyIndex);
+            var total0_MethodCode = "0x0dfe1681";
+            var total1_MethodCode = "0xd21220a7";
+
+            List<getTotalSupplyDTO> res = new();
+            StringBuilder aa = new();
+
+            aa.Append("[");
+
+            foreach (var item in addresses)
+            {
+                aa.Append(EthUrlBuilder.eth_call(
+                    item.Item1,
+                    item.Item2,
+                    total1_MethodCode));
+
+                if (addresses.Last() != item)
+                {
+                    aa.Append(",");
+                }
+            }
+
+            aa.Append("]");
+
+            StringContent httpContent = new StringContent(
+                aa.ToString(),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await httpClient.PostAsync(apiKey, httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+
+                if (t is not null)
+                {
+                    res = t;
+                }
+            }
+
+            return res;
+        }
+
         public async Task<List<getAssetTransfersDTO>> getAssetTransfers(
             List<EthTrainData> EthTrainData,
             int apiKeyIndex)

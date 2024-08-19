@@ -82,10 +82,48 @@ namespace eth_shared
                 else
                 {
                     var decoded = DecodeSwapEvents(validated);
+                    var addressesToProcess =
+                        decoded.
+                        Select(x => x.Log.Address).
+                        Distinct().
+                        Select((v, i) => (v, i)).
+                        ToList();
+
+                    var token0 = await GetToken0(addressesToProcess);
+                    var token1 = await GetToken1(addressesToProcess);
+                    GetToken0AndToken1(addressesToProcess, token0, token1);
                     var processed = await ProcessDecoded(decoded, tokensToProcess);
                     var saved = await SaveToDB_update(processed);
                 }
             }
+        }
+
+        public async Task<List<getTotalSupplyDTO>> GetToken0(List<(string, int)> events)
+        {
+            List<getTotalSupplyDTO> res = new();
+
+            var diff = events.Count();
+            var items = events;
+
+            Func<List<(string, int)>, int, Task<List<getTotalSupplyDTO>>> apiMethod = apiAlchemy.eth_callToken0;
+
+            res = await apiAlchemy.executeBatchCall(events, apiMethod, diff);
+
+            return res;
+        }
+
+        public async Task<List<getTotalSupplyDTO>> GetToken1(List<(string, int)> events)
+        {
+            List<getTotalSupplyDTO> res = new();
+
+            var diff = events.Count();
+            var items = events;
+
+            Func<List<(string, int)>, int, Task<List<getTotalSupplyDTO>>> apiMethod = apiAlchemy.eth_callToken1;
+
+            res = await apiAlchemy.executeBatchCall(events, apiMethod, diff);
+
+            return res;
         }
 
         private async Task<int> SaveToDB_update
@@ -99,29 +137,27 @@ namespace eth_shared
             return res;
         }
 
-        private async Task<Token0AndToken1> GetToken0AndToken1(string pairAddress)
+        private void GetToken0AndToken1(
+            List<(string v, int i)> addressesToProcess,
+            List<getTotalSupplyDTO> token0,
+            List<getTotalSupplyDTO> token1
+            )
         {
-            Token0AndToken1 res = new();
-
-            if (token0AndToken1Cache.ContainsKey(pairAddress))
+            foreach (var item in addressesToProcess)
             {
-                res = token0AndToken1Cache[pairAddress];
-            }
-            else
-            {
-                var token0 = await ApiWeb3.PerformEthCall("token0", pairAddress);
-                var token1 = await ApiWeb3.PerformEthCall("token1", pairAddress);
+                Token0AndToken1 res = new();
 
-                res.token0 = token0.Replace("0x", "").TrimStart('0');
+                var t0 = token0.Where(x => x.id == item.i).FirstOrDefault();
+                var t1 = token1.Where(x => x.id == item.i).FirstOrDefault();
+
+                res.token0 = t0.result.Replace("0x", "").TrimStart('0');
                 res.token0 = "0x" + res.token0;
 
-                res.token1 = token1.Replace("0x", "").TrimStart('0');
+                res.token1 = t1.result.Replace("0x", "").TrimStart('0');
                 res.token1 = "0x" + res.token1;
 
-                token0AndToken1Cache.Add(pairAddress, res);
+                token0AndToken1Cache.Add(item.v, res);
             }
-
-            return res;
         }
 
         public async Task<List<EthSwapEvents>> ProcessDecoded(
@@ -137,7 +173,7 @@ namespace eth_shared
                 var events = item.Event;
                 var ethTrainData = ethTrainDatas.Where(x => x.pairAddress.Equals(logs.Address, StringComparison.InvariantCultureIgnoreCase)).Single();
 
-                var tokens01 = await GetToken0AndToken1(logs.Address);
+                var tokens01 = token0AndToken1Cache[logs.Address];
 
                 var ethSwapEvents = events.Map(ethTrainData, decimalCeparator, tokens01);
 

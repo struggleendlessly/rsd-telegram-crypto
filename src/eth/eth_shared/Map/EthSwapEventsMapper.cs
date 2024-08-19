@@ -11,7 +11,7 @@ namespace eth_shared.Map
 {
     public static class Mapper
     {
-        static string EthAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+        static readonly string EthAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
         public static EthSwapEvents Map(
             this List<ParameterOutput> collection,
             EthTrainData ethTrainData,
@@ -19,6 +19,7 @@ namespace eth_shared.Map
             Token0AndToken1 Token01)
         {
             EthSwapEvents res = new();
+            var EthAddressMaybe = EthAddress;
 
             var sender = collection.Where(x => x.Parameter.Name.Equals("sender", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().Result.ToString();
             var to = collection.Where(x => x.Parameter.Name.Equals("to", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().Result.ToString();
@@ -39,27 +40,25 @@ namespace eth_shared.Map
                 if (Token01.token0.Contains(ethTrainData.contractAddress, StringComparison.InvariantCultureIgnoreCase))
                 {
                     res.tokenNotEth = Token01.token1;
-                    EthAddress = Token01.token1;
+                    EthAddressMaybe = Token01.token1;
                 }
 
                 if (Token01.token1.Contains(ethTrainData.contractAddress, StringComparison.InvariantCultureIgnoreCase))
                 {
                     res.tokenNotEth = Token01.token0;
-                    EthAddress = Token01.token0;
+                    EthAddressMaybe = Token01.token0;
                 }
 
             }
 
             listToOrder = [Token01.token0, Token01.token1];
 
-            //listToOrder.Sort();
-
             BigDecimal EthIn = 0.0;
             BigDecimal EthOut = 0.0;
             BigDecimal TokenIn = 0.0;
             BigDecimal TokenOut = 0.0;
 
-            if (listToOrder[0].Equals(EthAddress))
+            if (listToOrder[0].Equals(EthAddressMaybe, StringComparison.CurrentCultureIgnoreCase))
             {
                 EthIn = BigDecimal.Parse(amount0in.FormatTo18(decimalCeparator));
                 EthOut = BigDecimal.Parse(amount0out.FormatTo18(decimalCeparator));

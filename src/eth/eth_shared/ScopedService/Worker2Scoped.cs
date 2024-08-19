@@ -90,8 +90,33 @@ namespace eth_shared
             //await getTokenSniffer.Start();
             //await getReservesLogs.Start();
 
-            await getSwapEvents.Start();
-            await getSwapEventsETHUSD.Start();
+            {
+                _logger.LogInformation("Worker Worker1Scoped getSwapEvents running at: {time}", DateTimeOffset.Now);
+                var _сount = await dbContext.EthSwapEvents.CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSwapEvents count before: {count}", _сount);
+                var timeStart = DateTimeOffset.Now;
+
+                await getSwapEvents.Start();
+
+                var timeEnd = DateTimeOffset.Now;
+                _сount = await dbContext.EthSwapEvents.CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSwapEvents count before: {count}", _сount);
+                _logger.LogInformation("Worker Worker1Scoped getSwapEvents running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
+
+            {
+                _logger.LogInformation("Worker Worker1Scoped getSwapEventsETHUSD running at: {time}", DateTimeOffset.Now);
+                var _сount = await dbContext.EthSwapEventsETHUSD.CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSwapEventsETHUSD count before: {count}", _сount);
+                var timeStart = DateTimeOffset.Now;
+
+                await getSwapEventsETHUSD.Start();
+
+                var timeEnd = DateTimeOffset.Now;
+                _сount = await dbContext.EthSwapEventsETHUSD.CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSwapEventsETHUSD count before: {count}", _сount);
+                _logger.LogInformation("Worker Worker1Scoped getSwapEventsETHUSD running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
         }
 
         //async Task SendTlgrmMessageP0()

@@ -79,7 +79,6 @@ namespace eth_shared
 
                 var timeEndStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker Worker1Scoped processed blocks: {block}", await dbContext.EthBlock.CountAsync());
                 _logger.LogInformation("Worker Worker1Scoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);
@@ -89,53 +88,69 @@ namespace eth_shared
         async Task Start()
         {
             {
+                _logger.LogInformation("Worker Worker1Scoped isDead running at: {time}", DateTimeOffset.Now);
+                var _сount = await dbContext.EthTrainData.Where(x => x.isDead == true).CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped isDead count before: {count}", _сount);
                 var timeStart = DateTimeOffset.Now;
-                _logger.LogInformation("Worker isDead running at: {time}", DateTimeOffset.Now);
 
                 await isDead.Start();
 
                 var timeEnd = DateTimeOffset.Now;
-                _logger.LogInformation("Worker isDead running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                _сount = await dbContext.EthTrainData.Where(x => x.isDead == true).CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped isDead count after: {count}", _сount);
+                _logger.LogInformation("Worker Worker1Scoped isDead running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
 
             {
+                _logger.LogInformation("Worker Worker1Scoped getBalanceOnCreating running at: {time}", DateTimeOffset.Now);
+                var _сount = await dbContext.EthTrainData.Where(x => x.BalanceOnCreating > 0).CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getBalanceOnCreating count before: {count}", _сount);
                 var timeStart = DateTimeOffset.Now;
-                _logger.LogInformation("Worker getBalanceOnCreating running at: {time}", DateTimeOffset.Now);
 
                 await getBalanceOnCreating.Start();
 
                 var timeEnd = DateTimeOffset.Now;
-                _logger.LogInformation("Worker getBalanceOnCreating running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                _сount = await dbContext.EthTrainData.Where(x => x.BalanceOnCreating > 0).CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getBalanceOnCreating сount after: {count}", _сount);
+                _logger.LogInformation("Worker Worker1Scoped getBalanceOnCreating running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
 
             {
+                _logger.LogInformation("Worker Worker1Scoped getSourceCode running at: {time}", DateTimeOffset.Now);
+                var _сount = await dbContext.EthTrainData.Where(x => x.ABI != "no").CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSourceCode count before: {count}", _сount);
                 var timeStart = DateTimeOffset.Now;
-                _logger.LogInformation("Worker getSourceCode running at: {time}", DateTimeOffset.Now);
 
                 await getSourceCode.Start();
 
                 var timeEnd = DateTimeOffset.Now;
-                _logger.LogInformation("Worker getSourceCode running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                _logger.LogInformation("Worker Worker1Scoped getSourceCode running at: {time}", DateTimeOffset.Now);
+                _сount = await dbContext.EthTrainData.Where(x => x.ABI != "no").CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSourceCode running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
 
             {
+                _logger.LogInformation("Worker Worker1Scoped getWalletAge running at: {time}", DateTimeOffset.Now);
+                var _сount = await dbContext.EthTrainData.Where(x => x.walletCreated == default).CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getWalletAge count before: {count}", _сount);
                 var timeStart = DateTimeOffset.Now;
-                _logger.LogInformation("Worker getWalletAge running at: {time}", DateTimeOffset.Now);
 
                 await getWalletAge.Start();
 
                 var timeEnd = DateTimeOffset.Now;
-                _logger.LogInformation("Worker getWalletAge running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                 _сount = await dbContext.EthTrainData.Where(x => x.walletCreated == default).CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getWalletAge count before: {count}", _сount);
+                _logger.LogInformation("Worker Worker1Scoped getWalletAge running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
 
             {
                 var timeStart = DateTimeOffset.Now;
-                _logger.LogInformation("Worker SendTlgrmMessageP0 running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker Worker1Scoped SendTlgrmMessageP0 running at: {time}", DateTimeOffset.Now);
 
                 await SendTlgrmMessageP0();
 
                 var timeEnd = DateTimeOffset.Now;
-                _logger.LogInformation("Worker SendTlgrmMessageP0 running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                _logger.LogInformation("Worker Worker1Scoped SendTlgrmMessageP0 running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
         }
 

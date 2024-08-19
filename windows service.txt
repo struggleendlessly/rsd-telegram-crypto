@@ -1,0 +1,12 @@
+////////////////////////////////////////////////////////
+
+$params = @{
+  Name = "ws_eth_5mins"
+  BinaryPathName = 'D:\windowsServices\ws_eth_5mins\ws_eth_5mins.exe'
+  DisplayName = "ws_eth_5mins"
+  StartupType = "Manual"
+  Description = "ws_eth_5mins"
+}
+New-Service @params
+
+////////////////////////////////////////////////////////

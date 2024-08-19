@@ -79,7 +79,6 @@ namespace eth_shared
 
                 var timeEndStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker Worker2Scoped processed blocks: {block}", await dbContext.EthBlock.CountAsync());
                 _logger.LogInformation("Worker Worker2Scoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);

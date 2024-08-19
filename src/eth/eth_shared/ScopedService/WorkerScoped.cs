@@ -55,9 +55,11 @@ namespace eth_shared
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var timeStartStep1 = DateTimeOffset.Now;
 
                 _logger.LogInformation("Worker WorkerScoped running at: {time}", DateTimeOffset.Now);
+                var lastBlock = await dbContext.EthTrainData.OrderByDescending(x => x.blockNumberInt).FirstAsync();
+                _logger.LogInformation("Worker WorkerScoped lastBlock proccessed: {time}", lastBlock.blockNumberInt);
+                var timeStart = DateTimeOffset.Now;
 
                 try
                 {
@@ -69,10 +71,11 @@ namespace eth_shared
                     _logger.LogError("Worker WorkerScoped Exception: {stack}", ex.StackTrace);
                 }
 
-                var timeEndStep1 = DateTimeOffset.Now;
+                var timeEnd = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker WorkerScoped processed blocks: {block}", await dbContext.EthBlock.CountAsync());
-                _logger.LogInformation("Worker WorkerScoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
+                lastBlock = await dbContext.EthTrainData.OrderByDescending(x => x.blockNumberInt).FirstAsync();
+                _logger.LogInformation("Worker WorkerScoped lastBlock proccessed: {time}", lastBlock.blockNumberInt);
+                _logger.LogInformation("Worker WorkerScoped running time: {time}", (timeEnd - timeStart).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);
             }

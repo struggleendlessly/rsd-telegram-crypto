@@ -5,6 +5,8 @@ using eth_shared.Extensions;
 using Nethereum.ABI.FunctionEncoding;
 using Nethereum.Util;
 
+using static eth_shared.GetSwapEvents;
+
 namespace eth_shared.Map
 {
     public static class Mapper
@@ -13,7 +15,8 @@ namespace eth_shared.Map
         public static EthSwapEvents Map(
             this List<ParameterOutput> collection,
             EthTrainData ethTrainData,
-            string decimalCeparator)
+            string decimalCeparator,
+            Token0AndToken1 Token01)
         {
             EthSwapEvents res = new();
 
@@ -25,7 +28,31 @@ namespace eth_shared.Map
             var amount1out = collection.Where(x => x.Parameter.Name.Equals("amount1out", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault().Result.ToString();
 
             List<string> listToOrder = [EthAddress, ethTrainData.contractAddress];
-            listToOrder.Sort();
+
+            if (Token01.token0.Contains(EthAddress, StringComparison.InvariantCultureIgnoreCase) ||
+                Token01.token1.Contains(EthAddress, StringComparison.InvariantCultureIgnoreCase))
+            {
+
+            }
+            else
+            {
+                if (Token01.token0.Contains(ethTrainData.contractAddress, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    res.tokenNotEth = Token01.token1;
+                    EthAddress = Token01.token1;
+                }
+
+                if (Token01.token1.Contains(ethTrainData.contractAddress, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    res.tokenNotEth = Token01.token0;
+                    EthAddress = Token01.token0;
+                }
+
+            }
+
+            listToOrder = [Token01.token0, Token01.token1];
+
+            //listToOrder.Sort();
 
             BigDecimal EthIn = 0.0;
             BigDecimal EthOut = 0.0;

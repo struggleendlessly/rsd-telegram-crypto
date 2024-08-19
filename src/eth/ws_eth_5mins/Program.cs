@@ -90,7 +90,7 @@ builder.Services.AddTransient<GetSwapEventsETHUSD>();
 builder.Services.AddTransient<Step1>();
 builder.Services.AddTransient<Step2>();
 
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<Worker3>();
 
 var host = builder.Build();
 host.Run();

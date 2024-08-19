@@ -1,11 +1,4 @@
-﻿using Data;
-
-using eth_shared;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-
-using ws_eth_findTokens.ScopedService;
+﻿using eth_shared;
 
 namespace ws_eth_findTokens
 {
@@ -30,7 +23,7 @@ namespace ws_eth_findTokens
                 IScopedProcessingService scopedProcessingService =
                     scope.
                     ServiceProvider.
-                    GetRequiredKeyedService<IScopedProcessingService>("2");
+                    GetRequiredKeyedService<IScopedProcessingService>("Worker1Scoped");
 
                 await scopedProcessingService.DoWorkAsync(stoppingToken);
             }

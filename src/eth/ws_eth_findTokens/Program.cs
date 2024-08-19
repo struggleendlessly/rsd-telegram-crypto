@@ -19,7 +19,6 @@ using Shared;
 using Shared.ConfigurationOptions;
 
 using ws_eth_findTokens;
-using ws_eth_findTokens.ScopedService;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -93,8 +92,8 @@ builder.Services.AddTransient<Step1>();
 builder.Services.AddTransient<Step2>();
 builder.Services.AddTransient<Step3>();
 
-builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerScoped>("1");
-builder.Services.AddKeyedScoped<IScopedProcessingService, Worker1Scoped>("2");
+builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerScoped>("WorkerScoped");
+builder.Services.AddKeyedScoped<IScopedProcessingService, Worker1Scoped>("Worker1Scoped");
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddHostedService<Worker1>();
 

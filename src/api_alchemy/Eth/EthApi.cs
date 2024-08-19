@@ -17,7 +17,6 @@ namespace api_alchemy.Eth
     public class EthApi
     {
         private readonly int batchSize = 50;
-        private readonly int maxDiffToProcess = 1000;
 
         private readonly ILogger logger;
         private readonly HttpClient httpClient;
@@ -52,7 +51,8 @@ namespace api_alchemy.Eth
 
             List<ApiInput> items,
             Func<List<ApiInput>, int, Task<List<Response>>> apiMethod,
-            int diff = 0
+            int diff = 0,
+            int maxDiffToProcess = 1000
             )
         {
             ConcurrentBag<Response> res = new();
@@ -63,7 +63,6 @@ namespace api_alchemy.Eth
             {
                 batchSizeLocal = 1;
             }
-
 
             if (diff > 0)
             {

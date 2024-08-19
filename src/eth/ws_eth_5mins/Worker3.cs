@@ -6,15 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ws_eth_5mins
 {
-    public class Worker : BackgroundService
+    public class Worker3 : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<Worker3> _logger;
         private readonly Step1 step1;
         private readonly Step2 step2;
         private readonly dbContext dbContext;
 
-        public Worker(
-            ILogger<Worker> logger,
+        public Worker3(
+            ILogger<Worker3> logger,
             dbContext dbContext,
             Step1 step1,
             Step2 step2

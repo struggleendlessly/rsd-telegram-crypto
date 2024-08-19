@@ -1,16 +1,15 @@
-using ws_eth_findTokens.ScopedService;
+using eth_shared;
 
 namespace ws_eth_findTokens
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
-
+        private readonly ILogger _logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
 
         public Worker(
-            IServiceScopeFactory serviceScopeFactory,
-            ILogger<Worker> logger
+            ILogger<Worker> logger,
+            IServiceScopeFactory serviceScopeFactory
             )
         {
             _logger = logger;
@@ -24,7 +23,7 @@ namespace ws_eth_findTokens
                 IScopedProcessingService scopedProcessingService =
                     scope.
                     ServiceProvider.
-                    GetRequiredKeyedService<IScopedProcessingService>("1");
+                    GetRequiredKeyedService<IScopedProcessingService>("WorkerScoped");
 
                 await scopedProcessingService.DoWorkAsync(stoppingToken);
             }

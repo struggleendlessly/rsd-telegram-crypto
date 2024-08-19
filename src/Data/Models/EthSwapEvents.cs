@@ -15,6 +15,7 @@
         public double priceEth { get; set; }
         public bool isBuy { get; set; }
         public int blockNumberInt { get; set; }
+        public string tokenNotEth { get; set; } = string.Empty;
 
         public EthTrainData? EthTrainData { get; set; }
     }

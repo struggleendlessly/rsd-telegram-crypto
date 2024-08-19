@@ -17,6 +17,7 @@ using Nethereum.Contracts;
 using Nethereum.Util;
 
 using System.Globalization;
+using System.Linq;
 
 namespace eth_shared
 {
@@ -30,6 +31,7 @@ namespace eth_shared
         int lastEthBlockNumber = 0;
         int lastProcessedBlock = 18911035;
         int lastBlockToProcess = 0;
+        private Dictionary<string, Token0AndToken1> token0AndToken1Cache = new();
 
         CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
         string decimalCeparator = ".";
@@ -78,7 +80,7 @@ namespace eth_shared
             else
             {
                 var decoded = DecodeSwapEvents(validated);
-                var processed = ProcessDecoded(decoded, tokensToProcess);
+                var processed = await ProcessDecoded(decoded, tokensToProcess);
                 var saved = await SaveToDB_update(processed);
             }
         }
@@ -94,7 +96,32 @@ namespace eth_shared
             return res;
         }
 
-        public List<EthSwapEvents> ProcessDecoded(
+        private async Task<Token0AndToken1> GetToken0AndToken1(string pairAddress)
+        {
+            Token0AndToken1 res = new();
+
+            if (token0AndToken1Cache.ContainsKey(pairAddress))
+            {
+                res = token0AndToken1Cache[pairAddress];
+            }
+            else
+            {
+                var token0 = await ApiWeb3.PerformEthCall("token0", pairAddress);
+                var token1 = await ApiWeb3.PerformEthCall("token1", pairAddress);
+
+                res.token0 = token0.Replace("0x", "").TrimStart('0');
+                res.token0 = "0x"+ res.token0;
+
+                res.token1 = token1.Replace("0x", "").TrimStart('0');
+                res.token1 = "0x" + res.token1;
+
+                token0AndToken1Cache.Add(pairAddress, res);
+            }
+
+            return res;
+        }
+
+        public async Task<List<EthSwapEvents>> ProcessDecoded(
             List<EventLog<List<ParameterOutput>>> decoded,
             List<EthTrainData> ethTrainDatas
             )
@@ -107,7 +134,9 @@ namespace eth_shared
                 var events = item.Event;
                 var ethTrainData = ethTrainDatas.Where(x => x.pairAddress.Equals(logs.Address, StringComparison.InvariantCultureIgnoreCase)).Single();
 
-                var ethSwapEvents = events.Map(ethTrainData, decimalCeparator);
+                var tokens01 = await GetToken0AndToken1(logs.Address);
+
+                var ethSwapEvents = events.Map(ethTrainData, decimalCeparator, tokens01);
 
                 ethSwapEvents.pairAddress = logs.Address;
                 ethSwapEvents.blockNumberInt = Convert.ToInt32(logs.BlockNumber.ToString());
@@ -177,7 +206,7 @@ namespace eth_shared
                 Where(
                     x =>
                     x.pairAddress != "no" &&
-                    x.DeadBlockNumber > lastBlockToProcess &&
+                    (x.DeadBlockNumber > lastBlockToProcess || x.DeadBlockNumber == 0) &&
                     x.blockNumberInt < lastBlockToProcess
                     ).
                 OrderBy(x => x.blockNumberInt).
@@ -203,9 +232,15 @@ namespace eth_shared
 
             Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
 
-            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff);
+            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff, diff);
 
             return res;
+        }
+
+        public class Token0AndToken1
+        {
+            public string token0 { get; set; }
+            public string token1 { get; set; }
         }
     }
 }

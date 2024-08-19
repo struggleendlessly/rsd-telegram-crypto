@@ -49,6 +49,8 @@ async Task<string> PerformEthCall(Web3 web3)
 
     var contract = web3.Eth.GetContract(pairAbi, contractAddress);
     var function = contract.GetFunction("token1");
+    var ee =
+    contract.ContractBuilder.ContractABI.Functions.Where(x => x.Name.Equals("token1", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().Sha3Signature;
 
     var callInput = new Nethereum.RPC.Eth.DTOs.CallInput
     {

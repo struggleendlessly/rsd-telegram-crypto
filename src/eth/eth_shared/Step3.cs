@@ -7,9 +7,10 @@ using etherscan;
 
 using Microsoft.Extensions.Logging;
 
+
 namespace eth_shared
 {
-    public class Step2
+    public class Step3
     {
         private List<EthTrainData> ethTrainDatas = new();
 
@@ -27,7 +28,7 @@ namespace eth_shared
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
-        public Step2(
+        public Step3(
             ILogger<Step2> logger,
             IsDead isDead,
             GetPair getPair,
@@ -62,41 +63,40 @@ namespace eth_shared
             //await getTokenSniffer.Start();
             //await getReservesLogs.Start();
 
-            await getSwapEvents.Start();
-            await isDead.Start();
-            await getBalanceOnCreating.Start();
-            await getSourceCode.Start();
-            await getWalletAge.Start();
+            //await getSwapEvents.Start();
+            //await isDead.Start();
+            //await getBalanceOnCreating.Start();
+            //await getSourceCode.Start();
+            //await getWalletAge.Start();
             await getPair.Start();
-            await getSwapEventsETHUSD.Start();
-            await SendTlgrmMessageP0();
-            //await SendTlgrmMessageP10();
+            //await getSwapEventsETHUSD.Start();
+            //await SendTlgrmMessageP0();
+            await SendTlgrmMessageP10();
         }
 
-        public async Task SendTlgrmMessageP0()
+        public async Task SendTlgrmMessageP10()
         {
             var notDefault = default(DateTime).AddDays(1);
             var ethTrainData =
                 dbContext.
                 EthTrainData.
-                //Where(x=>x.contractAddress == "0x3f4e95bf39bc676c4f7eaccd4d2d353fa2891190").
                 //Where(
                 //    x => x.walletCreated > notDefault &&
                 //    x.BalanceOnCreating >= 0).
                 //Take(2).
                 Where(
-                    x => x.walletCreated > notDefault &&
-                    x.ABI != "no" &&
-                    x.BalanceOnCreating >= 0 &&
-                    x.tlgrmNewTokens == 0 &&
+                    x =>
+                    x.pairAddress != "" &&
+                    x.pairAddress != "no" &&
+                    x.tlgrmLivePairs == 0 &&
                     x.isDead == false &&
-                    x.blockNumberInt > 20420936).
+                    x.blockNumberInt > 20456589).
                 ToList();
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
 
-            var t = await tlgrmApi.SendPO(ethTrainData, blocks);
+            var t = await tlgrmApi.SendP1O(ethTrainData, blocks);
 
             foreach (var item in ethTrainData)
             {
@@ -104,7 +104,7 @@ namespace eth_shared
 
                 if (resp is not null)
                 {
-                    item.tlgrmNewTokens = resp.tlgrmMsgId;
+                    item.tlgrmLivePairs = resp.tlgrmMsgId;
                 }
             }
 

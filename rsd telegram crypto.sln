@@ -44,7 +44,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "etherscan", "src\eth\ethers
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tlgrmApi", "src\eth\tlgrmApi\tlgrmApi.csproj", "{45340CF2-26A2-4AE3-9FB4-0988CC171AD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api_tokenSniffer", "src\api_tokenSniffer\api_tokenSniffer.csproj", "{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api_tokenSniffer", "src\api_tokenSniffer\api_tokenSniffer.csproj", "{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ws_eth_5mins", "src\eth\ws_eth_5mins\ws_eth_5mins.csproj", "{290ED28C-2074-41CA-A565-A1700C1E57FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +118,10 @@ Global
 		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AAA9BEC-C219-4592-9C01-D1CDAF9C9D7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{290ED28C-2074-41CA-A565-A1700C1E57FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{290ED28C-2074-41CA-A565-A1700C1E57FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{290ED28C-2074-41CA-A565-A1700C1E57FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{290ED28C-2074-41CA-A565-A1700C1E57FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{C155B49E-DA89-475D-9AF8-EA4A7D17B08D} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 		{4FF14FE1-9B63-48FC-9F15-61CF22616BEF} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 		{45340CF2-26A2-4AE3-9FB4-0988CC171AD8} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
+		{290ED28C-2074-41CA-A565-A1700C1E57FF} = {98DCB412-3671-4EAE-BDF6-C55DC89C67C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D54AC4D8-ED12-40CF-BD73-23C6CD5E0CF1}

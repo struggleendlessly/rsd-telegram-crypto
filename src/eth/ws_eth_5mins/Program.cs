@@ -18,8 +18,7 @@ using Serilog.Sinks.OpenTelemetry;
 using Shared;
 using Shared.ConfigurationOptions;
 
-using ws_eth_findTokens;
-using ws_eth_findTokens.ScopedService;
+using ws_eth_5mins;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -37,7 +36,7 @@ Log.Logger = new LoggerConfiguration().
         };
         x.ResourceAttributes = new Dictionary<string, object>
         {
-            ["service.name"] = "ws_eth_findTokens"
+            ["service.name"] = "ws_eth_5mins"
         };
     }).
     CreateLogger();
@@ -45,12 +44,11 @@ Log.Logger = new LoggerConfiguration().
 builder.Logging.AddSerilog();
 builder.Services.AddWindowsService(options =>
 {
-    options.ServiceName = "ws_eth_findTokens";
+    options.ServiceName = "ws_eth_5mins";
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<dbContext>(options => options.UseSqlServer(connectionString));
-
+builder.Services.AddDbContext<dbContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
 
 builder.Services.Configure<OptionsAlchemy>(builder.Configuration.GetSection(OptionsAlchemy.SectionName));
 builder.Services.Configure<OptionsEtherscan>(builder.Configuration.GetSection(OptionsEtherscan.SectionName));
@@ -60,14 +58,14 @@ builder.Services.AddHttpClient("Api", client =>
 {
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var socketHandler = new SocketsHttpHandler
     {
-        var socketHandler = new SocketsHttpHandler
-        {
-            MaxConnectionsPerServer = int.MaxValue,
-            PooledConnectionLifetime = TimeSpan.FromMinutes(15),
-        };
-        return socketHandler;
-    })
+        MaxConnectionsPerServer = int.MaxValue,
+        PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+    };
+    return socketHandler;
+})
 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
 .AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
 
@@ -91,12 +89,8 @@ builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<GetSwapEventsETHUSD>();
 builder.Services.AddTransient<Step1>();
 builder.Services.AddTransient<Step2>();
-builder.Services.AddTransient<Step3>();
 
-builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerScoped>("1");
-builder.Services.AddKeyedScoped<IScopedProcessingService, Worker1Scoped>("2");
 builder.Services.AddHostedService<Worker>();
-builder.Services.AddHostedService<Worker1>();
 
 var host = builder.Build();
 host.Run();

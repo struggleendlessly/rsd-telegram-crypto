@@ -1,16 +1,22 @@
+﻿using Data;
+
+using eth_shared;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
 using ws_eth_findTokens.ScopedService;
 
 namespace ws_eth_findTokens
 {
-    public class Worker : BackgroundService
+    public class Worker1 : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
-
+        private readonly ILogger _logger;
         private readonly IServiceScopeFactory serviceScopeFactory;
 
-        public Worker(
-            IServiceScopeFactory serviceScopeFactory,
-            ILogger<Worker> logger
+        public Worker1(
+            ILogger<Worker1> logger,
+            IServiceScopeFactory serviceScopeFactory
             )
         {
             _logger = logger;
@@ -24,7 +30,7 @@ namespace ws_eth_findTokens
                 IScopedProcessingService scopedProcessingService =
                     scope.
                     ServiceProvider.
-                    GetRequiredKeyedService<IScopedProcessingService>("1");
+                    GetRequiredKeyedService<IScopedProcessingService>("2");
 
                 await scopedProcessingService.DoWorkAsync(stoppingToken);
             }

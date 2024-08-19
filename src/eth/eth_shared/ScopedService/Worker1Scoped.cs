@@ -126,6 +126,7 @@ namespace eth_shared
                 var timeEnd = DateTimeOffset.Now;
                 _logger.LogInformation("Worker Worker1Scoped getSourceCode running at: {time}", DateTimeOffset.Now);
                 _сount = await dbContext.EthTrainData.Where(x => x.ABI != "no").CountAsync();
+                _logger.LogInformation("Worker Worker1Scoped getSourceCode сount after: {count}", _сount);
                 _logger.LogInformation("Worker Worker1Scoped getSourceCode running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
 
@@ -139,7 +140,7 @@ namespace eth_shared
 
                 var timeEnd = DateTimeOffset.Now;
                  _сount = await dbContext.EthTrainData.Where(x => x.walletCreated == default).CountAsync();
-                _logger.LogInformation("Worker Worker1Scoped getWalletAge count before: {count}", _сount);
+                _logger.LogInformation("Worker Worker1Scoped getWalletAge count after: {count}", _сount);
                 _logger.LogInformation("Worker Worker1Scoped getWalletAge running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
 

@@ -58,7 +58,7 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker WorkerScoped running at: {time}", DateTimeOffset.Now);
                 var lastBlock = await dbContext.EthTrainData.OrderByDescending(x => x.blockNumberInt).FirstAsync();
-                _logger.LogInformation("Worker WorkerScoped lastBlock proccessed: {number}", lastBlock.blockNumberInt);
+                _logger.LogInformation("Worker WorkerScoped lastBlock proccessed before: {number}", lastBlock.blockNumberInt);
                 var timeStart = DateTimeOffset.Now;
 
                 try
@@ -74,7 +74,7 @@ namespace eth_shared
                 var timeEnd = DateTimeOffset.Now;
 
                 lastBlock = await dbContext.EthTrainData.OrderByDescending(x => x.blockNumberInt).FirstAsync();
-                _logger.LogInformation("Worker WorkerScoped lastBlock proccessed: {number}", lastBlock.blockNumberInt);
+                _logger.LogInformation("Worker WorkerScoped lastBlock proccessed after: {number}", lastBlock.blockNumberInt);
                 _logger.LogInformation("Worker WorkerScoped running time: {time}", (timeEnd - timeStart).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);

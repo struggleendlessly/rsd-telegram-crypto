@@ -1,6 +1,6 @@
-using eth_shared;
+﻿using eth_shared;
 
-namespace ws_eth_5mins
+namespace ws_eth_findTokens
 {
     public class Worker3 : BackgroundService
     {

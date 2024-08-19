@@ -194,7 +194,6 @@ namespace eth_shared
                 _logger.LogInformation("Worker Worker1Scoped SendTlgrmMessageP0 running at: {time}", DateTimeOffset.Now);
                 /////////////////////
                 await SendTlgrmMessageP0();
-                await SendTlgrmMessageP10();
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
                 _logger.LogInformation("Worker Worker1Scoped SendTlgrmMessageP0 running time: {time}", (timeEnd - timeStart).TotalSeconds);
@@ -233,43 +232,6 @@ namespace eth_shared
                 if (resp is not null)
                 {
                     item.tlgrmNewTokens = resp.tlgrmMsgId;
-                }
-            }
-
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task SendTlgrmMessageP10()
-        {
-            var notDefault = default(DateTime).AddDays(1);
-            var ethTrainData =
-                dbContext.
-                EthTrainData.
-                //Where(
-                //    x => x.walletCreated > notDefault &&
-                //    x.BalanceOnCreating >= 0).
-                //Take(2).
-                Where(
-                    x =>
-                    x.pairAddress != "" &&
-                    x.pairAddress != "no" &&
-                    x.tlgrmLivePairs == 0 &&
-                    x.isDead == false &&
-                    x.blockNumberInt > 20456589).
-                ToList();
-
-            var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
-            var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
-
-            var t = await tlgrmApi.SendP1O(ethTrainData, blocks);
-
-            foreach (var item in ethTrainData)
-            {
-                var resp = t.FirstOrDefault(x => x.contractAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase));
-
-                if (resp is not null)
-                {
-                    item.tlgrmLivePairs = resp.tlgrmMsgId;
                 }
             }
 

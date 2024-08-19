@@ -103,7 +103,7 @@ namespace eth_shared
                 var timeEnd = DateTimeOffset.Now;
 
                 _сount = await dbContext.EthSwapEvents.CountAsync();
-                _logger.LogInformation("Worker Worker2Scoped getSwapEvents count before: {count}", _сount);
+                _logger.LogInformation("Worker Worker2Scoped getSwapEvents count after: {count}", _сount);
 
                 _logger.LogInformation("Worker Worker2Scoped getSwapEvents running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
@@ -121,7 +121,7 @@ namespace eth_shared
                 var timeEnd = DateTimeOffset.Now;
 
                 _сount = await dbContext.EthSwapEventsETHUSD.CountAsync();
-                _logger.LogInformation("Worker Worker2Scoped getSwapEventsETHUSD count before: {count}", _сount);
+                _logger.LogInformation("Worker Worker2Scoped getSwapEventsETHUSD count after: {count}", _сount);
 
                 _logger.LogInformation("Worker Worker2Scoped getSwapEventsETHUSD running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }

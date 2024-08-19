@@ -88,9 +88,6 @@ builder.Services.AddTransient<GetReservesLogs>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<GetSwapEventsETHUSD>();
-builder.Services.AddTransient<Step1>();
-builder.Services.AddTransient<Step2>();
-builder.Services.AddTransient<Step3>();
 
 builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerScoped>("WorkerScoped");
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker1Scoped>("Worker1Scoped");

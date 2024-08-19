@@ -6,7 +6,6 @@ using Data.Models;
 using etherscan;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace eth_shared
@@ -30,7 +29,7 @@ namespace eth_shared
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
         public Worker1Scoped(
-            ILogger<Step2> logger,
+            ILogger<Worker1Scoped> logger,
             IsDead isDead,
             GetPair getPair,
             dbContext dbContext,
@@ -58,8 +57,6 @@ namespace eth_shared
             this.getTokenSniffer = getTokenSniffer;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
-
-
         }
 
         public async Task DoWorkAsync(CancellationToken stoppingToken)
@@ -68,7 +65,7 @@ namespace eth_shared
             {
                 var timeStartStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker step3 running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker Worker1Scoped running at: {time}", DateTimeOffset.Now);
 
                 try
                 {
@@ -76,14 +73,14 @@ namespace eth_shared
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Worker step3 Exception: {message}", ex.Message);
-                    _logger.LogError("Worker step3 Exception: {stack}", ex.StackTrace);
+                    _logger.LogError("Worker Worker1Scoped Exception: {message}", ex.Message);
+                    _logger.LogError("Worker Worker1Scoped Exception: {stack}", ex.StackTrace);
                 }
 
                 var timeEndStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker step3 processed blocks: {block}", await dbContext.EthBlock.CountAsync());
-                _logger.LogInformation("Worker step3 running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
+                _logger.LogInformation("Worker Worker1Scoped processed blocks: {block}", await dbContext.EthBlock.CountAsync());
+                _logger.LogInformation("Worker Worker1Scoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);
             }
@@ -91,12 +88,55 @@ namespace eth_shared
 
         async Task Start()
         {
-            await isDead.Start();
-            await getBalanceOnCreating.Start();
-            await getSourceCode.Start();
-            await getWalletAge.Start();
+            {
+                var timeStart = DateTimeOffset.Now;
+                _logger.LogInformation("Worker isDead running at: {time}", DateTimeOffset.Now);
 
-            await SendTlgrmMessageP0();
+                await isDead.Start();
+
+                var timeEnd = DateTimeOffset.Now;
+                _logger.LogInformation("Worker isDead running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
+
+            {
+                var timeStart = DateTimeOffset.Now;
+                _logger.LogInformation("Worker getBalanceOnCreating running at: {time}", DateTimeOffset.Now);
+
+                await getBalanceOnCreating.Start();
+
+                var timeEnd = DateTimeOffset.Now;
+                _logger.LogInformation("Worker getBalanceOnCreating running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
+
+            {
+                var timeStart = DateTimeOffset.Now;
+                _logger.LogInformation("Worker getSourceCode running at: {time}", DateTimeOffset.Now);
+
+                await getSourceCode.Start();
+
+                var timeEnd = DateTimeOffset.Now;
+                _logger.LogInformation("Worker getSourceCode running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
+
+            {
+                var timeStart = DateTimeOffset.Now;
+                _logger.LogInformation("Worker getWalletAge running at: {time}", DateTimeOffset.Now);
+
+                await getWalletAge.Start();
+
+                var timeEnd = DateTimeOffset.Now;
+                _logger.LogInformation("Worker getWalletAge running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
+
+            {
+                var timeStart = DateTimeOffset.Now;
+                _logger.LogInformation("Worker SendTlgrmMessageP0 running at: {time}", DateTimeOffset.Now);
+
+                await SendTlgrmMessageP0();
+
+                var timeEnd = DateTimeOffset.Now;
+                _logger.LogInformation("Worker SendTlgrmMessageP0 running time: {time}", (timeEnd - timeStart).TotalSeconds);
+            }
         }
 
         async Task SendTlgrmMessageP0()
@@ -136,6 +176,5 @@ namespace eth_shared
 
             await dbContext.SaveChangesAsync();
         }
-
     }
 }

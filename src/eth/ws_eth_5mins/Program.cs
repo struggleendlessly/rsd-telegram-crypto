@@ -87,10 +87,11 @@ builder.Services.AddTransient<GetReservesLogs>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<GetSwapEventsETHUSD>();
-builder.Services.AddTransient<Step1>();
-builder.Services.AddTransient<Step2>();
 
-builder.Services.AddHostedService<Worker3>();
+builder.Services.AddKeyedScoped<IScopedProcessingService, Worker2Scoped>("Worker2Scoped");
+//builder.Services.AddKeyedScoped<IScopedProcessingService, Worker1Scoped>("Worker3Scoped");
+builder.Services.AddHostedService<Worker2>();
+//builder.Services.AddHostedService<Worker3>();
 
 var host = builder.Build();
 host.Run();

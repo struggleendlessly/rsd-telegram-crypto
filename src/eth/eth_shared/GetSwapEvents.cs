@@ -4,7 +4,6 @@ using api_alchemy.Eth.ResponseDTO;
 using Data;
 using Data.Models;
 
-using eth_shared.Extensions;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,6 @@ using Nethereum.Contracts;
 using Nethereum.Util;
 
 using System.Globalization;
-using System.Linq;
 
 namespace eth_shared
 {
@@ -66,22 +64,27 @@ namespace eth_shared
             }
 
             var tokensToProcess = await GetTokensToProcess();
-            var unfiltered = await Get(tokensToProcess);
-            var validated = Validate(unfiltered);
+            var tokensToProcessBactch = tokensToProcess.Batch(1000);
 
-            if (validated.Count == 0)
+            foreach (var item in tokensToProcessBactch)
             {
-                var t = new EthSwapEvents();
-                t.blockNumberInt = lastBlockToProcess;
+                var unfiltered = await Get(item.ToList());
+                var validated = Validate(unfiltered);
 
-                dbContext.EthSwapEvents.Add(t);
-                await dbContext.SaveChangesAsync();
-            }
-            else
-            {
-                var decoded = DecodeSwapEvents(validated);
-                var processed = await ProcessDecoded(decoded, tokensToProcess);
-                var saved = await SaveToDB_update(processed);
+                if (validated.Count == 0)
+                {
+                    var t = new EthSwapEvents();
+                    t.blockNumberInt = lastBlockToProcess;
+
+                    dbContext.EthSwapEvents.Add(t);
+                    await dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    var decoded = DecodeSwapEvents(validated);
+                    var processed = await ProcessDecoded(decoded, tokensToProcess);
+                    var saved = await SaveToDB_update(processed);
+                }
             }
         }
 
@@ -110,7 +113,7 @@ namespace eth_shared
                 var token1 = await ApiWeb3.PerformEthCall("token1", pairAddress);
 
                 res.token0 = token0.Replace("0x", "").TrimStart('0');
-                res.token0 = "0x"+ res.token0;
+                res.token0 = "0x" + res.token0;
 
                 res.token1 = token1.Replace("0x", "").TrimStart('0');
                 res.token1 = "0x" + res.token1;
@@ -232,7 +235,7 @@ namespace eth_shared
 
             Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
 
-            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff, diff);
+            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff);
 
             return res;
         }

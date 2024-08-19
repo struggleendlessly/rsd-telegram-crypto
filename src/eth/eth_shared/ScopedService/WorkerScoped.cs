@@ -1,11 +1,10 @@
-﻿using api_alchemy.Eth.ResponseDTO;
-using api_alchemy.Eth;
+﻿using api_alchemy.Eth;
+using api_alchemy.Eth.ResponseDTO;
 
 using Data;
 using Data.Models;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace eth_shared
@@ -58,7 +57,7 @@ namespace eth_shared
             {
                 var timeStartStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker step1 running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker WorkerScoped running at: {time}", DateTimeOffset.Now);
 
                 try
                 {
@@ -66,14 +65,14 @@ namespace eth_shared
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Worker step1 Exception: {message}", ex.Message);
-                    _logger.LogError("Worker step1 Exception: {stack}", ex.StackTrace);
+                    _logger.LogError("Worker WorkerScoped Exception: {message}", ex.Message);
+                    _logger.LogError("Worker WorkerScoped Exception: {stack}", ex.StackTrace);
                 }
 
                 var timeEndStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker step1 processed blocks: {block}", await dbContext.EthBlock.CountAsync());
-                _logger.LogInformation("Worker step1 running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
+                _logger.LogInformation("Worker WorkerScoped processed blocks: {block}", await dbContext.EthBlock.CountAsync());
+                _logger.LogInformation("Worker WorkerScoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
                 await Task.Delay(60000, stoppingToken);
             }
@@ -123,44 +122,44 @@ namespace eth_shared
 
             return res;
         }
-        private async Task CheckSkippedBlocks()
-        {
-            var blocks = dbContext.EthBlock.Select(x => x.numberInt).ToList().Order().ToList();
-            var minBlockNumber = blocks.First();
-            var lastProccessedBlock = await GetLastProccessedBlockNumber();
-            var endOfEtalonRange = lastProccessedBlock - minBlockNumber;
-            var etalonBlockNumbers = Enumerable.Range(minBlockNumber, endOfEtalonRange);
-            bool isInSequence = blocks.SequenceEqual(etalonBlockNumbers);
-            var blockDiff = etalonBlockNumbers.Except(blocks).ToList();
+        //private async Task CheckSkippedBlocks()
+        //{
+        //    var blocks = dbContext.EthBlock.Select(x => x.numberInt).ToList().Order().ToList();
+        //    var minBlockNumber = blocks.First();
+        //    var lastProccessedBlock = await GetLastProccessedBlockNumber();
+        //    var endOfEtalonRange = lastProccessedBlock - minBlockNumber;
+        //    var etalonBlockNumbers = Enumerable.Range(minBlockNumber, endOfEtalonRange);
+        //    bool isInSequence = blocks.SequenceEqual(etalonBlockNumbers);
+        //    var blockDiff = etalonBlockNumbers.Except(blocks).ToList();
 
-            var rangeOfBatches = 1;
-            //var diff = blockDiff.Count();
+        //    var rangeOfBatches = 1;
+        //    //var diff = blockDiff.Count();
 
-            //if (diff > 0)
-            //{
-            //    var batchSizeLocal = batchSize;
+        //    //if (diff > 0)
+        //    //{
+        //    //    var batchSizeLocal = batchSize;
 
-            //    if (diff > maxDiffToProcess)
-            //    {
-            //        diff = maxDiffToProcess;
-            //    }
+        //    //    if (diff > maxDiffToProcess)
+        //    //    {
+        //    //        diff = maxDiffToProcess;
+        //    //    }
 
-            //    rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
+        //    //    rangeOfBatches = (int)Math.Floor(diff / (double)batchSize);
 
-            //    if (rangeOfBatches == 0)
-            //    {
-            //        rangeOfBatches = 1;
-            //        batchSizeLocal = diff;
-            //    }
+        //    //    if (rangeOfBatches == 0)
+        //    //    {
+        //    //        rangeOfBatches = 1;
+        //    //        batchSizeLocal = diff;
+        //    //    }
 
-            //    List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
-            //    var blockDiffChunks = blockDiff.Chunk(batchSizeLocal).ToList();
+        //    //    List<int> rangeForBatches = Enumerable.Range(0, rangeOfBatches).ToList();
+        //    //    var blockDiffChunks = blockDiff.Chunk(batchSizeLocal).ToList();
 
-            //    await GetBlocksInParalel(rangeForBatches, blockDiffChunks);
+        //    //    await GetBlocksInParalel(rangeForBatches, blockDiffChunks);
 
-            //    await Middle();
-            //    await End();
-            //}
-        }
+        //    //    await Middle();
+        //    //    await End();
+        //    //}
+        //}
     }
 }

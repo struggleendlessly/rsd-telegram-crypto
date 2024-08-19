@@ -170,7 +170,8 @@ namespace tlgrmApi
             foreach (var item in collection)
             {
                 item.messageText = item.messageText +
-                    $"📈 [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) \n";
+                    $"📈 [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
+                    $"📈 [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n";
             }
 
             foreach (var item in collection)

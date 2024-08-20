@@ -74,7 +74,6 @@ namespace etherscan
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError("getSourceCodeBatchRequest error, message: {message}", ex.Message);
                             _logger.LogError("getSourceCodeBatchRequest error, response: {response}", responseText);
                             throw;
                         }

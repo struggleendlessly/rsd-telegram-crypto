@@ -69,6 +69,8 @@ namespace etherscan
                                 t.contractAddress = data.Value;
                                 res.Add(t);
                             }
+
+                            Thread.Sleep(100);
                         }
                         catch (Exception ex)
                         {

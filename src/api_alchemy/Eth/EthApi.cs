@@ -52,7 +52,8 @@ namespace api_alchemy.Eth
             List<ApiInput> items,
             Func<List<ApiInput>, int, Task<List<Response>>> apiMethod,
             int diff = 0,
-            int maxDiffToProcess = 1000
+            int maxDiffToProcess = 1000,
+            int sleep = 10
             )
         {
             ConcurrentBag<Response> res = new();
@@ -105,6 +106,8 @@ namespace api_alchemy.Eth
                         {
                             res.Add(item);
                         }
+
+                        Thread.Sleep(sleep);
                     });
             }
 

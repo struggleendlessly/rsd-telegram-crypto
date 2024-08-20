@@ -10,6 +10,7 @@ namespace Data
         public DbSet<EthTrxOthers> EthTrxOther { get; set; }
         public DbSet<EthTrainData> EthTrainData { get; set; }
         public DbSet<EthSwapEvents> EthSwapEvents { get; set; }
+        public DbSet<EthTokensVolume> EthTokensVolumes { get; set; }
         public DbSet<EthSwapEventsETHUSD> EthSwapEventsETHUSD { get; set; }
 
         public string DbPath { get; }

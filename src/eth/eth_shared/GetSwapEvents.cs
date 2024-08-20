@@ -90,6 +90,7 @@ namespace eth_shared
                         ToList();
 
                     var token0 = await GetToken0(addressesToProcess);
+                    Thread.Sleep(1000);
                     var token1 = await GetToken1(addressesToProcess);
                     GetToken0AndToken1(addressesToProcess, token0, token1);
                     var processed = await ProcessDecoded(decoded, tokensToProcess);

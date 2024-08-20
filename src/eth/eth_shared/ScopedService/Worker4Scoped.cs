@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace eth_shared
 {
-    public sealed class Worker2Scoped : IScopedProcessingService
+    public sealed class Worker4Scoped : IScopedProcessingService
     {
         private List<EthTrainData> ethTrainDatas = new();
 
@@ -25,11 +25,12 @@ namespace eth_shared
         private readonly GetSwapEvents getSwapEvents;
         private readonly GetTokenSniffer getTokenSniffer;
         private readonly GetReservesLogs getReservesLogs;
+        private readonly VolumePrepare volumePrepare;
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
-        public Worker2Scoped(
-            ILogger<Worker2Scoped> logger,
+        public Worker4Scoped(
+            ILogger<Worker4Scoped> logger,
             IsDead isDead,
             GetPair getPair,
             dbContext dbContext,
@@ -40,6 +41,7 @@ namespace eth_shared
             GetSwapEvents getSwapEvents,
             GetTokenSniffer getTokenSniffer,
             GetReservesLogs getReservesLogs,
+            VolumePrepare volumePrepare,
             GetSwapEventsETHUSD getSwapEventsETHUSD,
             GetBalanceOnCreating getBalanceOnCreating
             )
@@ -52,7 +54,8 @@ namespace eth_shared
             this.getWalletAge = getWalletAge;
             this.etherscanApi = etherscanApi;
             this.getSourceCode = getSourceCode;
-            this.getSwapEvents = getSwapEvents;
+            this.getSwapEvents = getSwapEvents; 
+            this.volumePrepare = volumePrepare;
             this.getReservesLogs = getReservesLogs;
             this.getTokenSniffer = getTokenSniffer;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
@@ -65,7 +68,7 @@ namespace eth_shared
             {
                 var timeStartStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker Worker2Scoped running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker Worker4Scoped running at: {time}", DateTimeOffset.Now);
 
                 try
                 {
@@ -73,15 +76,15 @@ namespace eth_shared
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Worker Worker2Scoped Exception: {message}", ex.Message);
-                    _logger.LogError("Worker Worker2Scoped Exception: {stack}", ex.StackTrace);
+                    _logger.LogError("Worker Worker4Scoped Exception: {message}", ex.Message);
+                    _logger.LogError("Worker Worker4Scoped Exception: {stack}", ex.StackTrace);
                 }
 
                 var timeEndStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker Worker2Scoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
+                _logger.LogInformation("Worker Worker4Scoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
-                await Task.Delay(60000, stoppingToken);
+                await Task.Delay(300, stoppingToken);
             }
         }
 
@@ -98,7 +101,7 @@ namespace eth_shared
 
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
-                await getSwapEvents.Start();
+                await volumePrepare.Start();
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 
@@ -116,7 +119,7 @@ namespace eth_shared
 
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
-                await getSwapEventsETHUSD.Start();
+                //await getSwapEventsETHUSD.Start();
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 

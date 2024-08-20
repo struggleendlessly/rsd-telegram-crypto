@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 
+using eth_shared.DTO;
 using eth_shared.Extensions;
 
 using Nethereum.ABI.FunctionEncoding;
@@ -127,6 +128,29 @@ namespace eth_shared.Map
             res.EthOut = EthOut.ToString();
             res.TokenIn = TokenIn.ToString();
             res.TokenOut = TokenOut.ToString();
+
+            return res;
+        }
+
+        public static EthSwapEventsDTO Map(
+            this EthSwapEvents val)
+        {
+            EthSwapEventsDTO res = new();
+
+            res.pairAddress = val.pairAddress;
+            res.txsHash = val.txsHash;
+            res.from = val.from;
+            res.to = val.to;
+            res.EthIn = BigDecimal.Parse(val.EthIn);
+            res.EthOut = BigDecimal.Parse(val.EthOut);
+            res.TokenIn = BigDecimal.Parse(val.TokenIn);
+            res.TokenOut = BigDecimal.Parse(val.TokenOut);
+            res.priceEth = val.priceEth;
+            res.isBuy = val.isBuy;
+            res.blockNumberInt = val.blockNumberInt;
+            res.tokenNotEth = val.tokenNotEth;
+            res.Id = val.Id;
+            res.EthTrainData = val.EthTrainData;
 
             return res;
         }

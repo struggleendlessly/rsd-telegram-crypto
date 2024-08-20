@@ -56,11 +56,11 @@ namespace etherscan
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var ee = string.Empty;
+                        var responseText = string.Empty;
                         try
                         {
 
-                            ee = await response.Content.ReadAsStringAsync();
+                            responseText = await response.Content.ReadAsStringAsync();
                             var t = await response.Content.ReadFromJsonAsync<GetSourceCodeDTO>();
 
                             if (t is not null &&
@@ -72,7 +72,8 @@ namespace etherscan
                         }
                         catch (Exception ex)
                         {
-
+                            _logger.LogError("getSourceCodeBatchRequest error, message: {message}", ex.Message);
+                            _logger.LogError("getSourceCodeBatchRequest error, response: {response}", responseText);
                             throw;
                         }
                     }

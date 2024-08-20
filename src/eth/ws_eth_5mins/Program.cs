@@ -79,6 +79,7 @@ builder.Services.AddTransient<GetBlocks>();
 builder.Services.AddTransient<GetWalletAge>();
 builder.Services.AddTransient<GetSwapEvents>();
 builder.Services.AddTransient<GetSourceCode>();
+builder.Services.AddTransient<VolumePrepare>();
 builder.Services.AddTransient<GetTotalSupply>();
 builder.Services.AddTransient<GetTransactions>();
 builder.Services.AddTransient<GetTokenSniffer>();
@@ -89,9 +90,9 @@ builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<GetSwapEventsETHUSD>();
 
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker2Scoped>("Worker2Scoped");
-//builder.Services.AddKeyedScoped<IScopedProcessingService, Worker1Scoped>("Worker3Scoped");
+builder.Services.AddKeyedScoped<IScopedProcessingService, Worker4Scoped>("Worker4Scoped");
 builder.Services.AddHostedService<Worker2>();
-//builder.Services.AddHostedService<Worker3>();
+//builder.Services.AddHostedService<Worker4>();
 
 var host = builder.Build();
 host.Run();

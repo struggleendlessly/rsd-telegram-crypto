@@ -245,7 +245,9 @@ namespace eth_shared
             var res = await
                 dbContext.
                 EthTrainData.
-                Where(x => string.IsNullOrEmpty(x.pairAddress)).
+                Where(x => string.IsNullOrEmpty(x.pairAddress) && 
+                      x.walletCreated != default && 
+                      x.walletCreated != default(DateTime).AddDays(1)).
                 Take(1000).
                 ToListAsync();
 

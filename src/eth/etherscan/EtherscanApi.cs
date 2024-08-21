@@ -124,7 +124,7 @@ namespace etherscan
                         }
                     }
 
-                    //Thread.Sleep(100);
+                    Thread.Sleep(100);
                 });
 
             return res.ToList();

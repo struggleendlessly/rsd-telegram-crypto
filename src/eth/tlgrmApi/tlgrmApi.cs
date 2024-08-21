@@ -19,6 +19,7 @@ namespace tlgrmApi
         private readonly HttpClient httpClient;
         private readonly OptionsTelegram optionsTelegram;
 
+        Dictionary<string, string> icons = new();
         public tlgrmApi(
             ILogger<tlgrmApi> logger,
             IHttpClientFactory httpClient,
@@ -30,6 +31,16 @@ namespace tlgrmApi
 
             this.httpClient = httpClient.CreateClient("Api");
             this.httpClient.BaseAddress = new Uri(optionsTelegram.UrlBase);
+
+            icons.Add("greenBook", "%F0%9F%93%97");
+            icons.Add("redBook", "%F0%9F%93%95");
+            icons.Add("lightning", "%E2%9A%A1");
+            icons.Add("coin", "%F0%9F%AA%99");
+            icons.Add("chart", "%F0%9F%93%88");
+            icons.Add("whiteCircle", "%E2%9A%AA");
+            icons.Add("yellowCircle", "%F0%9F%9F%A1");
+            icons.Add("orangeCircle", "%F0%9F%9F%A0");
+            icons.Add("redCircle", "%F0%9F%94%B4");
         }
 
         public async Task<int> SendSequest(
@@ -85,7 +96,7 @@ namespace tlgrmApi
                     val.walletAge = ageStr;
                 }
 
-                string readableTotalSupply = Regex.Replace(item.totalSupply, @"(?<=\d)(?=(\d{3})+$)", "_");
+                string readableTotalSupply = Regex.Replace(item.totalSupply, @"(?<=\d)(?=(\d{3})+$)", ".");
 
                 val.from = item.from;
                 val.totalSupply = readableTotalSupply;
@@ -96,13 +107,13 @@ namespace tlgrmApi
                 val.symbol = item.symbol;
                 val.pairAddress = item.pairAddress;
 
-                val.ABIICon = "%F0%9F%93%95"; // unverified
+                val.ABIICon = icons["redBook"];
                 val.walletIcon = "⚪"; // man
                 val.balanceIcon = "⚪"; // grey
 
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
-                    val.ABIICon = "%F0%9F%93%97"; // verified
+                    val.ABIICon = icons["greenBook"];
                 }
 
                 if (age.Hours > 1)
@@ -132,9 +143,9 @@ namespace tlgrmApi
 
                 var text =
                     $"" +
-                    $"📌 [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
+                    $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
                     $"{val.ABIICon}`{val.contractAddress}` \n " +
-                    $"💰`{val.totalSupply}` \n " +
+                    $"{icons["coins"]}`{val.totalSupply}` \n " +
                     $"{val.walletIcon} [{val.walletAge} / {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
                     $"";
 

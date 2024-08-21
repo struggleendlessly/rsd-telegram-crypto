@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -426,7 +427,18 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getTotalSupplyDTO> t = [];
+
+                try
+                {
+                    t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
 
                 if (t is not null)
                 {
@@ -474,7 +486,18 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getTotalSupplyDTO> t = [];
+
+                try
+                {
+                    t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
 
                 if (t is not null)
                 {

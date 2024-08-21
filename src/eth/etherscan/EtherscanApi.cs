@@ -62,7 +62,10 @@ namespace etherscan
 
                             responseText = await response.Content.ReadAsStringAsync();
                             var t = await response.Content.ReadFromJsonAsync<GetSourceCodeDTO>();
+                            if (true)
+                            {
 
+                            }
                             if (t is not null &&
                                 t.result is not null)
                             {
@@ -79,7 +82,7 @@ namespace etherscan
                         }
                     }
 
-                    //Thread.Sleep(100);
+                    Thread.Sleep(100);
                 });
 
             return res.ToList();

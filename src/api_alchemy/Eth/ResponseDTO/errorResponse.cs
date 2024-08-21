@@ -1,11 +1,8 @@
 ﻿namespace api_alchemy.Eth.ResponseDTO
 {
-    public class getTotalSupplyDTO
+    public class errorResponse
     {
-        public string jsonrpc { get; set; } = string.Empty;
-        public int id { get; set; }
         public Error error { get; set; } = new Error();
-        public string result { get; set; } = string.Empty;
         public class Error
         {
             public string Code { get; set; } = "";

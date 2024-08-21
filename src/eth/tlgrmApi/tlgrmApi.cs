@@ -86,7 +86,7 @@ namespace tlgrmApi
 
                 if (block is not null)
                 {
-                    var ageStr = $"{age.Days}d {age.Hours}h {age.Minutes}m";
+                    var ageStr = $"{age.Days} d {age.Hours} h {age.Minutes} m";
 
                     if (age.Days < 0)
                     {
@@ -108,8 +108,8 @@ namespace tlgrmApi
                 val.pairAddress = item.pairAddress;
 
                 val.ABIICon = icons["redBook"];
-                val.walletIcon = "⚪"; // man
-                val.balanceIcon = "⚪"; // grey
+                val.walletIcon = icons["whiteCircle"];
+                val.balanceIcon = icons["whiteCircle"];
 
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
@@ -118,12 +118,18 @@ namespace tlgrmApi
 
                 if (age.Hours > 1)
                 {
-                    val.walletIcon = "\t\U0001f7e0"; // orange 
+                    val.walletIcon = icons["yellowCircle"]; // orange 
                 }
 
                 if (age.Days > 0)
                 {
-                    val.walletIcon = "🔵"; // red
+                    val.walletIcon = icons["orangeCircle"]; // red
+                }
+
+
+                if (age.Days > 7)
+                {
+                    val.walletIcon = icons["redCircle"]; // red
                 }
 
                 if (age.Days > 4000)
@@ -133,19 +139,24 @@ namespace tlgrmApi
 
                 if (item.BalanceOnCreating > 1)
                 {
-                    val.balanceIcon = "\t\U0001f7e0";
+                    val.balanceIcon = icons["yellowCircle"];
                 }
 
                 if (item.BalanceOnCreating > 10)
                 {
-                    val.balanceIcon = "🔴";
+                    val.balanceIcon = icons["orangeCircle"];
+                }
+
+                if (item.BalanceOnCreating > 25)
+                {
+                    val.balanceIcon = icons["redCircle"];
                 }
 
                 var text =
                     $"" +
                     $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
                     $"{val.ABIICon}`{val.contractAddress}` \n " +
-                    $"{icons["coins"]}`{val.totalSupply}` \n " +
+                    $"{icons["coin"]} `{val.totalSupply}` \n " +
                     $"{val.walletIcon} [{val.walletAge} / {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
                     $"";
 
@@ -181,8 +192,8 @@ namespace tlgrmApi
             foreach (var item in collection)
             {
                 item.messageText = item.messageText +
-                    $"📈 [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
-                    $"📈 [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n";
+                    $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
+                    $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n";
             }
 
             foreach (var item in collection)

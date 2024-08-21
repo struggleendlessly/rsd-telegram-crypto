@@ -86,7 +86,7 @@ namespace tlgrmApi
 
                 if (block is not null)
                 {
-                    var ageStr = age.ToString(@"d\.hh\:mm");
+                    var ageStr = $"{age.Days}d {age.Hours}h {age.Minutes}m";
 
                     if (age.Days < 0)
                     {

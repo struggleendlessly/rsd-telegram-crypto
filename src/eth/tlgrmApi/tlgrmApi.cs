@@ -96,23 +96,23 @@ namespace tlgrmApi
                 val.symbol = item.symbol;
                 val.pairAddress = item.pairAddress;
 
-                val.ABIICon = "❤";
+                val.ABIICon = "%F0%9F%93%95"; // unverified
                 val.walletIcon = "⚪"; // man
                 val.balanceIcon = "⚪"; // grey
 
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
-                    val.ABIICon = "💚";
+                    val.ABIICon = "%F0%9F%93%97"; // verified
                 }
 
                 if (age.Hours > 1)
                 {
-                    val.walletIcon = "\t\U0001f7e0"; // orange
+                    val.walletIcon = "\t\U0001f7e0"; // orange 
                 }
 
                 if (age.Days > 0)
                 {
-                    val.walletIcon = "🔴"; // red
+                    val.walletIcon = "🔵"; // red
                 }
 
                 if (age.Days > 4000)

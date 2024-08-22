@@ -6,9 +6,5 @@
         public int id { get; set; }
         public Error error { get; set; } = new Error();
         public string result { get; set; } = string.Empty;
-        public class Error
-        {
-            public string Code { get; set; } = "";
-        }
     }
 }

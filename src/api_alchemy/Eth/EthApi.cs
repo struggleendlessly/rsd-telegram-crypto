@@ -159,11 +159,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<getBlockByNumberDTO>();
+                var json = await response.Content.ReadAsStringAsync();
+                getBlockByNumberDTO? t = null;
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<getBlockByNumberDTO>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 
@@ -201,11 +213,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getBlockByNumberDTO>? t = [];
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<List<getBlockByNumberDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 
@@ -243,11 +267,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<List<getTransactionReceiptDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getTransactionReceiptDTO>? t = [];
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<List<getTransactionReceiptDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 
@@ -287,11 +323,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<List<getTokenMetadataDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getTokenMetadataDTO>? t = [];
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<List<getTokenMetadataDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 
@@ -332,12 +380,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t1 = await response.Content.ReadAsStringAsync();
-                var t = await response.Content.ReadFromJsonAsync<List<getBalance>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getBalance>? t = [];
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<List<getBalance>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 
@@ -379,11 +438,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getTotalSupplyDTO>? t = [];
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 
@@ -428,21 +499,21 @@ namespace api_alchemy.Eth
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                List<getTotalSupplyDTO> t = [];
+                List<getTotalSupplyDTO>? t = [];
 
                 try
                 {
                     t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
                 }
                 catch (Exception ex)
                 {
-
+                    logger.LogError("Error json: {json}", json);
                     throw;
-                }
-
-                if (t is not null)
-                {
-                    res = t;
                 }
             }
 
@@ -487,21 +558,21 @@ namespace api_alchemy.Eth
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                List<getTotalSupplyDTO> t = [];
+                List<getTotalSupplyDTO>? t = [];
 
                 try
                 {
                     t = await response.Content.ReadFromJsonAsync<List<getTotalSupplyDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
                 }
                 catch (Exception ex)
                 {
-
+                    logger.LogError("Error json: {json}", json);
                     throw;
-                }
-
-                if (t is not null)
-                {
-                    res = t;
                 }
             }
 
@@ -529,40 +600,56 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                var t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
+                var json = await response.Content.ReadAsStringAsync();
+                getAssetTransfersDTO? t = null;
 
-                if (t is not null)
+                try
                 {
-                    if (t.result is not null &&
-                        t.result.transfers is not null &&
-                        t.result.transfers.Count() > 0)
+                    t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
+
+                    if (t is not null)
                     {
-                        res.Add(t);
-                    }
-                    else
-                    {
-                        Thread.Sleep(500);
-
-                        data = EthUrlBuilder.alchemy_getAssetTransfers(
-                                    item.from,
-                                    item.blockNumber,
-                                    "internal");
-
-                        httpContent = new StringContent(
-                            data,
-                            Encoding.UTF8,
-                            "application/json");
-
-                        response = await httpClient.PostAsync(apiKey, httpContent);
-
-                        t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
-
-                        if (t is not null)
+                        if (t.result is not null &&
+                            t.result.transfers is not null &&
+                            t.result.transfers.Count() > 0)
                         {
                             res.Add(t);
                         }
+                        else
+                        {
+                            Thread.Sleep(500);
+
+                            data = EthUrlBuilder.alchemy_getAssetTransfers(
+                                        item.from,
+                                        item.blockNumber,
+                                        "internal");
+
+                            httpContent = new StringContent(
+                                data,
+                                Encoding.UTF8,
+                                "application/json");
+
+                            response = await httpClient.PostAsync(apiKey, httpContent);
+
+                            t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
+
+                            if (t is not null)
+                            {
+                                res.Add(t);
+                            }
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
+                }
+
+                //var t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
+
+
             }
 
             return res;
@@ -607,12 +694,23 @@ namespace api_alchemy.Eth
 
             if (response.IsSuccessStatusCode)
             {
-                //var t = await response.Content.ReadAsStringAsync();
-                var t = await response.Content.ReadFromJsonAsync<List<getSwapDTO>>();
+                var json = await response.Content.ReadAsStringAsync();
+                List<getSwapDTO>? t = [];
 
-                if (t is not null)
+                try
                 {
-                    res = t;
+                    t = await response.Content.ReadFromJsonAsync<List<getSwapDTO>>();
+
+                    if (t is not null)
+                    {
+                        res = t;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError("Error json: {json}", json);
+
+                    throw;
                 }
             }
 

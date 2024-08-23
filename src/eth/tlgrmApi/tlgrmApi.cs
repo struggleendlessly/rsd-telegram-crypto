@@ -158,6 +158,7 @@ namespace tlgrmApi
                     $"{val.ABIICon}`{val.contractAddress}` \n " +
                     $"{icons["coin"]} `{val.totalSupply}` \n " +
                     $"{val.walletIcon} [{val.walletAge} / {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
+                    $"[Source Wallet]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
                     $"";
 
                 val.messageText = text;

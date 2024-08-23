@@ -4,6 +4,9 @@ using api_alchemy.Eth.ResponseDTO;
 using Data;
 using Data.Models;
 
+using etherscan;
+using etherscan.ResponseDTO;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -14,18 +17,21 @@ namespace eth_shared
         private readonly ILogger logger;
         private readonly EthApi apiAlchemy;
         private readonly dbContext dbContext;
+        private readonly EtherscanApi etherscanApi;
 
         int lastEthBlockNumber = 0;
 
         public GetWalletAge(
             EthApi apiAlchemy,
             dbContext dbContext,
+            EtherscanApi etherscanApi,
             ILogger<GetWalletAge> logger
             )
         {
             this.logger = logger;
             this.apiAlchemy = apiAlchemy;
             this.dbContext = dbContext;
+            this.etherscanApi = etherscanApi;
         }
 
         public async Task Start()
@@ -41,7 +47,12 @@ namespace eth_shared
 
             var processedUpdate = await ProcessUpdate(toUpdate, verified);
 
-            var updated = await SaveToDB_update(processedUpdate);
+            var walletNames = await dbContext.WalletNames.ToListAsync();
+
+            var getNormalTxnForWalletSources = await GetNormalTxn(toUpdate, walletNames);
+            var validateForRemoveLiquidityOnSource = await ValidateForRemoveLiquidity(getNormalTxnForWalletSources, toUpdate);
+
+            var updated = await SaveToDB_update(validateForRemoveLiquidityOnSource);
 
             List<EthTrainData> toDelete = new();
 
@@ -55,6 +66,46 @@ namespace eth_shared
 
             var processedDelete = await ProcessDelete(toDelete);
             var deleted = await SaveToDB_delete(processedDelete);
+        }
+
+        public async Task<List<EthTrainData>> ValidateForRemoveLiquidity(
+            List<GetNormalTxnDTO> getNormalTxnDTOs,
+            List<EthTrainData> ethTrainDatas)
+        {
+            foreach (var item in getNormalTxnDTOs)
+            {
+                if (item.result is not null &&
+                    item.result.Count() > 0)
+                {
+                    var t = item.result.Where(x => x.functionName.Contains("removeLiquidity", StringComparison.InvariantCultureIgnoreCase)).Count();
+                    var td = ethTrainDatas.Where(x => x.WalletSource1in.Equals(item.ownerAddresses, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+                    if (td is not null)
+                    {
+                        td.WalletSource1inCountRemLiq = t;
+                    }
+                }
+            }
+
+            return ethTrainDatas;
+        }
+
+        public async Task<List<GetNormalTxnDTO>> GetNormalTxn(
+             List<EthTrainData> tokensToProcess,
+             List<WalletNames> walletNames)
+        {
+            List<GetNormalTxnDTO> res = new();
+
+            var owners =
+                tokensToProcess.
+                Where(x => !walletNames.Any(v => v.Address.Equals(x.WalletSource1in, StringComparison.InvariantCultureIgnoreCase))).
+                Select(x => (x.WalletSource1in, "0")).
+                Distinct().
+                ToList();
+
+            res = await etherscanApi.getNormalTxnBatchRequest(owners);
+
+            return res;
         }
 
         private async Task<int> SaveToDB_delete(List<EthTrainData> ethTrainDatas)
@@ -105,6 +156,7 @@ namespace eth_shared
                 if (t is not null)
                 {
                     item.walletCreated = t.metadata.blockTimestamp;
+                    item.WalletSource1in = t.from;
                     res.Add(item);
                 }
             }
@@ -150,7 +202,7 @@ namespace eth_shared
             var res = await
                 dbContext.
                 EthTrainData.
-                Where(x => x.walletCreated == default).
+                Where(x => x.walletCreated == default || x.walletCreated == default(DateTime).AddDays(1)).
                 Take(200).
                 ToListAsync();
 

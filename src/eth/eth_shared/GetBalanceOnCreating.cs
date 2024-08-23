@@ -86,7 +86,6 @@ namespace eth_shared
 
             try
             {
-
                 foreach (var item in toUpdate)
                 {
                     var t = getBalanceDTOs.Where(x => x.id == item.Id).FirstOrDefault();
@@ -173,7 +172,7 @@ namespace eth_shared
             var res = await
                 dbContext.
                 EthTrainData.
-                Where(x => x.BalanceOnCreating == -1).
+                Where(x => x.BalanceOnCreating == -1 || x.BalanceOnCreating == -2).
                 Take(100).
                 ToListAsync();
 

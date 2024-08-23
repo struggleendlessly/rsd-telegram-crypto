@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(dbContext))]
-    partial class dbContextModelSnapshot : ModelSnapshot
+    [Migration("20240822100115_In38")]
+    partial class In38
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,9 +282,6 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("WalletSource1inCountRemLiq")
-                        .HasColumnType("int");
-
                     b.Property<string>("blockHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -501,49 +501,6 @@ namespace Data.Migrations
                     b.ToTable("EthTrxOther");
                 });
 
-            modelBuilder.Entity("Data.Models.TradeCompanies", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TradeCompanies");
-                });
-
-            modelBuilder.Entity("Data.Models.WalletNames", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TradeCompaniesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TradeCompaniesId");
-
-                    b.ToTable("WalletNames");
-                });
-
             modelBuilder.Entity("Data.Models.EthSwapEvents", b =>
                 {
                     b.HasOne("Data.Models.EthTrainData", "EthTrainData")
@@ -562,25 +519,9 @@ namespace Data.Migrations
                     b.Navigation("EthTrainData");
                 });
 
-            modelBuilder.Entity("Data.Models.WalletNames", b =>
-                {
-                    b.HasOne("Data.Models.TradeCompanies", "TradeCompanies")
-                        .WithMany("WalletNames")
-                        .HasForeignKey("TradeCompaniesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TradeCompanies");
-                });
-
             modelBuilder.Entity("Data.Models.EthTrainData", b =>
                 {
                     b.Navigation("EthSwapEvents");
-                });
-
-            modelBuilder.Entity("Data.Models.TradeCompanies", b =>
-                {
-                    b.Navigation("WalletNames");
                 });
 #pragma warning restore 612, 618
         }

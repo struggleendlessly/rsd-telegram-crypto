@@ -29,7 +29,7 @@ namespace etherscan
             var res = string.Empty;
 
             StringBuilder urlBuilder = new StringBuilder();
-            urlBuilder.Append("api/?module=account");
+            urlBuilder.Append("api?module=account");
             urlBuilder.Append("&action=txlist");
             urlBuilder.Append($"&address={ownerAddress.from}");
             urlBuilder.Append($"&startblock={ownerAddress.blockNumber}");

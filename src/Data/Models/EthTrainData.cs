@@ -26,6 +26,8 @@ namespace Data.Models
         public bool isDead { get; set; } = false;
         public int isDeadInt { get; set; }
         public int DeadBlockNumber { get; set; } = 0;
+        public string WalletSource1in { get; set; } = "";
+        public int WalletSource1inCountRemLiq { get; set; }
 
         public ICollection<EthSwapEvents> EthSwapEvents { get; set; } = new List<EthSwapEvents>();
 

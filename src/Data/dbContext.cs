@@ -12,6 +12,8 @@ namespace Data
         public DbSet<EthSwapEvents> EthSwapEvents { get; set; }
         public DbSet<EthTokensVolume> EthTokensVolumes { get; set; }
         public DbSet<EthSwapEventsETHUSD> EthSwapEventsETHUSD { get; set; }
+        public DbSet<WalletNames> WalletNames { get; set; }
+        public DbSet<TradeCompanies> TradeCompanies { get; set; }
 
         public string DbPath { get; }
 

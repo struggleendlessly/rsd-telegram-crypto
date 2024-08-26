@@ -1,12 +1,8 @@
-﻿using Azure.Core;
-
-using Polly;
+﻿using Polly;
 using Polly.Extensions.Http;
+using Polly.Timeout;
 
 using System.Net;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 
 namespace Shared
 {
@@ -16,6 +12,7 @@ namespace Shared
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
+                .Or<TimeoutRejectedException>()
                 .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound || msg.StatusCode == HttpStatusCode.TooManyRequests)
                 .OrResult(msg => {
                     // we need it for alchem api, because sometimes they send 429 status code in the body

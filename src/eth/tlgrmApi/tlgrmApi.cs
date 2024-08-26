@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Data;
+using Data.Models;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,16 +18,21 @@ namespace tlgrmApi
     {
         private readonly ILogger logger;
         private readonly HttpClient httpClient;
+        private readonly dbContext dbContext;
         private readonly OptionsTelegram optionsTelegram;
 
         Dictionary<string, string> icons = new();
+        List<WalletNames> walletNames = new();
+
         public tlgrmApi(
             ILogger<tlgrmApi> logger,
             IHttpClientFactory httpClient,
+            dbContext dbContext,
             IOptions<OptionsTelegram> options
             )
         {
             this.logger = logger;
+            this.dbContext = dbContext;
             this.optionsTelegram = options.Value;
 
             this.httpClient = httpClient.CreateClient("Api");
@@ -41,6 +47,8 @@ namespace tlgrmApi
             icons.Add("yellowCircle", "%F0%9F%9F%A1");
             icons.Add("orangeCircle", "%F0%9F%9F%A0");
             icons.Add("redCircle", "%F0%9F%94%B4");
+
+            walletNames = dbContext.WalletNames.ToList();
         }
 
         public async Task<int> SendSequest(
@@ -111,6 +119,7 @@ namespace tlgrmApi
                 val.walletIcon = icons["whiteCircle"];
                 val.balanceIcon = icons["whiteCircle"];
 
+                var sourceWalletName = "Source Wallet";
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
                     val.ABIICon = icons["greenBook"];
@@ -125,7 +134,6 @@ namespace tlgrmApi
                 {
                     val.walletIcon = icons["orangeCircle"]; // red
                 }
-
 
                 if (age.Days > 7)
                 {
@@ -152,13 +160,20 @@ namespace tlgrmApi
                     val.balanceIcon = icons["redCircle"];
                 }
 
+                var isWalletKnown = walletNames.FirstOrDefault(x => x.Address.Equals(item.WalletSource1in, StringComparison.InvariantCultureIgnoreCase));
+                
+                if (isWalletKnown is not null)
+                {
+                    sourceWalletName = $"{isWalletKnown.Name} Wallet";
+                }
+
                 var text =
                     $"" +
                     $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
                     $"{val.ABIICon}`{val.contractAddress}` \n " +
                     $"{icons["coin"]} `{val.totalSupply}` \n " +
                     $"{val.walletIcon} [{val.walletAge} / {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
-                    $"[Source Wallet]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
+                    $"[{sourceWalletName}]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
                     $"";
 
                 val.messageText = text;

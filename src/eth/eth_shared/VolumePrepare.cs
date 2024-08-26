@@ -63,6 +63,12 @@ namespace eth_shared
             }
 
             var tokensToProcess = await GetTokensToProcess();
+
+            if (tokensToProcess.Count == 0)
+            {
+                return;
+            }
+
             List<EthSwapEventsDTO> mapped = new();
 
             foreach (var item in tokensToProcess)

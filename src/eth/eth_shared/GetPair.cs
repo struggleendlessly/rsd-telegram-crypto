@@ -125,7 +125,7 @@ namespace eth_shared
                 var t = collection.Where(x => x.tokenAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                 item.pairAddress = t.pairAddress;
-                item.pairBlockNumberInt = Convert.ToInt32(t.blockNumber, 16);
+                item.pairBlockNumberInt = Convert.ToInt32(t.blockNumber);
                 item.pairAddressFunctionName = t.functionName;
             }
 

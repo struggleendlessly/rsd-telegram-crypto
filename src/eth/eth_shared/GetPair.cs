@@ -76,11 +76,11 @@ namespace eth_shared
             await SaveToDB_delete(toDelete);
         }
 
-        private async Task<List<(string tokenAddress, string pairAddress, string functionName)>> GetTransactionReceipts(
-            List<(string tokenAddress, string hashPair)> tokensToProcess, string functionName)
+        private async Task<List<(string tokenAddress, string pairAddress, string functionName, string blockNumber)>> GetTransactionReceipts(
+            List<(string tokenAddress, string hashPair, string blockNumber)> tokensToProcess, string functionName)
         {
 
-            List<(string, string, string)> res = new();
+            List<(string, string, string, string)> res = new();
 
             var diff = tokensToProcess.Count();
             var items = tokensToProcess.Select(x => x.hashPair).ToList();
@@ -104,7 +104,7 @@ namespace eth_shared
 
                     if (pairCreated)
                     {
-                        res.Add((token.tokenAddress, log.address, functionName));
+                        res.Add((token.tokenAddress, log.address, functionName, token.blockNumber));
                         break;
                     }
                 }
@@ -114,7 +114,7 @@ namespace eth_shared
         }
 
         private async Task<int> SaveToDB_update(
-            List<(string tokenAddress, string pairAddress, string functionName)> collection)
+            List<(string tokenAddress, string pairAddress, string functionName, string blockNumber)> collection)
         {
             var res = 0;
             var ids = collection.Select(x => x.tokenAddress).ToList();
@@ -125,6 +125,7 @@ namespace eth_shared
                 var t = collection.Where(x => x.tokenAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                 item.pairAddress = t.pairAddress;
+                item.pairBlockNumberInt = Convert.ToInt32(t.blockNumber, 16);
                 item.pairAddressFunctionName = t.functionName;
             }
 
@@ -137,7 +138,7 @@ namespace eth_shared
             List<string> collection)
         {
             var res = 0;
-            var ethTrainDataToDelete = await 
+            var ethTrainDataToDelete = await
                 dbContext.
                 EthTrainData.
                 Where(x => collection.Contains(x.contractAddress) && (lastEthBlockNumber - x.blockNumberInt) > 20000).
@@ -155,11 +156,11 @@ namespace eth_shared
             return res;
         }
 
-        public List<(string tokenAddress, string hashPair)> ProcessAddLiquidity(
+        public List<(string tokenAddress, string hashPair, string blockNumber)> ProcessAddLiquidity(
             List<GetNormalTxnDTO.Result> collection)
         {
 
-            List<(string, string)> res = new();
+            List<(string, string, string)> res = new();
 
             foreach (var item in collection)
             {
@@ -170,23 +171,23 @@ namespace eth_shared
 
                     if (!string.IsNullOrEmpty(tokenAddress))
                     {
-                        res.Add((tokenAddress, item.hash));
+                        res.Add((tokenAddress, item.hash, item.blockNumber));
                     }
                 }
             }
 
             return res;
         }
-        public List<(string tokenAddress, string hashPair)> ProcessOpenTrading(
+        public List<(string tokenAddress, string hashPair, string blockNumber)> ProcessOpenTrading(
             List<GetNormalTxnDTO.Result> collection)
         {
-            List<(string, string)> res = new();
+            List<(string, string, string)> res = new();
 
             foreach (var item in collection)
             {
                 if (item.to is not null)
                 {
-                    res.Add((item.to, item.hash));
+                    res.Add((item.to, item.hash, item.blockNumber));
                 }
             }
 
@@ -245,8 +246,8 @@ namespace eth_shared
             var res = await
                 dbContext.
                 EthTrainData.
-                Where(x => string.IsNullOrEmpty(x.pairAddress) && 
-                      x.walletCreated != default && 
+                Where(x => string.IsNullOrEmpty(x.pairAddress) &&
+                      x.walletCreated != default &&
                       x.walletCreated != default(DateTime).AddDays(1)).
                 Take(1000).
                 ToListAsync();

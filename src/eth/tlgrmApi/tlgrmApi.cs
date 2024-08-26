@@ -47,6 +47,9 @@ namespace tlgrmApi
             icons.Add("yellowCircle", "%F0%9F%9F%A1");
             icons.Add("orangeCircle", "%F0%9F%9F%A0");
             icons.Add("redCircle", "%F0%9F%94%B4");
+            icons.Add("star", "%E2%9C%A8");
+            icons.Add("snowflake", "%E2%9C%B3");
+            icons.Add("poops", "%F0%9F%92%A9");
 
             walletNames = dbContext.WalletNames.ToList();
         }
@@ -119,7 +122,13 @@ namespace tlgrmApi
                 val.walletIcon = icons["whiteCircle"];
                 val.balanceIcon = icons["whiteCircle"];
 
-                var sourceWalletName = "Source Wallet";
+                var sourceWalletName = "Wallet";
+                var sourceWalletIcon = icons["star"];
+                if (item.WalletSource1inCountRemLiq > 0)
+                {
+                    sourceWalletIcon = icons["poops"];
+                }                
+                
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
                     val.ABIICon = icons["greenBook"];
@@ -165,6 +174,7 @@ namespace tlgrmApi
                 if (isWalletKnown is not null)
                 {
                     sourceWalletName = $"{isWalletKnown.Name} Wallet";
+                    sourceWalletIcon = icons["snowflake"];
                 }
 
                 var text =
@@ -172,8 +182,8 @@ namespace tlgrmApi
                     $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
                     $"{val.ABIICon}`{val.contractAddress}` \n " +
                     $"{icons["coin"]} `{val.totalSupply}` \n " +
-                    $"{val.walletIcon} [{val.walletAge} / {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
-                    $"[{sourceWalletName}]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
+                    $"{val.walletIcon} [{val.walletAge}  {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
+                    $"{sourceWalletIcon} [{sourceWalletName}]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
                     $"";
 
                 val.messageText = text;

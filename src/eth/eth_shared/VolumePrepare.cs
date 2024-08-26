@@ -31,6 +31,8 @@ namespace eth_shared
         int lastEthBlockNumber = 0;
         int lastProcessedBlock = 18911035;
         int lastBlockToProcess = 0;
+        int lastBlockInDbEthTokensVolumes = 0;
+        int lastBlockInDbEthSwapEvents = 0;
         int periodInMins = 5;
         public VolumePrepare(
             ILogger<VolumePrepare> logger,
@@ -49,10 +51,12 @@ namespace eth_shared
         {
             lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
             this.periodInMins = periodInMins;
+            lastBlockInDbEthTokensVolumes = await dbContext.EthTokensVolumes.MaxAsync(x => x.blockIntEnd);
+            lastBlockInDbEthSwapEvents = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
 
             if (await dbContext.EthTokensVolumes.AnyAsync())
             {
-                lastProcessedBlock = await dbContext.EthTokensVolumes.MaxAsync(x => x.blockIntEnd) + 1;
+                lastProcessedBlock = lastBlockInDbEthTokensVolumes + 1;
             }
 
             lastBlockToProcess = lastProcessedBlock + periodInMins * 5;
@@ -62,12 +66,12 @@ namespace eth_shared
                 return;
             }
 
-            var tokensToProcess = await GetTokensToProcess();
-
-            if (tokensToProcess.Count == 0)
+            if (lastBlockToProcess > lastBlockInDbEthSwapEvents)
             {
                 return;
             }
+
+            var tokensToProcess = await GetTokensToProcess();
 
             List<EthSwapEventsDTO> mapped = new();
 
@@ -83,6 +87,8 @@ namespace eth_shared
 
             foreach (var group in grouped)
             {
+                var swaped = tokensToProcess.Where(x => x.pairAddress == group.Key).FirstOrDefault();
+
                 EthTokensVolume tVolume = new();
                 tVolume.blockIntStart = lastProcessedBlock;
                 tVolume.blockIntEnd = lastBlockToProcess;
@@ -110,6 +116,7 @@ namespace eth_shared
                 tVolume.volumePositiveEth = volumePositiveEth.ToString();
                 tVolume.volumeNegativeEth = volumeNegativeEth.ToString();
                 tVolume.volumeTotalEth = volumeTotalEth.ToString();
+                tVolume.EthTrainData = swaped.EthTrainData;
 
                 result.Add(tVolume);
             }
@@ -119,6 +126,7 @@ namespace eth_shared
                 EthTokensVolume tVolume = new();
                 tVolume.blockIntStart = lastProcessedBlock;
                 tVolume.blockIntEnd = lastBlockToProcess;
+                tVolume.periodInMins = periodInMins;
                 result.Add(tVolume);
             }
 
@@ -129,11 +137,27 @@ namespace eth_shared
 
         public async Task<List<EthSwapEvents>> GetTokensToProcess()
         {
-            var res = await
-                dbContext.
-                EthSwapEvents.
-                Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
-                ToListAsync();
+            List<EthSwapEvents> res = [];
+
+            if (periodInMins == 1)
+            {
+                res = await
+                   dbContext.
+                   EthSwapEvents.
+                   Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
+                   Include(x => x.EthTrainData).
+                   ToListAsync();
+            }
+            else
+            {
+                res = await
+                    dbContext.
+                    EthSwapEvents.
+                    Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
+                    Include(x => x.EthTrainData).
+                    ToListAsync();
+            }
+
 
             return res;
         }

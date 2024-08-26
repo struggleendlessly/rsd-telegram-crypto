@@ -119,7 +119,7 @@ namespace eth_shared
 
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
-                await getSwapEventsETHUSD.Start();
+                //await getSwapEventsETHUSD.Start();
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 

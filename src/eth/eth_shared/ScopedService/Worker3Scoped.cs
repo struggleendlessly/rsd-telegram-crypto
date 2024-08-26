@@ -137,6 +137,7 @@ namespace eth_shared
                     x.pairAddress != "" &&
                     x.pairAddress != "no" &&
                     x.tlgrmLivePairs == 0 &&
+                    x.BalanceOnCreating >= 0 &&
                     x.isDead == false &&
                     x.blockNumberInt > 20456589).
                 ToList();

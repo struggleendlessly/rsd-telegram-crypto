@@ -22,6 +22,7 @@ namespace Data.Models
         public string tsExploits { get; set; } = string.Empty;
         public string tsFullResponse { get; set; } = string.Empty;
         public string pairAddress { get; set; } = string.Empty;
+        public int pairBlockNumberInt { get; set; }
         public string pairAddressFunctionName { get; set; } = string.Empty;
         public bool isDead { get; set; } = false;
         public int isDeadInt { get; set; }

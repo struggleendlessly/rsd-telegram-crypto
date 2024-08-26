@@ -83,6 +83,8 @@ namespace eth_shared
                     if (td is not null)
                     {
                         td.WalletSource1inCountRemLiq = t;
+                        td.isDead = true;
+                        td.DeadBlockNumber = td.blockNumberInt;
                     }
                 }
             }

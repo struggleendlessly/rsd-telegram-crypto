@@ -81,7 +81,7 @@ namespace api_alchemy.Eth
                 {
                     rangeForBatchesWithApiKey.Add(i, apiKeyParallelIndex);
 
-                    if (apiKeyParallelIndex + 1 < 15)
+                    if (apiKeyParallelIndex + 1 < optionsAlchemy.ApiKeys.Count())
                     {
                         apiKeyParallelIndex++;
                     }

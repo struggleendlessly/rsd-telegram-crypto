@@ -51,10 +51,26 @@ namespace eth_shared
         {
             lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
             this.periodInMins = periodInMins;
-            lastBlockInDbEthTokensVolumes = await dbContext.EthTokensVolumes.MaxAsync(x => x.blockIntEnd);
-            lastBlockInDbEthSwapEvents = await dbContext.EthSwapEvents.MaxAsync(x => x.blockNumberInt);
 
-            if (await dbContext.EthTokensVolumes.AnyAsync())
+            var lastInDbEthTokensVolumes =
+                await dbContext.
+                EthTokensVolumes.
+                Where(x => x.periodInMins == periodInMins).
+                OrderByDescending(x => x.blockIntEnd).
+                Take(1).
+                FirstOrDefaultAsync();
+
+            if (lastInDbEthTokensVolumes is not null)
+            {
+                lastBlockInDbEthTokensVolumes = lastInDbEthTokensVolumes.blockIntEnd;
+            }
+
+            lastBlockInDbEthSwapEvents =
+                await dbContext.
+                EthSwapEvents.
+                MaxAsync(x => x.blockNumberInt);
+
+            if (await dbContext.EthTokensVolumes.AnyAsync(x => x.periodInMins == periodInMins))
             {
                 lastProcessedBlock = lastBlockInDbEthTokensVolumes + 1;
             }
@@ -141,12 +157,13 @@ namespace eth_shared
 
             if (periodInMins == 1)
             {
-                res = await
-                   dbContext.
-                   EthSwapEvents.
-                   Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
-                   Include(x => x.EthTrainData).
-                   ToListAsync();
+                var freshTokens = await
+                    dbContext.
+                    EthTrainData.
+                    Where(x => (lastEthBlockNumber - x.blockNumberInt) <= 500).
+                    Include(x => x.EthSwapEvents).
+                    Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
+                    ToListAsync();
             }
             else
             {

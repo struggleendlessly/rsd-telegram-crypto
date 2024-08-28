@@ -93,17 +93,8 @@ namespace eth_shared
 
             foreach (var item in tokensToProcess)
             {
-                try
-                {
-                    var t = item.Map();
-                    mapped.Add(t);
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw;
-                }
+                var t = item.Map();
+                mapped.Add(t);
             }
 
             var grouped = mapped.GroupBy(x => x.pairAddress).ToList();

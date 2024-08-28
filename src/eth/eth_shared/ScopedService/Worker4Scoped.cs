@@ -26,6 +26,7 @@ namespace eth_shared
         private readonly GetTokenSniffer getTokenSniffer;
         private readonly GetReservesLogs getReservesLogs;
         private readonly VolumePrepare volumePrepare;
+        private readonly VolumeTracking volumeTracking;
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
@@ -36,12 +37,13 @@ namespace eth_shared
             dbContext dbContext,
             EtherscanApi etherscanApi,
             GetWalletAge getWalletAge,
-            tlgrmApi.tlgrmApi tlgrmApi,
+            //tlgrmApi.tlgrmApi tlgrmApi,
             GetSourceCode getSourceCode,
             GetSwapEvents getSwapEvents,
             GetTokenSniffer getTokenSniffer,
             GetReservesLogs getReservesLogs,
             VolumePrepare volumePrepare,
+            VolumeTracking volumeTracking,
             GetSwapEventsETHUSD getSwapEventsETHUSD,
             GetBalanceOnCreating getBalanceOnCreating
             )
@@ -56,6 +58,7 @@ namespace eth_shared
             this.getSourceCode = getSourceCode;
             this.getSwapEvents = getSwapEvents; 
             this.volumePrepare = volumePrepare;
+            this.volumeTracking = volumeTracking;
             this.getReservesLogs = getReservesLogs;
             this.getTokenSniffer = getTokenSniffer;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
@@ -102,6 +105,7 @@ namespace eth_shared
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
                 //await volumePrepare.Start(1);
+                //await volumeTracking.Start(5);
                 await volumePrepare.Start(5);
                 await volumePrepare.Start(30);
                 await volumePrepare.Start(60);

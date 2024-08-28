@@ -48,7 +48,7 @@ builder.Services.AddWindowsService(options =>
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<dbContext>(options => options.UseSqlServer(connectionString), ServiceLifetime.Singleton);
+builder.Services.AddDbContext<dbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.Configure<OptionsAlchemy>(builder.Configuration.GetSection(OptionsAlchemy.SectionName));
 builder.Services.Configure<OptionsEtherscan>(builder.Configuration.GetSection(OptionsEtherscan.SectionName));
@@ -85,6 +85,7 @@ builder.Services.AddTransient<GetTransactions>();
 builder.Services.AddTransient<GetTokenSniffer>();
 builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetReservesLogs>();
+builder.Services.AddTransient<VolumeTracking>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<GetSwapEventsETHUSD>();

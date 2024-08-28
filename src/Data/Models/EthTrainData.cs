@@ -30,7 +30,8 @@ namespace Data.Models
         public string WalletSource1in { get; set; } = "";
         public int WalletSource1inCountRemLiq { get; set; }
 
-        public ICollection<EthSwapEvents> EthSwapEvents { get; set; } = new List<EthSwapEvents>();
+        public ICollection<EthSwapEvents> EthSwapEvents { get; set; } = [];
+        public ICollection<EthTokensVolume> EthTokensVolumes { get; set; } = [];
 
         // Telegram
         public int tlgrmNewTokens { get; set; } = 0;

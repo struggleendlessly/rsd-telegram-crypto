@@ -93,8 +93,17 @@ namespace eth_shared
 
             foreach (var item in tokensToProcess)
             {
-                var t = item.Map();
-                mapped.Add(t);
+                try
+                {
+                    var t = item.Map();
+                    mapped.Add(t);
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
             }
 
             var grouped = mapped.GroupBy(x => x.pairAddress).ToList();
@@ -162,7 +171,10 @@ namespace eth_shared
                     EthTrainData.
                     Where(x => (lastEthBlockNumber - x.blockNumberInt) <= 500).
                     Include(x => x.EthSwapEvents).
-                    Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
+                    SelectMany(x => x.EthSwapEvents).
+                    Where(x => x.blockNumberInt >= lastProcessedBlock &&
+                          x.blockNumberInt < lastBlockToProcess &&
+                          x.EthTrainData != null).
                     ToListAsync();
             }
             else
@@ -170,7 +182,9 @@ namespace eth_shared
                 res = await
                     dbContext.
                     EthSwapEvents.
-                    Where(x => x.blockNumberInt >= lastProcessedBlock && x.blockNumberInt < lastBlockToProcess).
+                    Where(x => x.blockNumberInt >= lastProcessedBlock &&
+                          x.blockNumberInt < lastBlockToProcess &&
+                          x.EthTrainData != null).
                     Include(x => x.EthTrainData).
                     ToListAsync();
             }

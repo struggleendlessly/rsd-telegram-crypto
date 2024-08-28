@@ -101,7 +101,7 @@ namespace eth_shared
 
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
-                await volumePrepare.Start(1);
+                //await volumePrepare.Start(1);
                 await volumePrepare.Start(5);
                 await volumePrepare.Start(30);
                 await volumePrepare.Start(60);

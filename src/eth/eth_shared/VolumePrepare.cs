@@ -172,6 +172,7 @@ namespace eth_shared
                     ToListAsync();
             }
 
+            logger.LogInformation("Worker Worker4Scoped volumePrepare GetTokensToProcess count: {count}, period: {period}", res.Count(), periodInMins);
 
             return res;
         }

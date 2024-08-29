@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Shared.ConfigurationOptions;
+using Shared.DTO;
 using Shared.Telegram.Models;
 
 using System.Net.Http.Json;
@@ -50,6 +51,8 @@ namespace tlgrmApi
             icons.Add("star", "%E2%9C%A8");
             icons.Add("snowflake", "%E2%9C%B3");
             icons.Add("poops", "%F0%9F%92%A9");
+            icons.Add("rocket", "%F0%9F%9A%80");
+            icons.Add("flagRed", "%F0%9F%9A%A9");
 
             walletNames = dbContext.WalletNames.ToList();
         }
@@ -91,6 +94,7 @@ namespace tlgrmApi
                 int intUnix = Convert.ToInt32(block.timestamp, 16);
                 DateTime dateTimeBlock = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                 dateTimeBlock = dateTimeBlock.AddSeconds(intUnix);
+                val.EthTrainDataId = item.Id;
 
                 val.walletAge = (-1).ToString();
                 var age = dateTimeBlock - item.walletCreated;
@@ -127,8 +131,8 @@ namespace tlgrmApi
                 if (item.WalletSource1inCountRemLiq > 0)
                 {
                     sourceWalletIcon = icons["poops"];
-                }                
-                
+                }
+
                 if (!string.IsNullOrEmpty(val.ABI))
                 {
                     val.ABIICon = icons["greenBook"];
@@ -170,7 +174,7 @@ namespace tlgrmApi
                 }
 
                 var isWalletKnown = walletNames.FirstOrDefault(x => x.Address.Equals(item.WalletSource1in, StringComparison.InvariantCultureIgnoreCase));
-                
+
                 if (isWalletKnown is not null)
                 {
                     sourceWalletName = $"{isWalletKnown.Name} Wallet";
@@ -220,6 +224,35 @@ namespace tlgrmApi
                 item.messageText = item.messageText +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
                     $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n";
+            }
+
+            foreach (var item in collection)
+            {
+                var t = await SendSequest(threadId, item.messageText);
+                item.tlgrmMsgId = t;
+            }
+
+            return collection;
+        }
+
+        public async Task<List<P0_DTO>> SendP20(
+            List<EthTrainData> ethTrainDatas,
+            List<EthBlocks> ethBlocks,
+            List<EthTokensVolumeAvarageDTO> validated)
+        {
+            List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
+            var threadId = optionsTelegram.message_thread_id_p20;
+
+            foreach (var item in collection)
+            {
+                var average = validated.FirstOrDefault(x => x.EthTrainDataId == item.EthTrainDataId);
+                var x = (decimal)(average.last.volumePositiveEth / average.volumePositiveEthAverage);
+
+                item.messageText = item.messageText +
+                    $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
+                    $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n" +
+                    $"{icons["rocket"]} Last {validated.Count()}-  {(decimal)average.volumePositiveEthAverage:0.##} Period: {average.periodInMins} mins \n" +
+                    $"{icons["flagRed"]} Last-  {(decimal)average.last.volumePositiveEth:0.##} -  {x:0.##} X";
             }
 
             foreach (var item in collection)

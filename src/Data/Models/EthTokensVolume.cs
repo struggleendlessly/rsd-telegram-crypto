@@ -13,6 +13,7 @@
         public string volumeNegativeEth { get; set; } = string.Empty;
         public string volumeTotalEth { get; set; } = string.Empty;
 
+        public int? EthTrainDataId { get; set; } = null;
         public EthTrainData? EthTrainData { get; set; } = null;
     }
 }

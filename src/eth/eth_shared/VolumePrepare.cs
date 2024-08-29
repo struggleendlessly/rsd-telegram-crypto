@@ -3,22 +3,14 @@
 using Data;
 using Data.Models;
 
-using eth_shared.DTO;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using nethereum;
-
 using Nethereum.Util;
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.DTO;
 
 namespace eth_shared
 {

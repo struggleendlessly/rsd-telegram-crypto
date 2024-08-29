@@ -2,6 +2,7 @@
 {
     public class P0_DTO
     {
+        public int EthTrainDataId { get; set; } = 0;
         public int tlgrmMsgId { get; set; } = 0;
         public string name { get; set; } = string.Empty;
         public string symbol { get; set; } = string.Empty;

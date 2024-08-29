@@ -99,8 +99,8 @@ namespace eth_shared
             {
                 _logger.LogInformation("Worker Worker4Scoped volumePrepare running at: {time}", DateTimeOffset.Now);
 
-                var _сount = await dbContext.EthSwapEvents.CountAsync();
-                _logger.LogInformation("Worker Worker4Scoped volumePrepare count before: {count}", _сount);
+                //var _сount = await dbContext.EthSwapEvents.CountAsync();
+                //_logger.LogInformation("Worker Worker4Scoped volumePrepare count before: {count}", _сount);
 
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////

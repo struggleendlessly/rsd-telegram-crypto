@@ -1,10 +1,11 @@
 ﻿using Data.Models;
 
-using eth_shared.DTO;
 using eth_shared.Extensions;
 
 using Nethereum.ABI.FunctionEncoding;
 using Nethereum.Util;
+
+using Shared.DTO;
 
 using static eth_shared.GetSwapEvents;
 

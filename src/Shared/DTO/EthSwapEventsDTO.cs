@@ -2,7 +2,7 @@
 
 using Nethereum.Util;
 
-namespace eth_shared.DTO
+namespace Shared.DTO
 {
     public class EthSwapEventsDTO
     {

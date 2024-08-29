@@ -3,12 +3,14 @@
 using Data;
 using Data.Models;
 
-using eth_shared.DTO;
+using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using Nethereum.Util;
+
+using Shared.DTO;
 
 namespace eth_shared
 {
@@ -17,6 +19,7 @@ namespace eth_shared
         private readonly ILogger logger;
         private readonly dbContext dbContext;
         private readonly EthApi apiAlchemy;
+        private readonly tlgrmApi.tlgrmApi tlgrmApi;
 
         int lastEthBlockNumber = 0;
         int lastProcessedBlock = 18911035;
@@ -27,12 +30,14 @@ namespace eth_shared
         public VolumeTracking(
             ILogger<VolumeTracking> logger,
             dbContext dbContext,
+            tlgrmApi.tlgrmApi tlgrmApi,
             EthApi apiAlchemy
             )
         {
             this.logger = logger;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
+            this.tlgrmApi = tlgrmApi;
         }
 
         public async Task Start(
@@ -42,116 +47,137 @@ namespace eth_shared
             lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
             this.periodInMins = periodInMins;
 
-            //var lastInDbEthTokensVolumes =
-            //    await dbContext.
-            //    EthTokensVolumes.
-            //    Where(x => x.periodInMins == periodInMins).
-            //    OrderByDescending(x => x.blockIntEnd).
-            //    Take(1).
-            //    FirstOrDefaultAsync();
-
-            //if (lastInDbEthTokensVolumes is not null)
-            //{
-            //    lastBlockInDbEthTokensVolumes = lastInDbEthTokensVolumes.blockIntEnd;
-            //}
-
-            //lastBlockInDbEthSwapEvents =
-            //    await dbContext.
-            //    EthSwapEvents.
-            //    MaxAsync(x => x.blockNumberInt);
-
-            //if (await dbContext.EthTokensVolumes.AnyAsync(x => x.periodInMins == periodInMins))
-            //{
-            //    lastProcessedBlock = lastBlockInDbEthTokensVolumes + 1;
-            //}
-
-            //lastBlockToProcess = lastProcessedBlock + periodInMins * 5;
-
-            //if (lastBlockToProcess > lastEthBlockNumber)
-            //{
-            //    return;
-            //}
-
-            //if (lastBlockToProcess > lastBlockInDbEthSwapEvents)
-            //{
-            //    return;
-            //}
-
             var tokensToProcess = await GetTokensToProcess();
+            var mapped = Map(tokensToProcess);
+            var average = Average(mapped);
+            var validated = Validate(average);
+            await SendTlgrmMessageP0(validated);
+        }
+        async Task SendTlgrmMessageP0(
+            List<EthTokensVolumeAvarageDTO> validated)
+        {
+            var ethTrainData =
+                dbContext.
+                EthTrainData.
+                Where(x => validated.Select(v => v.EthTrainDataId).Contains(x.Id)).
+                ToList();
 
-            List<EthSwapEventsDTO> mapped = new();
+            var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
+            var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
 
-            //foreach (var item in tokensToProcess)
-            //{
-            //    var t = item.Map();
-            //    mapped.Add(t);
-            //}
+            var t = await tlgrmApi.SendP20(ethTrainData, blocks, validated);
 
-            //var grouped = mapped.GroupBy(x => x.pairAddress).ToList();
+            foreach (var item in ethTrainData)
+            {
+                var resp = t.FirstOrDefault(x => x.contractAddress.Equals(item.contractAddress, StringComparison.InvariantCultureIgnoreCase));
 
-            //List<EthTokensVolume> result = new();
+                if (resp is not null)
+                {
+                    item.tlgrmVolume = resp.tlgrmMsgId;
+                }
+            }
 
-            //foreach (var group in grouped)
-            //{
-            //    var swaped = tokensToProcess.Where(x => x.pairAddress == group.Key).FirstOrDefault();
-
-            //    EthTokensVolume tVolume = new();
-            //    tVolume.blockIntStart = lastProcessedBlock;
-            //    tVolume.blockIntEnd = lastBlockToProcess;
-            //    tVolume.EthTrainData = group.First().EthTrainData;
-            //    tVolume.periodInMins = periodInMins;
-
-            //    BigDecimal volumePositiveEth = 0;
-            //    BigDecimal volumeNegativeEth = 0;
-            //    BigDecimal volumeTotalEth = 0;
-
-            //    foreach (var item in group)
-            //    {
-            //        if (item.isBuy)
-            //        {
-            //            volumePositiveEth += item.EthIn;
-            //        }
-            //        else
-            //        {
-            //            volumeNegativeEth += item.EthOut;
-            //        }
-            //    }
-
-            //    volumeTotalEth = (volumePositiveEth + volumeNegativeEth);
-
-            //    tVolume.volumePositiveEth = volumePositiveEth.ToString();
-            //    tVolume.volumeNegativeEth = volumeNegativeEth.ToString();
-            //    tVolume.volumeTotalEth = volumeTotalEth.ToString();
-            //    tVolume.EthTrainData = swaped.EthTrainData;
-
-            //    result.Add(tVolume);
-            //}
-
-            //if (result.Count == 0)
-            //{
-            //    EthTokensVolume tVolume = new();
-            //    tVolume.blockIntStart = lastProcessedBlock;
-            //    tVolume.blockIntEnd = lastBlockToProcess;
-            //    tVolume.periodInMins = periodInMins;
-            //    result.Add(tVolume);
-            //}
-
-            //dbContext.EthTokensVolumes.AddRange(result);
             //await dbContext.SaveChangesAsync();
-
         }
 
-        public async Task<List<IGrouping<EthTrainData, EthTokensVolume>>> GetTokensToProcess()
+        private List<EthTokensVolumeAvarageDTO> Validate(
+            List<EthTokensVolumeAvarageDTO> average)
         {
-            List<IGrouping<EthTrainData, EthTokensVolume>> res = [];
+            List<EthTokensVolumeAvarageDTO> res = [];
 
-            var res5 = await
-                dbContext.
+            foreach (var item in average)
+            {
+                if (item.last.volumePositiveEth > (item.volumePositiveEthAverage * 3))
+                {
+                    res.Add(item);
+                }
+
+                if (item.last.Id == 1646)
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
+        }
+
+        private List<EthTokensVolumeAvarageDTO> Average(
+            List<List<EthTokensVolumeDTO>> mapped)
+        {
+            List<EthTokensVolumeAvarageDTO> res = [];
+
+            foreach (var groups in mapped)
+            {
+                if (groups.Count < 10)
+                {
+                    continue;
+                }
+
+                EthTokensVolumeAvarageDTO t = new();
+
+                BigDecimal volumePositiveEthSum = 0.0;
+                BigDecimal volumeNegativeEthSum = 0.0;
+                BigDecimal volumeTotalEthSum = 0.0;
+
+                var count = groups.Count() - 1;
+
+                foreach (var item in groups)
+                {
+                    if (groups[groups.Count - 1] == item)
+                    {
+                        t.last = item;
+
+                        continue;
+                    }
+
+                    volumePositiveEthSum += item.volumePositiveEth;
+                    volumeNegativeEthSum += item.volumeNegativeEth;
+                    volumeTotalEthSum += item.volumeTotalEth;
+                }
+
+                t.volumePositiveEthAverage = volumePositiveEthSum / count;
+                t.volumeNegativeEthAverage = volumeNegativeEthSum / count;
+                t.volumeTotalEthAverage = volumeTotalEthSum / count;
+                t.EthTrainDataId = groups[0].EthTrainDataId;
+                t.periodInMins = groups[0].periodInMins;
+
+                res.Add(t);
+            }
+
+            return res;
+        }
+        private List<List<EthTokensVolumeDTO>> Map(
+            List<IEnumerable<EthTokensVolume>> tokensToProcess)
+        {
+            List<List<EthTokensVolumeDTO>> res = [];
+
+            foreach (var groups in tokensToProcess)
+            {
+                List<EthTokensVolumeDTO> mappedGroup = [];
+
+                foreach (var item in groups)
+                {
+                    var t = item.Map();
+                    mappedGroup.Add(t);
+                }
+
+                res.Add(mappedGroup);
+            }
+
+            return res;
+        }
+        public async Task<List<IEnumerable<EthTokensVolume>>> GetTokensToProcess()
+        {
+            List<IEnumerable<EthTokensVolume>> res = [];
+
+            var ww = dbContext.EthTrainData.Where(x => x.isDead == false).Select(x => x.Id).ToList();
+            res = await dbContext.
                 EthTokensVolumes.
-                Include(x => x.EthTrainData).
-                Where(x => x.EthTrainData.isDead == false && x.periodInMins == periodInMins).
-                GroupBy(x => x.EthTrainData).
-                Select(g => g.OrderByDescending(row => row.Id).Take(20)).
+                Where(x => x.EthTrainDataId != null && ww.Contains((int)x.EthTrainDataId) &&
+                      x.periodInMins == periodInMins).
+                OrderByDescending(x => x.Id).
+                GroupBy(x => x.EthTrainDataId).
+                Select(g => g.OrderBy(row => row.Id).Take(21)).
                 ToListAsync();
 
             return res;

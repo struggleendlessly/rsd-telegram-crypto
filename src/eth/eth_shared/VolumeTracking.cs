@@ -92,10 +92,11 @@ namespace eth_shared
                     res.Add(item);
                 }
 
-                if (item.last.Id == 1646)
-                {
-                    res.Add(item);
-                }
+                ///////////////////////////// for debugging !!!!!!!!!!!!
+                //if (item.last.Id == 1646)
+                //{
+                //    res.Add(item);
+                //}
             }
 
             return res;

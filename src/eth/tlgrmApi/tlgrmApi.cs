@@ -251,8 +251,8 @@ namespace tlgrmApi
                 item.messageText = item.messageText +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
                     $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n" +
-                    $"{icons["rocket"]} Last {validated.Count()}-  {(decimal)average.volumePositiveEthAverage:0.##} Period: {average.periodInMins} mins \n" +
-                    $"{icons["flagRed"]} Last-  {(decimal)average.last.volumePositiveEth:0.##} -  {x:0.##} X";
+                    $"{icons["rocket"]} Pos av-  {(decimal)average.volumePositiveEthAverage:0.##}   Neg av-  {(decimal)average.volumeNegativeEthAverage:0.##}   Period: {average.periodInMins} mins \n" +
+                    $"{icons["flagRed"]} Current pos:  {(decimal)average.last.volumePositiveEth:0.##}  neg:  {(decimal)average.last.volumeNegativeEth:0.##} -  {x:0.##} X";
             }
 
             foreach (var item in collection)

@@ -8,10 +8,8 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 
 namespace api_alchemy.Eth
 {
@@ -23,11 +21,18 @@ namespace api_alchemy.Eth
         private readonly HttpClient httpClient;
         private readonly OptionsAlchemy optionsAlchemy;
         private string vAndApiKey;
+        private readonly int apiKeysCount = 0;
+        private readonly List<string> apiKeysList;
+
+        private static Random rng = new();
+
         public EthApi(
             ILogger<EthApi> logger,
             IHttpClientFactory httpClient,
             IOptions<OptionsAlchemy> _optionsAlchemy)
         {
+            rng = new Random(DateTime.Now.Day);
+
             this.logger = logger;
             optionsAlchemy = _optionsAlchemy.Value;
             var url = optionsAlchemy.UrlBase.Replace("{{{chainName}}}", optionsAlchemy.ChainNames.Etherium);
@@ -38,6 +43,23 @@ namespace api_alchemy.Eth
             Random rnd = new Random();
             var apiKeyIndex = rnd.Next(0, optionsAlchemy.ApiKeys.Length - 1);
             vAndApiKey = $"/v2/{optionsAlchemy.ApiKeys[apiKeyIndex]}";
+
+            apiKeysCount = optionsAlchemy.ApiKeys.Count();
+            apiKeysList = optionsAlchemy.ApiKeys.ToList();
+            Shuffle(apiKeysList);
+        }
+
+        public static void Shuffle<T>(IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
 
         private string GetvAndApiKey(int index)
@@ -66,6 +88,7 @@ namespace api_alchemy.Eth
                 batchSizeLocal = 1;
             }
 
+
             if (diff > 0)
             {
                 if (diff > maxDiffToProcess)
@@ -75,19 +98,40 @@ namespace api_alchemy.Eth
 
                 var rangeChunks = items.Chunk(batchSizeLocal).ToList();
                 var rangeForBatchesWithApiKey = new Dictionary<int, int>();
+
+                var currentDay = DateTime.Now.Day % 2;
                 var apiKeyParallelIndex = 0;
+
+                if (currentDay != 0)
+                {
+                    apiKeyParallelIndex = apiKeysCount - 1;
+                }
 
                 for (int i = 0; i < rangeChunks.Count(); i++)
                 {
                     rangeForBatchesWithApiKey.Add(i, apiKeyParallelIndex);
 
-                    if (apiKeyParallelIndex + 1 < optionsAlchemy.ApiKeys.Count())
+                    if (currentDay == 0)
                     {
-                        apiKeyParallelIndex++;
+                        if (apiKeyParallelIndex + 1 < apiKeysCount)
+                        {
+                            apiKeyParallelIndex++;
+                        }
+                        else
+                        {
+                            apiKeyParallelIndex = 0;
+                        }
                     }
                     else
                     {
-                        apiKeyParallelIndex = 0;
+                        if (apiKeyParallelIndex - 1 >= 0)
+                        {
+                            apiKeyParallelIndex--;
+                        }
+                        else
+                        {
+                            apiKeyParallelIndex = apiKeysCount - 1;
+                        }
                     }
                 }
 

@@ -18,6 +18,7 @@ namespace etherscan
         private readonly OptionsEtherscan optionsEtherscan;
 
         private readonly int MaxDegreeOfParallelism = 4;
+        private readonly int apiKeysCount = 0;
 
         public EtherscanApi(
             ILogger<EtherscanApi> logger,
@@ -31,6 +32,8 @@ namespace etherscan
 
             this.httpClient = httpClient.CreateClient("Api");
             this.httpClient.BaseAddress = new Uri(url);
+
+            apiKeysCount = optionsEtherscan.ApiKeys.Count();
         }
 
         private string GetApiKey(int index)
@@ -101,7 +104,7 @@ namespace etherscan
                 new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism, },
                 async (data, ct) =>
                 {
-                    
+
                     var response = await httpClient.GetAsync(data.Key);
 
                     if (response.IsSuccessStatusCode)
@@ -138,7 +141,13 @@ namespace etherscan
         {
             Dictionary<string, string> res = new();
 
+            var currentHour = DateTime.Now.Hour % 2;
             var apiKeyParallelIndex = 0;
+
+            if (currentHour != 0)
+            {
+                apiKeyParallelIndex = apiKeysCount - 1;
+            }
 
             for (int i = 0; i < contractAddresses.Count; i++)
             {
@@ -147,25 +156,45 @@ namespace etherscan
                 var url = UrlBuider.getSourceCode(item, apiKey);
                 res.Add(url, item);
 
-                if (apiKeyParallelIndex + 1 < optionsEtherscan.ApiKeys.Count())
+                if (currentHour == 0)
                 {
-                    apiKeyParallelIndex++;
+                    if (apiKeyParallelIndex + 1 < apiKeysCount)
+                    {
+                        apiKeyParallelIndex++;
+                    }
+                    else
+                    {
+                        apiKeyParallelIndex = 0;
+                    }
                 }
                 else
                 {
-                    apiKeyParallelIndex = 0;
+                    if (apiKeyParallelIndex - 1 >= 0)
+                    {
+                        apiKeyParallelIndex--;
+                    }
+                    else
+                    {
+                        apiKeyParallelIndex = apiKeysCount - 1;
+                    }
                 }
             }
 
             return res;
-        }      
-        
+        }
+
         private Dictionary<string, string> getNormalTxnBatch
             (List<(string from, string blockNumber)> ownerAddresses)
         {
             Dictionary<string, string> res = new();
 
+            var currentHour = DateTime.Now.Hour % 2;
             var apiKeyParallelIndex = 0;
+
+            if (currentHour != 0)
+            {
+                apiKeyParallelIndex = apiKeysCount - 1;
+            }
 
             for (int i = 0; i < ownerAddresses.Count; i++)
             {
@@ -176,13 +205,27 @@ namespace etherscan
 
                 Console.WriteLine(item);
 
-                if (apiKeyParallelIndex + 1 < optionsEtherscan.ApiKeys.Count())
+                if (currentHour == 0)
                 {
-                    apiKeyParallelIndex++;
+                    if (apiKeyParallelIndex + 1 < apiKeysCount)
+                    {
+                        apiKeyParallelIndex++;
+                    }
+                    else
+                    {
+                        apiKeyParallelIndex = 0;
+                    }
                 }
                 else
                 {
-                    apiKeyParallelIndex = 0;
+                    if (apiKeyParallelIndex - 1 >= 0)
+                    {
+                        apiKeyParallelIndex--;
+                    }
+                    else
+                    {
+                        apiKeyParallelIndex = apiKeysCount - 1;
+                    }
                 }
             }
 

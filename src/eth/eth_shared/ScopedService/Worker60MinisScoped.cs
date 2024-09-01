@@ -106,7 +106,7 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker Worker60MinisScoped volumePrepare .Start(60)");
 
-                await volumePrepare.Start(60);
+                await volumePrepare.Start(60, 50);
                 await volumeTracking.Start(60);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;

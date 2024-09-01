@@ -246,7 +246,13 @@ namespace tlgrmApi
             foreach (var item in collection)
             {
                 var average = validated.FirstOrDefault(x => x.EthTrainDataId == item.EthTrainDataId);
-                var x = (decimal)(average.last.volumePositiveEth / average.volumePositiveEthAverage);
+
+                decimal x = -99;
+
+                if (average.volumePositiveEthAverage != 0)
+                {
+                    x = (decimal)(average.last.volumePositiveEth / average.volumePositiveEthAverage);
+                }
 
                 item.messageText = item.messageText +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +

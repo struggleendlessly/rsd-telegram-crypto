@@ -17,6 +17,8 @@ using System.Text.Json;
 
 using TL;
 
+using WTelegram;
+
 //await Program1.Main();
 var eee = new JsonRpcClient("https://eth-mainnet.g.alchemy.com");
 var ddd = await eee.SendRequest();
@@ -29,6 +31,17 @@ var pairAbi = @"[{""inputs"":[],""payable"":false,""stateMutability"":""nonpayab
 await Main6();
 async Task Main6()
 {
+    using var client = new Client(23880234, "c349bbf6c93c7df984219a77aeb320df");
+    var myself = await client.LoginUserIfNeeded();
+    Console.WriteLine($"We are logged-in as {myself} (id {myself.id})");
+
+    // Fetch messages from a specific chat
+    var chat = await client.me.Messages_GetHistory(new InputPeerChannel (-1002211582592_5));
+    foreach (var message in chat.Messages)
+    {
+        //Console.WriteLine($"Message: {message.message}");
+    }
+
     // Load an existing wallet using a private key
     string privateKey = "a1df9cd7d5d7e7943293f9e82f0789b5b4df7381e39aa3a0507d352b8b235b61"; // Replace with your private key
     var account = new Account(privateKey);

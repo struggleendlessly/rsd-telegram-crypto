@@ -21,6 +21,7 @@ namespace Shared.DTO
         public int blockNumberInt { get; set; }
         public string tokenNotEth { get; set; } = string.Empty;
 
+        public int EthTrainDataId { get; set; }
         public EthTrainData? EthTrainData { get; set; }
     }
 }

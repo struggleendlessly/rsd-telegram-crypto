@@ -67,7 +67,7 @@ namespace eth_shared
                 lastProcessedBlock = lastBlockInDbEthTokensVolumes + 1;
             }
 
-            lastBlockToProcess = lastProcessedBlock + periodInMins * 5;
+            lastBlockToProcess = lastProcessedBlock + periodInMins * 5 * 1000;
 
             if (lastBlockToProcess > lastEthBlockNumber)
             {
@@ -89,56 +89,71 @@ namespace eth_shared
                 mapped.Add(t);
             }
 
-            var grouped = mapped.GroupBy(x => x.pairAddress).ToList();
+            var grouped =
+                mapped.
+                GroupBy(x => x.pairAddress).
+                ToList();
 
             List<EthTokensVolume> result = new();
 
             foreach (var group in grouped)
             {
-                var swaped = tokensToProcess.Where(x => x.pairAddress == group.Key).FirstOrDefault();
+                var fromBlock = lastProcessedBlock;
 
-                EthTokensVolume tVolume = new();
-                tVolume.blockIntStart = lastProcessedBlock;
-                tVolume.blockIntEnd = lastBlockToProcess;
-                tVolume.EthTrainData = group.First().EthTrainData;
-                tVolume.periodInMins = periodInMins;
-
-                BigDecimal volumePositiveEth = 0;
-                BigDecimal volumeNegativeEth = 0;
-                BigDecimal volumeTotalEth = 0;
-
-                foreach (var item in group)
+                for (int i = lastProcessedBlock + periodInMins * 5; i < lastBlockToProcess; i = i + periodInMins * 5)
                 {
-                    if (item.isBuy)
+                    EthTokensVolume tVolume = new();
+                    var batch = group.Where(x => x.blockNumberInt >= fromBlock && x.blockNumberInt < i).ToList();
+
+                    if (batch.Count == 0)
                     {
-                        volumePositiveEth += item.EthIn;
+
+                        tVolume.blockIntStart = fromBlock;
+                        tVolume.blockIntEnd = i;
+                        tVolume.periodInMins = periodInMins;
+                        result.Add(tVolume);
                     }
                     else
                     {
-                        volumeNegativeEth += item.EthOut;
+                        var swaped = tokensToProcess.Where(x => x.pairAddress == group.Key).FirstOrDefault();
+
+                        tVolume.blockIntStart = fromBlock;
+                        tVolume.blockIntEnd = i;
+                        tVolume.periodInMins = periodInMins;
+
+                        BigDecimal volumePositiveEth = 0;
+                        BigDecimal volumeNegativeEth = 0;
+                        BigDecimal volumeTotalEth = 0;
+
+                        foreach (var item in batch)
+                        {
+                            if (item.isBuy)
+                            {
+                                volumePositiveEth += item.EthIn;
+                            }
+                            else
+                            {
+                                volumeNegativeEth += item.EthOut;
+                            }
+                        }
+
+                        volumeTotalEth = (volumePositiveEth + volumeNegativeEth);
+
+                        tVolume.volumePositiveEth = volumePositiveEth.ToString();
+                        tVolume.volumeNegativeEth = volumeNegativeEth.ToString();
+                        tVolume.volumeTotalEth = volumeTotalEth.ToString();
+                        tVolume.EthTrainDataId = batch[0].EthTrainDataId;
+
+                        result.Add(tVolume);
                     }
+                    fromBlock = i;
                 }
-
-                volumeTotalEth = (volumePositiveEth + volumeNegativeEth);
-
-                tVolume.volumePositiveEth = volumePositiveEth.ToString();
-                tVolume.volumeNegativeEth = volumeNegativeEth.ToString();
-                tVolume.volumeTotalEth = volumeTotalEth.ToString();
-                tVolume.EthTrainData = swaped.EthTrainData;
-
-                result.Add(tVolume);
             }
+            var ee = result.Where(x => x.EthTrainDataId != null).ToList();
 
-            if (result.Count == 0)
-            {
-                EthTokensVolume tVolume = new();
-                tVolume.blockIntStart = lastProcessedBlock;
-                tVolume.blockIntEnd = lastBlockToProcess;
-                tVolume.periodInMins = periodInMins;
-                result.Add(tVolume);
-            }
-
-            dbContext.EthTokensVolumes.AddRange(result);
+            var ea = ee[5];
+            var dd = tokensToProcess.Where(x => x.blockNumberInt >= ea.blockIntStart && x.blockNumberInt < ea.blockIntEnd).ToList();
+            //dbContext.EthTokensVolumes.AddRange(result);
             await dbContext.SaveChangesAsync();
 
         }
@@ -163,13 +178,12 @@ namespace eth_shared
             else
             {
                 res = await
-                    dbContext.
-                    EthSwapEvents.
-                    Where(x => x.blockNumberInt >= lastProcessedBlock &&
-                          x.blockNumberInt < lastBlockToProcess &&
-                          x.EthTrainData != null).
-                    Include(x => x.EthTrainData).
-                    ToListAsync();
+                   dbContext.
+                   EthSwapEvents.
+                   Where(x => x.blockNumberInt >= lastProcessedBlock &&
+                         x.blockNumberInt < lastBlockToProcess &&
+                         x.EthTrainDataId != null).
+                   ToListAsync();
             }
 
             logger.LogInformation("Worker Worker4Scoped volumePrepare GetTokensToProcess count: {count}, period: {period}", res.Count(), periodInMins);

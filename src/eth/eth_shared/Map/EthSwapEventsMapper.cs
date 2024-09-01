@@ -151,7 +151,7 @@ namespace eth_shared.Map
             res.blockNumberInt = val.blockNumberInt;
             res.tokenNotEth = val.tokenNotEth;
             res.Id = val.Id;
-            res.EthTrainData = val.EthTrainData;
+            res.EthTrainDataId = (int)val.EthTrainDataId;
 
             return res;
         }

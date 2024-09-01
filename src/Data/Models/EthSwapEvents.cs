@@ -1,5 +1,8 @@
-﻿namespace Data.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Data.Models
 {
+    [Index(nameof(blockNumberInt))]
     public class EthSwapEvents
     {
         public int Id { get; set; }
@@ -17,6 +20,7 @@
         public int blockNumberInt { get; set; }
         public string tokenNotEth { get; set; } = string.Empty;
 
+        public int? EthTrainDataId { get; set; }
         public EthTrainData? EthTrainData { get; set; }
     }
 }

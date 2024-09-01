@@ -101,7 +101,7 @@ builder.Services.AddHostedService<Worker2>();
 //builder.Services.AddHostedService<Worker5Minis>();
 
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker4Scoped>("Worker4Scoped");
-builder.Services.AddHostedService<Worker4>();
+//builder.Services.AddHostedService<Worker4>();
 
 var host = builder.Build();
 host.Run();

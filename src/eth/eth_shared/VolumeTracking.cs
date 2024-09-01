@@ -59,7 +59,7 @@ namespace eth_shared
             var ethTrainData =
                 dbContext.
                 EthTrainData.
-                Where(x => validated.Select(v => v.EthTrainDataId).Contains(x.Id)).
+                Where(x => validated.Select(v => v.EthTrainDataId).Contains(x.Id) && x.tlgrmVolume == 0).
                 ToList();
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();

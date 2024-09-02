@@ -274,7 +274,7 @@ namespace tlgrmApi
             {
                 var average = validated.FirstOrDefault(x => x.EthTrainDataId == item.EthTrainDataId);
 
-                decimal x = -99;
+                decimal x = 99999;
 
                 if (average.volumePositiveEthAverage != 0)
                 {

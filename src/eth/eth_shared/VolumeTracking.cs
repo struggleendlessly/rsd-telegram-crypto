@@ -59,7 +59,7 @@ namespace eth_shared
             var ethTrainData =
                 dbContext.
                 EthTrainData.
-                Where(x => validated.Select(v => v.EthTrainDataId).Contains(x.Id) && x.tlgrmVolume == 0).
+                Where(x => validated.Select(v => v.EthTrainDataId).Contains(x.Id)).
                 ToList();
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
@@ -172,6 +172,7 @@ namespace eth_shared
             List<IEnumerable<EthTokensVolume>> res = [];
 
             var ww = dbContext.EthTrainData.Where(x => x.isDead == false).Select(x => x.Id).ToList();
+
             res = await dbContext.
                 EthTokensVolumes.
                 Where(x => x.EthTrainDataId != null && ww.Contains((int)x.EthTrainDataId) &&

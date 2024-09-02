@@ -1,5 +1,7 @@
 ﻿using api_tokenSniffer;
 
+using Cronos;
+
 using Data;
 using Data.Models;
 
@@ -29,6 +31,8 @@ namespace eth_shared
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
+        private const string schedule = "0/5 * * * *"; // every 5 min
+        private readonly CronExpression _cron;
         public Worker5MinisScoped(
             ILogger<Worker5MinisScoped> logger,
             IsDead isDead,
@@ -62,12 +66,20 @@ namespace eth_shared
             this.getTokenSniffer = getTokenSniffer;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
+
+            _cron = CronExpression.Parse(schedule);
         }
 
         public async Task DoWorkAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                _logger.LogInformation("Worker Worker5MinisScoped running");
+
+                var utcNow = DateTime.UtcNow;
+                var nextUtc = _cron.GetNextOccurrence(utcNow);
+                await Task.Delay(nextUtc.Value - utcNow, stoppingToken);
+
                 var timeStartStep1 = DateTimeOffset.Now;
 
                 _logger.LogInformation("Worker Worker5MinisScoped running at: {time}", DateTimeOffset.Now);
@@ -86,7 +98,8 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker Worker5MinisScoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
-                await Task.Delay(300_000, stoppingToken);
+                
+                //await Task.Delay(300_000, stoppingToken);
             }
         }
 
@@ -106,7 +119,7 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker Worker5MinisScoped volumePrepare .Start(5)");
 
-                await volumePrepare.Start(5, 1000);
+                await volumePrepare.Start(5, 100);
                 await volumeTracking.Start(5);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;

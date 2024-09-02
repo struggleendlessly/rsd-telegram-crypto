@@ -43,7 +43,7 @@ namespace tlgrmApi
             icons.Add("redBook", "%F0%9F%93%95");
             icons.Add("lightning", "%E2%9A%A1");
             icons.Add("coin", "%F0%9F%AA%99");
-            icons.Add("chart", "%F0%9F%93%88");
+            icons.Add("chart", "%F0%9F%92%B9");
             icons.Add("whiteCircle", "%E2%9A%AA");
             icons.Add("yellowCircle", "%F0%9F%9F%A1");
             icons.Add("orangeCircle", "%F0%9F%9F%A0");
@@ -53,6 +53,14 @@ namespace tlgrmApi
             icons.Add("poops", "%F0%9F%92%A9");
             icons.Add("rocket", "%F0%9F%9A%80");
             icons.Add("flagRed", "%F0%9F%9A%A9");
+            icons.Add("buy", "%F0%9F%93%88");
+            icons.Add("sell", "%F0%9F%93%89");
+            icons.Add("squareYellow", "%F0%9F%9F%A8");
+            icons.Add("squareOrange", "%F0%9F%9F%A7");
+            icons.Add("squareRed", "%F0%9F%9F%A5");
+            icons.Add("fire", "%F0%9F%94%A5");
+            icons.Add("boom", "%F0%9F%92%A5");
+            icons.Add("clockSend", "%E2%8F%B3");
 
             walletNames = dbContext.WalletNames.ToList();
         }
@@ -273,11 +281,32 @@ namespace tlgrmApi
                     x = (decimal)(average.last.volumePositiveEth / average.volumePositiveEthAverage);
                 }
 
+                string xxx = icons["squareYellow"];
+
+                if (x > 5)
+                {
+                    xxx = icons["squareOrange"];
+                }
+
+                if (x > 10)
+                {
+                    xxx = icons["squareRed"];
+                }
+
+                string buyToSell = icons["fire"];
+
+                if (average.last.volumeNegativeEth == 0 || average.last.volumePositiveEth / average.last.volumeNegativeEth >= 2)
+                {
+                    buyToSell = icons["boom"];
+                }
+
                 item.messageText = item.messageText +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
                     $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n" +
-                    $"{icons["rocket"]} Pos av-  {(decimal)average.volumePositiveEthAverage:0.##}   Neg av-  {(decimal)average.volumeNegativeEthAverage:0.##}   Period: {average.periodInMins} mins \n" +
-                    $"{icons["flagRed"]} Current pos:  {(decimal)average.last.volumePositiveEth:0.##}  neg:  {(decimal)average.last.volumeNegativeEth:0.##} -  {x:0.##} X";
+                    $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
+                    $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} ETH  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} ETH \n" +
+                    $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} ETH  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} ETH  \n" +
+                    $"{xxx} {x:0.##} X";
             }
 
             foreach (var item in collection)

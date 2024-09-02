@@ -81,7 +81,7 @@ namespace eth_shared
                 else
                 {
                     lastBlockToProcess = lastEthBlockNumber;
-                }             
+                }
             }
 
             if (lastBlockToProcess > lastBlockInDbEthSwapEvents)
@@ -123,17 +123,21 @@ namespace eth_shared
                     EthTokensVolume tVolume = new();
                     var batch = group.Where(x => x.blockNumberInt >= fromBlock && x.blockNumberInt < i).ToList();
 
+                    tVolume.blockIntStart = fromBlock;
+                    tVolume.blockIntEnd = i;
+                    tVolume.periodInMins = periodInMins;
+
                     if (batch.Count == 0)
                     {
-                        continue;
+                        tVolume.volumePositiveEth = 0.ToString();
+                        tVolume.volumeNegativeEth = 0.ToString();
+                        tVolume.volumeTotalEth = 0.ToString();
+                        tVolume.EthTrainDataId = group.ElementAt(0).EthTrainDataId;
                     }
                     else
                     {
                         var swaped = tokensToProcess.Where(x => x.pairAddress == group.Key).FirstOrDefault();
 
-                        tVolume.blockIntStart = fromBlock;
-                        tVolume.blockIntEnd = i;
-                        tVolume.periodInMins = periodInMins;
 
                         BigDecimal volumePositiveEth = 0;
                         BigDecimal volumeNegativeEth = 0;
@@ -158,8 +162,9 @@ namespace eth_shared
                         tVolume.volumeTotalEth = volumeTotalEth.ToString();
                         tVolume.EthTrainDataId = batch[0].EthTrainDataId;
 
-                        resultTemp.Add(tVolume);
                     }
+
+                    resultTemp.Add(tVolume);
 
                     fromBlock = i;
                 }

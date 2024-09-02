@@ -1,5 +1,7 @@
 ﻿using api_tokenSniffer;
 
+using Cronos;
+
 using Data;
 using Data.Models;
 
@@ -28,6 +30,9 @@ namespace eth_shared
         private readonly VolumeTracking volumeTracking;
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
+
+        private const string schedule = "0/30 * * * *"; // every 30 min
+        private readonly CronExpression _cron;
 
         public Worker30MinisScoped(
             ILogger<Worker30MinisScoped> logger,
@@ -62,12 +67,19 @@ namespace eth_shared
             this.getTokenSniffer = getTokenSniffer;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
+
+            _cron = CronExpression.Parse(schedule);
         }
 
         public async Task DoWorkAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                _logger.LogInformation("Worker Worker30MinisScoped running");
+                var utcNow = DateTime.UtcNow;
+                var nextUtc = _cron.GetNextOccurrence(utcNow);
+                await Task.Delay(nextUtc.Value - utcNow, stoppingToken);
+
                 var timeStartStep1 = DateTimeOffset.Now;
 
                 _logger.LogInformation("Worker Worker30MinisScoped running at: {time}", DateTimeOffset.Now);

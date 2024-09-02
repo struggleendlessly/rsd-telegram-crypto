@@ -20,4 +20,8 @@
     <Folder Include="Processors\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Cronos" Version="0.8.4" />
+  </ItemGroup>
+
 </Project>

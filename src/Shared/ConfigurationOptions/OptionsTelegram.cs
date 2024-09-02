@@ -15,7 +15,10 @@
         public string message_thread_id_unVerified { get; set; } = "";
         public string message_thread_id_p0 { get; set; } = "";
         public string message_thread_id_p10 { get; set; } = "";
-        public string message_thread_id_p20 { get; set; } = "";
+        public string message_thread_id_p20_60mins { get; set; } = "";
+        public string message_thread_id_p21_30mins { get; set; } = "";
+        public string message_thread_id_p22_5mins { get; set; } = "";
+        public string message_thread_id_p23_1mins { get; set; } = "";
         public string etherscanUrl { get; set; } = "";
         public string dextoolsUrl { get; set; } = "";
         public string dexscreenerUrl { get; set; } = "";

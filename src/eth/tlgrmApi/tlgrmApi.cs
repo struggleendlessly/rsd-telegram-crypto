@@ -238,10 +238,29 @@ namespace tlgrmApi
         public async Task<List<P0_DTO>> SendP20(
             List<EthTrainData> ethTrainDatas,
             List<EthBlocks> ethBlocks,
-            List<EthTokensVolumeAvarageDTO> validated)
+            List<EthTokensVolumeAvarageDTO> validated,
+            int message_thread_id_p20mins)
         {
             List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
-            var threadId = optionsTelegram.message_thread_id_p20;
+
+            var threadId = "";
+
+            switch (message_thread_id_p20mins)
+            {
+                case 1:
+                    threadId = optionsTelegram.message_thread_id_p23_1mins;
+                    break;
+                case 5:
+                    threadId = optionsTelegram.message_thread_id_p22_5mins;
+                    break;
+                case 30:
+                    threadId = optionsTelegram.message_thread_id_p21_30mins;
+                    break;
+                case 60:
+                    threadId = optionsTelegram.message_thread_id_p20_60mins;
+                    break;
+            }
+
 
             foreach (var item in collection)
             {

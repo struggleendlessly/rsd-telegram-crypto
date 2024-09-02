@@ -65,7 +65,13 @@ namespace eth_shared
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
 
-            var t = await tlgrmApi.SendP20(ethTrainData, blocks, validated);
+            var t = await 
+                tlgrmApi.
+                SendP20(
+                    ethTrainData, 
+                    blocks, 
+                    validated,
+                    periodInMins);
 
             foreach (var item in ethTrainData)
             {
@@ -77,7 +83,7 @@ namespace eth_shared
                 }
             }
 
-            //await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         private List<EthTokensVolumeAvarageDTO> Validate(
@@ -91,12 +97,6 @@ namespace eth_shared
                 {
                     res.Add(item);
                 }
-
-                ///////////////////////////// for debugging !!!!!!!!!!!!
-                //if (item.last.Id == 1646)
-                //{
-                //    res.Add(item);
-                //}
             }
 
             return res;

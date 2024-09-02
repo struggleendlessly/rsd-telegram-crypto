@@ -81,7 +81,7 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker Worker2Scoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
-                await Task.Delay(60000, stoppingToken);
+                await Task.Delay(500, stoppingToken);
             }
         }
 

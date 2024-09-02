@@ -97,8 +97,8 @@ builder.Services.AddKeyedScoped<IScopedProcessingService, Worker5MinisScoped>("W
 
 builder.Services.AddHostedService<Worker2>();
 builder.Services.AddHostedService<Worker60Minis>();
-//builder.Services.AddHostedService<Worker30Minis>();
-//builder.Services.AddHostedService<Worker5Minis>();
+builder.Services.AddHostedService<Worker30Minis>();
+builder.Services.AddHostedService<Worker5Minis>();
 
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker4Scoped>("Worker4Scoped");
 //builder.Services.AddHostedService<Worker4>();

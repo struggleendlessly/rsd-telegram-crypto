@@ -80,7 +80,7 @@ namespace eth_shared
                 }
                 else
                 {
-                    lastProcessedBlock = lastEthBlockNumber;
+                    lastBlockToProcess = lastEthBlockNumber;
                 }             
             }
 
@@ -92,7 +92,7 @@ namespace eth_shared
                 }
                 else
                 {
-                    lastProcessedBlock = lastBlockInDbEthSwapEvents;
+                    lastBlockToProcess = lastBlockInDbEthSwapEvents;
                 }
             }
 

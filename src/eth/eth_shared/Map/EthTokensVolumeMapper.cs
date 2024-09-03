@@ -26,6 +26,7 @@ namespace eth_shared.Map
             res.volumeNegativeEth = BigDecimal.Parse(val.volumeNegativeEth);
             res.volumePositiveEth = BigDecimal.Parse(val.volumePositiveEth);
             res.volumeTotalEth = BigDecimal.Parse(val.volumeTotalEth);
+            res.isTlgrmMessageSent = val.isTlgrmMessageSent;
 
             return res;
         }

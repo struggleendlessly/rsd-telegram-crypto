@@ -105,13 +105,13 @@ namespace eth_shared
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
                 //await volumePrepare.Start(1);
-                //await volumeTracking.Start(60);
-                _logger.LogInformation("Worker Worker4Scoped volumePrepare .Start(5)");
-                await volumePrepare.Start(60, 50);
-                _logger.LogInformation("Worker Worker4Scoped volumePrepare .Start(30)");
-                await volumePrepare.Start(30, 100);
-                _logger.LogInformation("Worker Worker4Scoped volumePrepare .Start(60)");
-                await volumePrepare.Start(5, 500);
+                await volumeTracking.Start(5);
+                //_logger.LogInformation("Worker Worker4Scoped volumePrepare .Start(5)");
+                //await volumePrepare.Start(60, 50);
+                //_logger.LogInformation("Worker Worker4Scoped volumePrepare .Start(30)");
+                //await volumePrepare.Start(30, 100);
+                //_logger.LogInformation("Worker Worker4Scoped volumePrepare .Start(60)");
+                //await volumePrepare.Start(5, 500);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 

@@ -8,7 +8,7 @@ namespace Shared.DTO
 
         public int blockIntStart { get; set; }
         public int blockIntEnd { get; set; }
-
+        public bool isTlgrmMessageSent { get; set; }
         public int periodInMins { get; set; }
 
         public BigDecimal volumePositiveEth { get; set; }

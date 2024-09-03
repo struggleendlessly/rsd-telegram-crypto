@@ -12,6 +12,8 @@ using Nethereum.Util;
 
 using Shared.DTO;
 
+using System.Linq;
+
 namespace eth_shared
 {
     public class VolumeTracking
@@ -49,6 +51,7 @@ namespace eth_shared
 
             var tokensToProcess = await GetTokensToProcess();
             var mapped = Map(tokensToProcess);
+            var ee = mapped.SelectMany(x => x.Where(v => v.EthTrainDataId == 1032));
             var average = Average(mapped);
             var validated = Validate(average);
             await SendTlgrmMessageP0(validated);
@@ -65,13 +68,15 @@ namespace eth_shared
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
 
-            var t = await 
+            var t = await
                 tlgrmApi.
                 SendP20(
-                    ethTrainData, 
-                    blocks, 
+                    ethTrainData,
+                    blocks,
                     validated,
                     periodInMins);
+
+            List<EthTokensVolume> EthTokensVolumesToUpdate = new();
 
             foreach (var item in ethTrainData)
             {
@@ -81,6 +86,11 @@ namespace eth_shared
                 {
                     item.tlgrmVolume = resp.tlgrmMsgId;
                 }
+
+                var tempVolumeValidated = validated.Where(x => x.EthTrainDataId == item.Id).FirstOrDefault();
+                var tempVolumeUpdate = dbContext.EthTokensVolumes.Where(x => x.Id == tempVolumeValidated.last.Id).FirstOrDefault();
+                tempVolumeUpdate.isTlgrmMessageSent = true;
+                EthTokensVolumesToUpdate.Add(tempVolumeUpdate);
             }
 
             await dbContext.SaveChangesAsync();
@@ -93,6 +103,11 @@ namespace eth_shared
 
             foreach (var item in average)
             {
+                if (item.last.isTlgrmMessageSent)
+                {
+                    continue;
+                }
+
                 if (item.last.volumePositiveEth > (item.volumePositiveEthAverage * 3))
                 {
                     res.Add(item);
@@ -124,7 +139,7 @@ namespace eth_shared
 
                 foreach (var item in groups)
                 {
-                    if (groups[groups.Count - 1] == item)
+                    if (groups[0] == item)
                     {
                         t.last = item;
 
@@ -177,9 +192,8 @@ namespace eth_shared
                 EthTokensVolumes.
                 Where(x => x.EthTrainDataId != null && ww.Contains((int)x.EthTrainDataId) &&
                       x.periodInMins == periodInMins).
-                OrderByDescending(x => x.Id).
                 GroupBy(x => x.EthTrainDataId).
-                Select(g => g.OrderBy(row => row.Id).Take(21)).
+                Select(g => g.OrderByDescending(row => row.blockIntEnd).Take(21)).
                 ToListAsync();
 
             return res;

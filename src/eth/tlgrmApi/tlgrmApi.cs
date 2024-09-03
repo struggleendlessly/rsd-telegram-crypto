@@ -306,7 +306,8 @@ namespace tlgrmApi
                     $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
                     $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} ETH  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} ETH \n" +
                     $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} ETH  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} ETH  \n" +
-                    $"{xxx} {x:0.##} X";
+                    $"{xxx} {x:0.##} X \n" +
+                    $"{average.last.blockIntStart} / {average.last.blockIntEnd}";
             }
 
             foreach (var item in collection)

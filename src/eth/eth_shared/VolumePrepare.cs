@@ -21,7 +21,7 @@ namespace eth_shared
         private readonly EthApi apiAlchemy;
 
         int lastEthBlockNumber = 0;
-        int lastProcessedBlock = 18911035;
+        int lastProcessedBlock = 20_558_576;
         int lastBlockToProcess = 0;
         int lastBlockInDbEthTokensVolumes = 0;
         int lastBlockInDbEthSwapEvents = 0;
@@ -174,6 +174,7 @@ namespace eth_shared
 
             dbContext.EthTokensVolumes.AddRange(result);
             await dbContext.SaveChangesAsync();
+            //await dbContext.BulkInsertAsync(result);
         }
 
         public async Task<List<EthSwapEvents>> GetTokensToProcess()

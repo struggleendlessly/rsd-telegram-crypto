@@ -51,7 +51,6 @@ namespace eth_shared
 
             var tokensToProcess = await GetTokensToProcess();
             var mapped = Map(tokensToProcess);
-            var ee = mapped.SelectMany(x => x.Where(v => v.EthTrainDataId == 1032));
             var average = Average(mapped);
             var validated = Validate(average);
             await SendTlgrmMessageP0(validated);

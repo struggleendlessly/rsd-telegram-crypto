@@ -25,6 +25,7 @@ namespace eth_shared
         private readonly GetSwapEvents getSwapEvents;
         private readonly GetTokenSniffer getTokenSniffer;
         private readonly GetReservesLogs getReservesLogs;
+        private readonly IsDeadBySwaps isDeadBySwaps;
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
 
@@ -40,7 +41,8 @@ namespace eth_shared
             GetSwapEvents getSwapEvents,
             GetTokenSniffer getTokenSniffer,
             GetReservesLogs getReservesLogs,
-            GetSwapEventsETHUSD getSwapEventsETHUSD,
+            IsDeadBySwaps isDeadBySwaps,
+        GetSwapEventsETHUSD getSwapEventsETHUSD,
             GetBalanceOnCreating getBalanceOnCreating
             )
         {
@@ -55,6 +57,7 @@ namespace eth_shared
             this.getSwapEvents = getSwapEvents;
             this.getReservesLogs = getReservesLogs;
             this.getTokenSniffer = getTokenSniffer;
+            this.isDeadBySwaps = isDeadBySwaps;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
         }
@@ -97,6 +100,7 @@ namespace eth_shared
                 _logger.LogInformation("Worker Worker2Scoped getSwapEvents count before: {count}", _сount);
 
                 var timeStart = DateTimeOffset.Now;
+                // await isDeadBySwaps.Start();
                 /////////////////////
                 await getSwapEvents.Start();
                 /////////////////////

@@ -30,7 +30,7 @@ namespace eth_shared
         private readonly VolumeTracking volumeTracking;
         private readonly GetSwapEventsETHUSD getSwapEventsETHUSD;
         private readonly GetBalanceOnCreating getBalanceOnCreating;
-
+        private readonly IsDeadBySwaps isDeadBySwaps;
         private const string schedule = "0 * * * *"; // every hour
         private readonly CronExpression _cron;
 
@@ -48,6 +48,7 @@ namespace eth_shared
             GetReservesLogs getReservesLogs,
             VolumePrepare volumePrepare,
             VolumeTracking volumeTracking,
+            IsDeadBySwaps isDeadBySwaps,
             GetSwapEventsETHUSD getSwapEventsETHUSD,
             GetBalanceOnCreating getBalanceOnCreating
             )
@@ -65,6 +66,7 @@ namespace eth_shared
             this.volumeTracking = volumeTracking;
             this.getReservesLogs = getReservesLogs;
             this.getTokenSniffer = getTokenSniffer;
+            this.isDeadBySwaps = isDeadBySwaps;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
 
@@ -116,7 +118,7 @@ namespace eth_shared
                 /////////////////////
 
                 _logger.LogInformation("Worker Worker60MinisScoped volumePrepare .Start(60)");
-
+                await isDeadBySwaps.Start();
                 await volumePrepare.Start(60, 50);
                 await volumeTracking.Start(60);
                 /////////////////////

@@ -86,6 +86,7 @@ builder.Services.AddTransient<GetTokenSniffer>();
 builder.Services.AddTransient<GetTokenMetadata>();
 builder.Services.AddTransient<GetReservesLogs>();
 builder.Services.AddTransient<VolumeTracking>();
+builder.Services.AddTransient<IsDeadBySwaps>();
 builder.Services.AddTransient<GetBalanceOnCreating>();
 builder.Services.AddTransient<GetTransactionReceipt>();
 builder.Services.AddTransient<GetSwapEventsETHUSD>();
@@ -95,7 +96,7 @@ builder.Services.AddKeyedScoped<IScopedProcessingService, Worker60MinisScoped>("
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker30MinisScoped>("Worker30MinisScoped");
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker5MinisScoped>("Worker5MinisScoped");
 
-builder.Services.AddHostedService<Worker2>();
+//builder.Services.AddHostedService<Worker2>();
 builder.Services.AddHostedService<Worker60Minis>();
 builder.Services.AddHostedService<Worker30Minis>();
 builder.Services.AddHostedService<Worker5Minis>();

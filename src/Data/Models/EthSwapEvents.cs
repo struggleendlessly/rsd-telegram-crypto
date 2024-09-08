@@ -3,6 +3,7 @@
 namespace Data.Models
 {
     [Index(nameof(blockNumberInt))]
+    [Index(nameof(EthTrainDataId))]
     public class EthSwapEvents
     {
         public int Id { get; set; }

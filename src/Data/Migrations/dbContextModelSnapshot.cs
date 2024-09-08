@@ -58,7 +58,7 @@ namespace Data.Migrations
                     b.HasIndex("numberInt")
                         .IsUnique();
 
-                    b.ToTable("EthBlock");
+                    b.ToTable("EthBlock", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.EthSwapEvents", b =>
@@ -123,7 +123,7 @@ namespace Data.Migrations
 
                     b.HasIndex("blockNumberInt");
 
-                    b.ToTable("EthSwapEvents");
+                    b.ToTable("EthSwapEvents", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.EthSwapEventsETHUSD", b =>
@@ -182,7 +182,7 @@ namespace Data.Migrations
 
                     b.HasIndex("blockNumberInt");
 
-                    b.ToTable("EthSwapEventsETHUSD");
+                    b.ToTable("EthSwapEventsETHUSD", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.EthTokensVolume", b =>
@@ -226,7 +226,7 @@ namespace Data.Migrations
 
                     b.HasIndex("blockIntEnd");
 
-                    b.ToTable("EthTokensVolumes");
+                    b.ToTable("EthTokensVolumes", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.EthTrainData", b =>
@@ -430,7 +430,7 @@ namespace Data.Migrations
                     b.HasIndex("hash")
                         .IsUnique();
 
-                    b.ToTable("EthTrainData");
+                    b.ToTable("EthTrainData", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.EthTrxOthers", b =>
@@ -508,7 +508,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EthTrxOther");
+                    b.ToTable("EthTrxOther", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.TradeCompanies", b =>
@@ -525,7 +525,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TradeCompanies");
+                    b.ToTable("TradeCompanies", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.WalletNames", b =>
@@ -551,7 +551,7 @@ namespace Data.Migrations
 
                     b.HasIndex("TradeCompaniesId");
 
-                    b.ToTable("WalletNames");
+                    b.ToTable("WalletNames", (string)null);
                 });
 
             modelBuilder.Entity("Data.Models.EthSwapEvents", b =>

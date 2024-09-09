@@ -6,7 +6,9 @@ namespace Shared.DTO
     {
         public int Id { get; set; }
 
+        public DateTime blockIntStartDate { get; set; }
         public int blockIntStart { get; set; }
+        public DateTime blockIntEndDate { get; set; }
         public int blockIntEnd { get; set; }
         public bool isTlgrmMessageSent { get; set; }
         public int periodInMins { get; set; }

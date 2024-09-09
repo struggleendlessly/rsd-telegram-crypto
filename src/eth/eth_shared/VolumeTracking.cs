@@ -109,6 +109,23 @@ namespace eth_shared
 
                 if (item.last.volumePositiveEth > (item.volumePositiveEthAverage * 3))
                 {
+                    var blockIntStart = dbContext.EthBlock.Where(x => x.numberInt == item.last.blockIntStart).FirstOrDefault();
+                    var blockIntEnd = dbContext.EthBlock.Where(x => x.numberInt == item.last.blockIntEnd).FirstOrDefault();
+
+                    if (blockIntStart is not null)
+                    {
+                        int intValue = Convert.ToInt32(blockIntStart.timestamp, 16);
+                        var timestampInt = Convert.ToDouble(intValue);
+                        item.last.blockIntStartDate = DateTime.UnixEpoch.AddSeconds(timestampInt);
+                    }
+
+                    if (blockIntEnd is not null)
+                    {
+                        int intValue = Convert.ToInt32(blockIntEnd.timestamp, 16);
+                        var timestampInt = Convert.ToDouble(intValue);
+                        item.last.blockIntEndDate = DateTime.UnixEpoch.AddSeconds(timestampInt);
+                    }
+
                     res.Add(item);
                 }
             }

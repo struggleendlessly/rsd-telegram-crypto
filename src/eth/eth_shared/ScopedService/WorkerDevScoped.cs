@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace eth_shared
 {
-    public sealed class Worker12SecScoped : IScopedProcessingService
+    public sealed class WorkerDevScoped : IScopedProcessingService
     {
         private List<EthTrainData> ethTrainDatas = new();
 
@@ -33,8 +33,8 @@ namespace eth_shared
 
         private const string schedule = "0/5 * * * *"; // every 5 min
         private readonly CronExpression _cron;
-        public Worker12SecScoped(
-            ILogger<Worker12SecScoped> logger,
+        public WorkerDevScoped(
+            ILogger<WorkerDevScoped> logger,
             IsDead isDead,
             GetPair getPair,
             dbContext dbContext,
@@ -76,9 +76,9 @@ namespace eth_shared
             {
                 _logger.LogInformation("Worker Worker5MinisScoped running");
 
-                var utcNow = DateTime.UtcNow;
-                var nextUtc = _cron.GetNextOccurrence(utcNow);
-                await Task.Delay(nextUtc.Value - utcNow, stoppingToken);
+                //var utcNow = DateTime.UtcNow;
+                //var nextUtc = _cron.GetNextOccurrence(utcNow);
+                //await Task.Delay(nextUtc.Value - utcNow, stoppingToken);
 
                 var timeStartStep1 = DateTimeOffset.Now;
 
@@ -119,8 +119,9 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker Worker5MinisScoped volumePrepare .Start(5)");
 
-                await volumePrepare.Start(5, 100);
-                await volumeTracking.Start(5);
+                await volumeTracking.Start();
+                //await volumePrepare.Start(5, 100);
+                //await volumeTracking.Start(5);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 

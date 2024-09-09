@@ -1,23 +1,38 @@
+using api_alchemy.Eth;
+
+using Data;
+
+using eth_shared;
+
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ws_eth_dev
 {
     public class Worker : BackgroundService
     {
+        private readonly IServiceScopeFactory serviceScopeFactory;
+
         private readonly ILogger<Worker> _logger;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(
+             ILogger<Worker> logger,
+             IServiceScopeFactory serviceScopeFactory
+            )
         {
             _logger = logger;
+            this.serviceScopeFactory = serviceScopeFactory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            using (IServiceScope scope = serviceScopeFactory.CreateScope())
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
+                IScopedProcessingService scopedProcessingService =
+                    scope.
+                    ServiceProvider.
+                    GetRequiredKeyedService<IScopedProcessingService>("WorkerDevScoped");
+
+                await scopedProcessingService.DoWorkAsync(stoppingToken);
             }
         }
     }

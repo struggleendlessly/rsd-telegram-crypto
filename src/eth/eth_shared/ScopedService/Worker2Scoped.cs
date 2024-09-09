@@ -100,7 +100,7 @@ namespace eth_shared
                 _logger.LogInformation("Worker Worker2Scoped getSwapEvents count before: {count}", _сount);
 
                 var timeStart = DateTimeOffset.Now;
-                // await isDeadBySwaps.Start();
+                //await isDeadBySwaps.Start();
                 /////////////////////
                 await getSwapEvents.Start();
                 /////////////////////

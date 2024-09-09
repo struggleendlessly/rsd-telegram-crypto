@@ -42,7 +42,7 @@ namespace eth_shared
 
         public async Task Start()
         {
-            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+            lastEthBlockNumber = (await dbContext.EthBlock.OrderByDescending(x => x.numberInt).Take(1).SingleAsync()).numberInt;
 
             if (await dbContext.EthSwapEvents.AnyAsync())
             {

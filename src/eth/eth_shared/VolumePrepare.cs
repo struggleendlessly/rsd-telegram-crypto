@@ -43,7 +43,7 @@ namespace eth_shared
             int multiply = 100
             )
         {
-            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+            lastEthBlockNumber = (await dbContext.EthBlock.OrderByDescending(x => x.numberInt).Take(1).SingleAsync()).numberInt;
             this.periodInMins = periodInMins;
             this.multiply = multiply;
 

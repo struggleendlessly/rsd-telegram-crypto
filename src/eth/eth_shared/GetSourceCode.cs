@@ -36,7 +36,7 @@ namespace eth_shared
 
         public async Task Start()
         {
-            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+            lastEthBlockNumber = (await dbContext.EthBlock.OrderByDescending(x => x.numberInt).Take(1).SingleAsync()).numberInt;
 
             var tokensToProcess = await GetTokensToProcess();
             var unverified = await Get(tokensToProcess);
@@ -167,7 +167,7 @@ namespace eth_shared
 
         public async Task<List<EthTrainData>> GetTokensToProcess()
         {
-            var lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+            var lastEthBlockNumber = (await dbContext.EthBlock.OrderByDescending(x => x.numberInt).Take(1).SingleAsync()).numberInt;
 
             var res = await
                 dbContext.

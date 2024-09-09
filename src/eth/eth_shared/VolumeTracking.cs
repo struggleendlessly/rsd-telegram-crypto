@@ -46,7 +46,7 @@ namespace eth_shared
             int periodInMins = 5
             )
         {
-            lastEthBlockNumber = await apiAlchemy.lastBlockNumber();
+            lastEthBlockNumber = (await dbContext.EthBlock.OrderByDescending(x => x.numberInt).Take(1).SingleAsync()).numberInt;
             this.periodInMins = periodInMins;
 
             var tokensToProcess = await GetTokensToProcess();

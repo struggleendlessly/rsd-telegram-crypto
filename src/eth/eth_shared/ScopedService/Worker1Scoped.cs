@@ -8,6 +8,8 @@ using etherscan;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace eth_shared
 {
     public sealed class Worker1Scoped : IScopedProcessingService
@@ -219,6 +221,28 @@ namespace eth_shared
                     x.isDead == false &&
                     x.blockNumberInt > 20420936).
                 ToList();
+
+            IEnumerable<int> EthTrainDataIds = ethTrainData.Select(v => v.Id);
+
+            var swaps =
+                await
+                dbContext.
+                EthSwapEvents.
+                Where(x => EthTrainDataIds.Contains((int)x.EthTrainDataId)).
+                GroupBy(x => x.EthTrainDataId).
+                Select(g => g.OrderByDescending(row => row.Id).Take(1)).
+                ToListAsync();
+
+            foreach (var item in ethTrainData)
+            {
+                var t1 =
+                    swaps.
+                    Where(x => x.Any(v => v.EthTrainDataId == item.Id)).
+                    Select(x => x).
+                    FirstOrDefault();
+
+                item.EthSwapEvents = new List<EthSwapEvents>(t1);
+            }
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();

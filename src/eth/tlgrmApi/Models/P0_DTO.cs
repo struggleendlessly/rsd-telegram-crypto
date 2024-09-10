@@ -21,5 +21,12 @@ namespace tlgrmApi.Models
         public string ABIICon { get; set; } = string.Empty;
         public string walletIcon { get; set; } = string.Empty;
         public string balanceIcon { get; set; } = string.Empty;
+        public string currency { get; set; } = "ETH";
+        public string line_tokenName { get; set; } = string.Empty;
+        public string line_tokenAddress { get; set; } = string.Empty;
+        public string line_tokenSupply { get; set; } = string.Empty;
+        public string line_WalletAgeAndBalance { get; set; } = string.Empty;
+        public string line_WalletFromType { get; set; } = string.Empty;
+        public string line_DextoolsAndDexcreener { get; set; } = string.Empty;
     }
 }

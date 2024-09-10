@@ -101,11 +101,9 @@ namespace tlgrmApi
 
                 val.EthTrainData = item;
 
-                var currency = "ETH";
-
-                if (item.EthSwapEvents.Any(x=>x.tokenNotEth != ""))
+                if (item.EthSwapEvents.Any(x => x.tokenNotEth != ""))
                 {
-                    currency = "XXX";
+                    val.currency = "XXX";
                 }
 
                 var block = ethBlocks.FirstOrDefault(x => x.numberInt == item.blockNumberInt);
@@ -198,17 +196,22 @@ namespace tlgrmApi
                     sourceWalletName = $"{isWalletKnown.Name} Wallet";
                     sourceWalletIcon = icons["snowflake"];
                 }
+                val.line_tokenName = $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress})";
+                val.line_tokenAddress = $"{val.ABIICon}`{val.contractAddress}`";
+                val.line_tokenSupply = $"{icons["coin"]} `{val.totalSupply}`";
+                val.line_WalletAgeAndBalance = $"{val.walletIcon} [{val.walletAge}  {val.balanceIcon} {val.balanceOnCreating} {val.currency}]({optionsTelegram.etherscanUrl}address/{val.from})";
+                val.line_WalletFromType = $"{sourceWalletIcon} [{sourceWalletName}]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}";
 
-                var text =
-                    $"" +
-                    $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
-                    $"{val.ABIICon}`{val.contractAddress}` \n " +
-                    $"{icons["coin"]} `{val.totalSupply}` \n " +
-                    $"{val.walletIcon} [{val.walletAge}  {val.balanceIcon} {val.balanceOnCreating} ETH]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
-                    $"{sourceWalletIcon} [{sourceWalletName}]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
-                    $"";
+                //var text =
+                //    $"" +
+                //    $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress}) \n" +
+                //    $"{val.ABIICon}`{val.contractAddress}` \n " +
+                //    $"{icons["coin"]} `{val.totalSupply}` \n " +
+                //    $"{val.walletIcon} [{val.walletAge}  {val.balanceIcon} {val.balanceOnCreating} {val.currency}]({optionsTelegram.etherscanUrl}address/{val.from})  \n" +
+                //    $"{sourceWalletIcon} [{sourceWalletName}]({optionsTelegram.etherscanUrl}address/{item.WalletSource1in}): {item.WalletSource1inCountRemLiq}  \n" +
+                //    $"";
 
-                val.messageText = text;
+                //val.messageText = text;
 
                 res.Add(val);
             }
@@ -224,6 +227,13 @@ namespace tlgrmApi
 
             foreach (var item in collection)
             {
+                item.messageText =
+                    item.line_tokenName + " \n" +
+                    item.line_tokenAddress + " \n" +
+                    item.line_tokenSupply + " \n" +
+                    item.line_WalletAgeAndBalance + " \n" +
+                    item.line_WalletFromType;
+
                 var t = await SendSequest(threadId, item.messageText);
                 item.tlgrmMsgId = t;
             }
@@ -239,7 +249,12 @@ namespace tlgrmApi
 
             foreach (var item in collection)
             {
-                item.messageText = item.messageText +
+                item.messageText =
+                    item.line_tokenName + " \n" +
+                    item.line_tokenAddress + " \n" +
+                    item.line_tokenSupply + " \n" +
+                    item.line_WalletAgeAndBalance + " \n" +
+                    item.line_WalletFromType + " \n" +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
                     $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n";
             }
@@ -310,14 +325,17 @@ namespace tlgrmApi
                     buyToSell = icons["boom"];
                 }
 
-                item.messageText = item.messageText +
-                    $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
-                    $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})  \n" +
+                item.messageText =
+                    item.line_tokenName + " \n" +
+                    item.line_tokenAddress + " \n" +
+
                     $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
-                    $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} ETH  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} ETH \n" +
-                    $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} ETH  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} ETH  \n" +
+                    $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} {item.currency}  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} {item.currency} \n" +
+                    $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
                     $"{xxx} {x:0.##} X \n" +
-                    $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()}";
+                    $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()} \n" +
+                    $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
+                    $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
             }
 
             foreach (var item in collection)

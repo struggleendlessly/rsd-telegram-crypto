@@ -161,7 +161,10 @@ namespace eth_shared
                     Select(x => x).
                     FirstOrDefault();
 
-                item.EthSwapEvents = new List<EthSwapEvents>(t1);
+                if (t1 is not null)
+                {
+                    item.EthSwapEvents = new List<EthSwapEvents>(t1);
+                }
             }
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();

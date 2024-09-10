@@ -173,7 +173,7 @@ namespace eth_shared
                 var _сount = await dbContext.EthTrainData.Where(x => x.walletCreated == default).CountAsync();
                 _logger.LogInformation("Worker Worker1Scoped getWalletAge default count before: {count}", _сount);
 
-                 _сount = await dbContext.EthTrainData.Where(x => x.walletCreated != default).CountAsync();
+                _сount = await dbContext.EthTrainData.Where(x => x.walletCreated != default).CountAsync();
                 _logger.LogInformation("Worker Worker1Scoped getWalletAge not default count before: {count}", _сount);
 
                 var timeStart = DateTimeOffset.Now;
@@ -241,7 +241,10 @@ namespace eth_shared
                     Select(x => x).
                     FirstOrDefault();
 
-                item.EthSwapEvents = new List<EthSwapEvents>(t1);
+                if (t1 is not null)
+                {
+                    item.EthSwapEvents = new List<EthSwapEvents>(t1);
+                }
             }
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();

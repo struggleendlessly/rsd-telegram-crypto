@@ -61,6 +61,7 @@ namespace tlgrmApi
             icons.Add("fire", "%F0%9F%94%A5");
             icons.Add("boom", "%F0%9F%92%A5");
             icons.Add("clockSend", "%E2%8F%B3");
+            icons.Add("calendar", "%F0%9F%97%93");
 
             walletNames = dbContext.WalletNames.ToList();
         }
@@ -97,6 +98,15 @@ namespace tlgrmApi
             foreach (var item in ethTrainDatas)
             {
                 P0_DTO val = new();
+
+                val.EthTrainData = item;
+
+                var currency = "ETH";
+
+                if (item.EthSwapEvents.Any(x=>x.tokenNotEth != ""))
+                {
+                    currency = "XXX";
+                }
 
                 var block = ethBlocks.FirstOrDefault(x => x.numberInt == item.blockNumberInt);
                 int intUnix = Convert.ToInt32(block.timestamp, 16);
@@ -307,7 +317,7 @@ namespace tlgrmApi
                     $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} ETH  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} ETH \n" +
                     $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} ETH  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} ETH  \n" +
                     $"{xxx} {x:0.##} X \n" +
-                    $"{average.last.blockIntStartDate} / {average.last.blockIntEndDate}";
+                    $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()}";
             }
 
             foreach (var item in collection)

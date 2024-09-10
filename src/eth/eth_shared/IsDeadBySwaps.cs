@@ -1,13 +1,12 @@
 ﻿using api_alchemy.Eth;
 
 using Data;
-using Data.Models;
 
-using etherscan.ResponseDTO;
 using etherscan;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using nethereum;
 
 namespace eth_shared
@@ -72,7 +71,7 @@ namespace eth_shared
                 EthSwapEvents.
                 Where(x => x.EthTrainDataId != null && ww.Contains((int)x.EthTrainDataId)).
                 GroupBy(x => x.EthTrainDataId).
-                Where(x => (lastEthBlockNumber - x.Max(y => y.blockNumberInt)) > 144000).
+                Where(x => (lastEthBlockNumber - x.Max(y => y.blockNumberInt)) > 100000).
                 Select(x => x.Key).
                 ToListAsync();
 

@@ -74,7 +74,7 @@ namespace eth_shared
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker Worker5MinisScoped running");
+                _logger.LogInformation("Worker WorkerDevScoped running");
 
                 //var utcNow = DateTime.UtcNow;
                 //var nextUtc = _cron.GetNextOccurrence(utcNow);
@@ -82,7 +82,7 @@ namespace eth_shared
 
                 var timeStartStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker Worker5MinisScoped running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker WorkerDevScoped running at: {time}", DateTimeOffset.Now);
 
                 try
                 {
@@ -90,13 +90,13 @@ namespace eth_shared
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("Worker Worker5MinisScoped Exception: {message}", ex.Message);
-                    _logger.LogError("Worker Worker5MinisScoped Exception: {stack}", ex.StackTrace);
+                    _logger.LogError("Worker WorkerDevScoped Exception: {message}", ex.Message);
+                    _logger.LogError("Worker WorkerDevScoped Exception: {stack}", ex.StackTrace);
                 }
 
                 var timeEndStep1 = DateTimeOffset.Now;
 
-                _logger.LogInformation("Worker Worker5MinisScoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
+                _logger.LogInformation("Worker WorkerDevScoped running time: {time}", (timeEndStep1 - timeStartStep1).TotalSeconds);
 
                 
                 //await Task.Delay(300_000, stoppingToken);
@@ -109,7 +109,7 @@ namespace eth_shared
             //await getReservesLogs.Start();
 
             {
-                _logger.LogInformation("Worker Worker5MinisScoped volumePrepare running at: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Worker WorkerDevScoped volumePrepare running at: {time}", DateTimeOffset.Now);
 
                 //var _сount = await dbContext.EthSwapEvents.CountAsync();
                 //_logger.LogInformation("Worker Worker4Scoped volumePrepare count before: {count}", _сount);
@@ -117,18 +117,17 @@ namespace eth_shared
                 var timeStart = DateTimeOffset.Now;
                 /////////////////////
 
-                _logger.LogInformation("Worker Worker5MinisScoped volumePrepare .Start(5)");
+                _logger.LogInformation("Worker WorkerDevScoped volumePrepare .Start(5)");
 
-                await volumeTracking.Start();
-                //await volumePrepare.Start(5, 100);
-                //await volumeTracking.Start(5);
+                await volumePrepare.Start(60, 100);
+                await volumeTracking.Start(60);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 
                 //_сount = await dbContext.EthSwapEvents.CountAsync();
                 //_logger.LogInformation("Worker Worker2Scoped getSwapEvents count after: {count}", _сount);
 
-                _logger.LogInformation("Worker Worker5MinisScoped volumePrepare running time: {time}", (timeEnd - timeStart).TotalSeconds);
+                _logger.LogInformation("Worker WorkerDevScoped volumePrepare running time: {time}", (timeEnd - timeStart).TotalSeconds);
             }
         }
     }

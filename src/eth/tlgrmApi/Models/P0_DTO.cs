@@ -1,8 +1,11 @@
-﻿namespace tlgrmApi.Models
+﻿using Data.Models;
+
+namespace tlgrmApi.Models
 {
     public class P0_DTO
     {
         public int EthTrainDataId { get; set; } = 0;
+        public EthTrainData EthTrainData { get; set; } = new();
         public int tlgrmMsgId { get; set; } = 0;
         public string name { get; set; } = string.Empty;
         public string symbol { get; set; } = string.Empty;

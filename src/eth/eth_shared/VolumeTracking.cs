@@ -6,6 +6,7 @@ using Data.Models;
 using eth_shared.Map;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 using Nethereum.Util;
@@ -58,11 +59,34 @@ namespace eth_shared
         async Task SendTlgrmMessageP0(
             List<EthTokensVolumeAvarageDTO> validated)
         {
+            IEnumerable<int> EthTrainDataIds = validated.Select(v => v.EthTrainDataId);
             var ethTrainData =
+                await
                 dbContext.
                 EthTrainData.
-                Where(x => validated.Select(v => v.EthTrainDataId).Contains(x.Id)).
-                ToList();
+                Where(x => EthTrainDataIds.Contains(x.Id)).
+                ToListAsync();
+
+            var swaps =
+                await
+                dbContext.
+                EthSwapEvents.
+                Where(x => EthTrainDataIds.Contains((int)x.EthTrainDataId)).
+                GroupBy(x => x.EthTrainDataId).
+                Select(g => g.OrderByDescending(row => row.Id).Take(1)).
+                ToListAsync();
+
+            foreach (var item in ethTrainData)
+            {
+                var t1 = 
+                    swaps.
+                    Where(x => x.Any(v => v.EthTrainDataId == item.Id)).
+                    Select(x => x).
+                    FirstOrDefault();
+
+                item.EthSwapEvents = new List<EthSwapEvents>(t1);
+            }
+
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();

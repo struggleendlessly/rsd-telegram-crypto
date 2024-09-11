@@ -86,6 +86,9 @@ namespace eth_shared
             var lastBlockNumber = await apiAlchemy.lastBlockNumber();
             var lastProccessedBlock = await GetLastProccessedBlockNumber();
 
+            _logger.LogInformation("Worker WorkerScoped lastBlockNumber: {number}", lastBlockNumber);
+            _logger.LogInformation("Worker WorkerScoped lastProccessedBlock: {number}", lastProccessedBlock);
+
             tokens = await getBlocks.Start(lastBlockNumber, lastProccessedBlock);
 
             await Middle();

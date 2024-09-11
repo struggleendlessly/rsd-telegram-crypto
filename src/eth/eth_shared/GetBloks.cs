@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 
 using nethereum;
 
+using Serilog.Core;
+
 namespace eth_shared
 {
     public class GetBlocks

@@ -174,6 +174,8 @@ namespace api_alchemy.Eth
 
             var response = await httpClient.PostAsync(vAndApiKey, httpContent);
 
+            logger.LogInformation("EthApi lastBlockNumber: {response}", response.RequestMessage);
+
             if (response.IsSuccessStatusCode)
             {
                 var t = await response.Content.ReadFromJsonAsync<lastBlockNumber>();

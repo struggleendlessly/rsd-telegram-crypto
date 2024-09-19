@@ -70,6 +70,8 @@ namespace tlgrmApi
             icons.Add("boom", "%F0%9F%92%A5");
             icons.Add("clockSend", "%E2%8F%B3");
             icons.Add("calendar", "%F0%9F%97%93");
+            icons.Add("antenna", "%F0%9F%93%B6");
+            icons.Add("SCROLL", "%F0%9F%93%9C");
 
             walletNames = dbContext.WalletNames.ToList();
         }
@@ -337,6 +339,7 @@ namespace tlgrmApi
 
                 var totalSupply = BigDecimal.Parse(item.EthTrainData.totalSupply);
                 var marketCap = totalSupply * (BigDecimal)item.EthTrainData.EthSwapEvents.FirstOrDefault().priceEth * (BigDecimal)ethPrice;
+                var marketCapStr = Regex.Replace(((ulong)marketCap).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
                 var volumeRiseCount = volumeRiseCountList.Where(x => x.EthTrainDataId == item.EthTrainDataId).ToList();
 
                 item.messageText =
@@ -348,8 +351,8 @@ namespace tlgrmApi
                     $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
                     $"{xxx} {x:0.##} X \n" +
                     $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()} \n" +
-                    $"{icons["calendar"]} Market Cap: {marketCap} \n" +
-                    $"{icons["calendar"]} Count of triggers: {volumeRiseCount.Count} \n" +
+                    $"{icons["antenna"]} Market Cap: {marketCapStr} \n" +
+                    $"{icons["SCROLL"]} Count of triggers: {volumeRiseCount.Count} \n" +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
                     $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
             }

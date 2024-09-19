@@ -34,9 +34,9 @@ namespace Data.Models
         public ICollection<EthTokensVolume> EthTokensVolumes { get; set; } = [];
 
         // Telegram
-        public int tlgrmNewTokens { get; set; } = 0;
-        public int tlgrmLivePairs { get; set; } = 0;
-        public int tlgrmVolume { get; set; } = 0;
+        public long tlgrmNewTokens { get; set; } = 0;
+        public long tlgrmLivePairs { get; set; } = 0;
+        public long tlgrmVolume { get; set; } = 0;
 
         // TokenMetadata
         public int decimals { get; set; } = default!;

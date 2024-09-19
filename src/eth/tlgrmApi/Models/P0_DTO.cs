@@ -6,7 +6,7 @@ namespace tlgrmApi.Models
     {
         public int EthTrainDataId { get; set; } = 0;
         public EthTrainData EthTrainData { get; set; } = new();
-        public int tlgrmMsgId { get; set; } = 0;
+        public long tlgrmMsgId { get; set; } = 0;
         public string name { get; set; } = string.Empty;
         public string symbol { get; set; } = string.Empty;
         public string contractAddress { get; set; } = string.Empty;

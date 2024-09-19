@@ -44,9 +44,9 @@ namespace Shared.Telegram
 
 
 
-        public async Task<int> SendMessageToGroup(string text, string threadId)
+        public async Task<long> SendMessageToGroup(string text, string threadId)
         {
-            var res = 0;
+            var res = 0L;
 
             string urlString = $"https://api.telegram.org/bot{optionsTelegram.bot_hash}/" +
                 $"sendMessage?" +
@@ -70,7 +70,7 @@ namespace Shared.Telegram
             return res;
         }
 
-        public async Task<int> DeleteMessageInGroup(int messageId, string threadId)
+        public async Task<int> DeleteMessageInGroup(long messageId, string threadId)
         {
             var res = 0;
 

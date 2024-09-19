@@ -18,6 +18,7 @@
         public string message_thread_id_p20_60mins { get; set; } = "";
         public string message_thread_id_p21_30mins { get; set; } = "";
         public string message_thread_id_p22_5mins { get; set; } = "";
+        public string message_thread_id_p22_5_02mins { get; set; } = "";
         public string message_thread_id_p23_1mins { get; set; } = "";
         public string etherscanUrl { get; set; } = "";
         public string dextoolsUrl { get; set; } = "";

@@ -8,11 +8,11 @@
 
     public class Result
     {
-        public int message_id { get; set; }
+        public long message_id { get; set; }
         public From from { get; set; }
         public Chat chat { get; set; }
         public int date { get; set; }
-        public int message_thread_id { get; set; }
+        public long message_thread_id { get; set; }
         public Reply_To_Message reply_to_message { get; set; }
         public string text { get; set; }
         public Entity[] entities { get; set; }
@@ -38,18 +38,18 @@
 
     public class Reply_To_Message
     {
-        public int message_id { get; set; }
+        public long message_id { get; set; }
         public From1 from { get; set; }
         public Chat1 chat { get; set; }
         public int date { get; set; }
-        public int message_thread_id { get; set; }
+        public long message_thread_id { get; set; }
         public Forum_Topic_Created forum_topic_created { get; set; }
         public bool is_topic_message { get; set; }
     }
 
     public class From1
     {
-        public int id { get; set; }
+        public long id { get; set; }
         public bool is_bot { get; set; }
         public string first_name { get; set; }
         public string username { get; set; }
@@ -78,7 +78,7 @@
 
     public class Entity
     {
-        public int offset { get; set; }
+        public long offset { get; set; }
         public int length { get; set; }
         public string type { get; set; }
         public string url { get; set; }

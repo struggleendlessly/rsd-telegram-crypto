@@ -13,6 +13,7 @@ using Nethereum.Util;
 
 using Shared.DTO;
 
+using System.Collections.Generic;
 using System.Linq;
 
 namespace eth_shared
@@ -54,10 +55,29 @@ namespace eth_shared
             var mapped = Map(tokensToProcess);
             var average = Average(mapped);
             var validated = Validate(average);
+            var validated02 = Validate02(validated);
             await SendTlgrmMessageP0(validated);
+            await SendTlgrmMessageP0(validated02, "02");
         }
+
+        private List<EthTokensVolumeAvarageDTO> Validate02(List<EthTokensVolumeAvarageDTO> validated)
+        {
+            List<EthTokensVolumeAvarageDTO> res = new();
+
+            foreach (var item in validated)
+            {
+                if (item.volumePositiveEthAverage >= 0.2)
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
+        }
+
         async Task SendTlgrmMessageP0(
-            List<EthTokensVolumeAvarageDTO> validated)
+            List<EthTokensVolumeAvarageDTO> validated,
+            string addition = "")
         {
             IEnumerable<int> EthTrainDataIds = validated.Select(v => v.EthTrainDataId);
             var ethTrainData =
@@ -78,7 +98,7 @@ namespace eth_shared
 
             foreach (var item in ethTrainData)
             {
-                var t1 = 
+                var t1 =
                     swaps.
                     Where(x => x.Any(v => v.EthTrainDataId == item.Id)).
                     Select(x => x).
@@ -93,7 +113,7 @@ namespace eth_shared
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
-            var volumeRiseCount = 
+            var volumeRiseCount =
                 dbContext.
                 EthTokensVolumes.
                 Where(x => EthTrainDataIds.Contains((int)x.EthTrainDataId) && x.isTlgrmMessageSent == true && x.periodInMins == periodInMins).
@@ -106,7 +126,8 @@ namespace eth_shared
                     blocks,
                     validated,
                     volumeRiseCount,
-                    periodInMins);
+                    periodInMins,
+                    addition);
 
             List<EthTokensVolume> EthTokensVolumesToUpdate = new();
 

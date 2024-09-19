@@ -8,10 +8,13 @@ using Microsoft.Extensions.Options;
 
 using Nethereum.Util;
 
+using Newtonsoft.Json;
+
 using Shared.ConfigurationOptions;
 using Shared.DTO;
 using Shared.Telegram.Models;
 
+using System.Globalization;
 using System.Net.Http.Json;
 using System.Numerics;
 using System.Text.RegularExpressions;
@@ -76,11 +79,11 @@ namespace tlgrmApi
             walletNames = dbContext.WalletNames.ToList();
         }
 
-        public async Task<int> SendSequest(
+        public async Task<long> SendSequest(
             string threadId,
             string text)
         {
-            var res = 0;
+            var res = 0L;
 
             string urlString = $"bot{optionsTelegram.bot_hash}/" +
                 $"sendMessage?" +
@@ -91,8 +94,11 @@ namespace tlgrmApi
                 $"disable_web_page_preview=true";
 
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-            var response = await httpClient.GetFromJsonAsync<MessageSend>(urlString);
-            res = response.result.message_id;
+            var ee = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, urlString));
+            var nn = ee.Content.ReadAsStringAsync();
+            var resp = JsonConvert.DeserializeObject<MessageSend>(nn.Result);
+            //var response = await httpClient.GetFromJsonAsync<MessageSend>(urlString);
+            res = resp.result.message_id;
 
             await Task.Delay(optionsTelegram.api_delay_forech);
 
@@ -283,7 +289,8 @@ namespace tlgrmApi
             List<EthBlocks> ethBlocks,
             List<EthTokensVolumeAvarageDTO> validated,
             List<EthTokensVolume> volumeRiseCountList,
-            int message_thread_id_p20mins)
+            int message_thread_id_p20mins,
+            string addition = "")
         {
             var ethPrice = await etherscanApi.getEthPrice();
             List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
@@ -297,6 +304,11 @@ namespace tlgrmApi
                     break;
                 case 5:
                     threadId = optionsTelegram.message_thread_id_p22_5mins;
+
+                    if (addition.Equals("02"))
+                    {
+                        threadId = optionsTelegram.message_thread_id_p22_5_02mins;
+                    }
                     break;
                 case 30:
                     threadId = optionsTelegram.message_thread_id_p21_30mins;
@@ -339,7 +351,8 @@ namespace tlgrmApi
 
                 var totalSupply = BigDecimal.Parse(item.EthTrainData.totalSupply);
                 var marketCap = totalSupply * (BigDecimal)item.EthTrainData.EthSwapEvents.FirstOrDefault().priceEth * (BigDecimal)ethPrice;
-                var marketCapStr = Regex.Replace(((ulong)marketCap).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
+                var ee = marketCap.ToString().Split('.')[0];
+                var marketCapStr = Regex.Replace( BigInteger.Parse(ee).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
                 var volumeRiseCount = volumeRiseCountList.Where(x => x.EthTrainDataId == item.EthTrainDataId).ToList();
 
                 item.messageText =

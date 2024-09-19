@@ -57,7 +57,11 @@ namespace eth_shared
             var validated = Validate(average);
             var validated02 = Validate02(validated);
             await SendTlgrmMessageP0(validated);
-            await SendTlgrmMessageP0(validated02, "02");
+
+            if (periodInMins == 5)
+            {
+                await SendTlgrmMessageP0(validated02, "02");
+            }
         }
 
         private List<EthTokensVolumeAvarageDTO> Validate02(List<EthTokensVolumeAvarageDTO> validated)

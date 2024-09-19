@@ -1,14 +1,19 @@
 ﻿using Data;
 using Data.Models;
 
+using etherscan;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using Nethereum.Util;
 
 using Shared.ConfigurationOptions;
 using Shared.DTO;
 using Shared.Telegram.Models;
 
 using System.Net.Http.Json;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 using tlgrmApi.Models;
@@ -21,6 +26,7 @@ namespace tlgrmApi
         private readonly HttpClient httpClient;
         private readonly dbContext dbContext;
         private readonly OptionsTelegram optionsTelegram;
+        private readonly EtherscanApi etherscanApi;
 
         Dictionary<string, string> icons = new();
         List<WalletNames> walletNames = new();
@@ -29,12 +35,14 @@ namespace tlgrmApi
             ILogger<tlgrmApi> logger,
             IHttpClientFactory httpClient,
             dbContext dbContext,
+            EtherscanApi etherscanApi,
             IOptions<OptionsTelegram> options
             )
         {
             this.logger = logger;
             this.dbContext = dbContext;
             this.optionsTelegram = options.Value;
+            this.etherscanApi = etherscanApi;
 
             this.httpClient = httpClient.CreateClient("Api");
             this.httpClient.BaseAddress = new Uri(optionsTelegram.UrlBase);
@@ -272,8 +280,10 @@ namespace tlgrmApi
             List<EthTrainData> ethTrainDatas,
             List<EthBlocks> ethBlocks,
             List<EthTokensVolumeAvarageDTO> validated,
+            List<EthTokensVolume> volumeRiseCountList,
             int message_thread_id_p20mins)
         {
+            var ethPrice = await etherscanApi.getEthPrice();
             List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
 
             var threadId = "";
@@ -325,6 +335,10 @@ namespace tlgrmApi
                     buyToSell = icons["boom"];
                 }
 
+                var totalSupply = BigDecimal.Parse(item.EthTrainData.totalSupply);
+                var marketCap = totalSupply * (BigDecimal)item.EthTrainData.EthSwapEvents.FirstOrDefault().priceEth * (BigDecimal)ethPrice;
+                var volumeRiseCount = volumeRiseCountList.Where(x => x.EthTrainDataId == item.EthTrainDataId).ToList();
+
                 item.messageText =
                     item.line_tokenName + " \n" +
                     item.line_tokenAddress + " \n" +
@@ -334,6 +348,8 @@ namespace tlgrmApi
                     $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
                     $"{xxx} {x:0.##} X \n" +
                     $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()} \n" +
+                    $"{icons["calendar"]} Market Cap: {marketCap} \n" +
+                    $"{icons["calendar"]} Count of triggers: {volumeRiseCount.Count} \n" +
                     $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
                     $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
             }

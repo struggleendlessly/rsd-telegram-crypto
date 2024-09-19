@@ -85,7 +85,7 @@ namespace eth_shared
                 _logger.LogInformation("Worker WorkerDevScoped running at: {time}", DateTimeOffset.Now);
 
                 try
-                {
+                {                  
                     await Start();
                 }
                 catch (Exception ex)
@@ -119,8 +119,8 @@ namespace eth_shared
 
                 _logger.LogInformation("Worker WorkerDevScoped volumePrepare .Start(5)");
 
-                await volumePrepare.Start(60, 100);
-                await volumeTracking.Start(60);
+                await volumePrepare.Start(30, 100);
+                await volumeTracking.Start(30);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;
 

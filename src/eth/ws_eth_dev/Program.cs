@@ -94,10 +94,11 @@ builder.Services.AddTransient<GetSwapEventsETHUSD>();
 builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerScoped>("WorkerScoped");
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker2Scoped>("Worker2Scoped");
 builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerDevScoped>("WorkerDevScoped");
+builder.Services.AddKeyedScoped<IScopedProcessingService, Worker4Scoped>("Worker4Scoped");
+builder.Services.AddKeyedScoped<IScopedProcessingService, Worker5MinisScoped>("Worker5MinisScoped");
 
 builder.Services.AddHostedService<Worker>();
 
-builder.Services.AddKeyedScoped<IScopedProcessingService, Worker4Scoped>("Worker4Scoped");
 //builder.Services.AddHostedService<Worker4>();
 
 var host = builder.Build();

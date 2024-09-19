@@ -19,6 +19,21 @@ namespace etherscan
             res = urlBuilder.ToString();
 
             return res;
+        }    
+        
+        public static string getEthPrice(
+            string apiKeyToken)
+        {
+            var res = string.Empty;
+
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.Append("api/?module=stats");
+            urlBuilder.Append("&action=ethprice");
+            urlBuilder.Append($"&apikey={apiKeyToken}");
+
+            res = urlBuilder.ToString();
+
+            return res;
         }   
         
         public static string getNormalTxn(

@@ -93,6 +93,11 @@ namespace eth_shared
 
             var ids = ethTrainData.Select(x => x.blockNumberInt).ToList();
             var blocks = dbContext.EthBlock.Where(x => ids.Contains(x.numberInt)).ToList();
+            var volumeRiseCount = 
+                dbContext.
+                EthTokensVolumes.
+                Where(x => EthTrainDataIds.Contains((int)x.EthTrainDataId) && x.isTlgrmMessageSent == true && x.periodInMins == periodInMins).
+                ToList();
 
             var t = await
                 tlgrmApi.
@@ -100,6 +105,7 @@ namespace eth_shared
                     ethTrainData,
                     blocks,
                     validated,
+                    volumeRiseCount,
                     periodInMins);
 
             List<EthTokensVolume> EthTokensVolumesToUpdate = new();

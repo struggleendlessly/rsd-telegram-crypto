@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\etherscan\etherscan.csproj" />
   </ItemGroup>
 
 </Project>

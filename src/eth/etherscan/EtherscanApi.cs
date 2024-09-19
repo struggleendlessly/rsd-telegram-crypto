@@ -6,7 +6,10 @@ using Microsoft.Extensions.Options;
 using Shared.ConfigurationOptions;
 
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Net.Http.Json;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace etherscan
 {
@@ -19,6 +22,9 @@ namespace etherscan
 
         private readonly int MaxDegreeOfParallelism = 4;
         private readonly int apiKeysCount = 0;
+
+        CultureInfo currentCulture = Thread.CurrentThread.CurrentCulture;
+        string decimalCeparator = ".";
 
         public EtherscanApi(
             ILogger<EtherscanApi> logger,
@@ -34,6 +40,8 @@ namespace etherscan
             this.httpClient.BaseAddress = new Uri(url);
 
             apiKeysCount = optionsEtherscan.ApiKeys.Count();
+
+            //currentCulture.NumberFormat = decimalCeparator;
         }
 
         private string GetApiKey(int index)
@@ -134,6 +142,40 @@ namespace etherscan
                 });
 
             return res.ToList();
+        }
+
+        public async Task<double> getEthPrice()
+        {
+            var res = 0.0;
+            Random rnd = new Random();
+            int apiKeyParallelIndex = rnd.Next(0, apiKeysCount - 1);
+
+            var apiKey = GetApiKey(apiKeyParallelIndex);
+            var url = UrlBuider.getEthPrice(apiKey);
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var ee = string.Empty;
+                try
+                {
+                    ee = await response.Content.ReadAsStringAsync();
+                    var t = await response.Content.ReadFromJsonAsync<GetEthPriceDTO>();
+
+                    if (t is not null &&
+                        t.result is not null)
+                    {
+                        _logger.LogInformation("getEthPrice: {0}", t.result.ethusd);
+                        res = double.Parse(t.result.ethusd, System.Globalization.NumberFormatInfo.InvariantInfo);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+
+            return res;
         }
 
         private Dictionary<string, string> getSourceCodeBatch

@@ -5,6 +5,8 @@ using Data.Models;
 
 using eth_shared.Map;
 
+using etherscan;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
@@ -15,6 +17,8 @@ using Shared.DTO;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace eth_shared
 {
@@ -24,7 +28,9 @@ namespace eth_shared
         private readonly dbContext dbContext;
         private readonly EthApi apiAlchemy;
         private readonly tlgrmApi.tlgrmApi tlgrmApi;
+        private readonly EtherscanApi etherscanApi;
 
+        double ethPrice = 0.0;
         int lastEthBlockNumber = 0;
         int lastProcessedBlock = 18911035;
         int lastBlockToProcess = 0;
@@ -35,19 +41,23 @@ namespace eth_shared
             ILogger<VolumeTracking> logger,
             dbContext dbContext,
             tlgrmApi.tlgrmApi tlgrmApi,
-            EthApi apiAlchemy
+            EthApi apiAlchemy,
+            EtherscanApi etherscanApi
             )
         {
             this.logger = logger;
             this.dbContext = dbContext;
             this.apiAlchemy = apiAlchemy;
             this.tlgrmApi = tlgrmApi;
+            this.etherscanApi = etherscanApi;
         }
 
         public async Task Start(
             int periodInMins = 5
             )
         {
+            ethPrice = await etherscanApi.getEthPrice();
+
             lastEthBlockNumber = (await dbContext.EthBlock.OrderByDescending(x => x.numberInt).Take(1).SingleAsync()).numberInt;
             this.periodInMins = periodInMins;
 
@@ -55,13 +65,95 @@ namespace eth_shared
             var mapped = Map(tokensToProcess);
             var average = Average(mapped);
             var validated = Validate(average);
-            var validated02 = Validate02(validated);
+
+            //TODO: double call to the DB with method SendTlgrmMessageP0 !!!!!!!!!!
+            IEnumerable<int> EthTrainDataIds = validated.Select(v => v.EthTrainDataId);
+            var ethTrainDatas =
+                await
+                dbContext.
+                EthTrainData.
+                Where(x => EthTrainDataIds.Contains(x.Id)).
+                ToListAsync();
+
             await SendTlgrmMessageP0(validated);
 
             if (periodInMins == 5)
             {
-                await SendTlgrmMessageP0(validated02, "02");
+                var validate03v100mc = await ValidateVandMC(
+                    ethTrainDatas,
+                    validated,
+                    volumeLimit: 0.3,
+                    marketCapLimitFrom: 0,
+                    marketCapLimitTo: 100_000);
+
+                await SendTlgrmMessageP0(validate03v100mc, "5mins_03v100mc");
+
+                var validate09v01_1mc = await ValidateVandMC(
+                    ethTrainDatas,
+                    validated,
+                    volumeLimit: 0.9,
+                    marketCapLimitFrom: 100_000,
+                    marketCapLimitTo: 1_000_000);
+
+                await SendTlgrmMessageP0(validate09v01_1mc, "5mins_09v01_1mc");
             }
+
+            if (periodInMins == 30)
+            {
+                var validate03v100mc = await ValidateVandMC(
+                    ethTrainDatas,
+                    validated,
+                    volumeLimit: 0.3,
+                    marketCapLimitFrom: 0,
+                    marketCapLimitTo: 100_000);
+
+                await SendTlgrmMessageP0(validate03v100mc, "30mins_03v100mc");
+
+                var validate09v01_1mc = await ValidateVandMC(
+                    ethTrainDatas,
+                    validated,
+                    volumeLimit: 0.9,
+                    marketCapLimitFrom: 100_000,
+                    marketCapLimitTo: 1_000_000);
+
+                await SendTlgrmMessageP0(validate09v01_1mc, "30mins_09v01_1mc");
+            }
+        }
+
+        private async Task<List<EthTokensVolumeAvarageDTO>> ValidateVandMC(
+            List<EthTrainData> ethTrainDatas,
+            List<EthTokensVolumeAvarageDTO> validated,
+            double volumeLimit,
+            int marketCapLimitFrom = 0,
+            int marketCapLimitTo = 100_000)
+        {
+            List<EthTokensVolumeAvarageDTO> res = new();
+
+            foreach (var item in validated)
+            {
+                var ethTrainData = ethTrainDatas.Where(x => x.Id == item.EthTrainDataId).FirstOrDefault();
+
+                var totalSupply = BigDecimal.Parse(ethTrainData.totalSupply);
+
+                var t1 =
+                    dbContext.
+                    EthSwapEvents.
+                    Where(x => x.EthTrainDataId == item.EthTrainDataId).
+                    OrderByDescending(x => x.Id).
+                    Take(1).
+                    FirstOrDefault();
+
+                var marketCap = totalSupply * (BigDecimal)t1.priceEth * (BigDecimal)ethPrice;
+
+                if (item.last.volumePositiveEth >= volumeLimit &&
+                    marketCap > marketCapLimitFrom &&
+                    marketCap <= marketCapLimitTo)
+                {
+                    res.Add(item);
+                }
+            }
+
+            return res;
         }
 
         private List<EthTokensVolumeAvarageDTO> Validate02(List<EthTokensVolumeAvarageDTO> validated)

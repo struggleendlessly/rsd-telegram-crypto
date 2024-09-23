@@ -30,6 +30,7 @@ namespace tlgrmApi
         private readonly dbContext dbContext;
         private readonly OptionsTelegram optionsTelegram;
         private readonly EtherscanApi etherscanApi;
+        Random rnd = new Random();
 
         Dictionary<string, string> icons = new();
         List<WalletNames> walletNames = new();
@@ -85,7 +86,9 @@ namespace tlgrmApi
         {
             var res = 0L;
 
-            string urlString = $"bot{optionsTelegram.bot_hash}/" +
+            var bot_hashIndex = rnd.Next(0, optionsTelegram.bot_hash.Count - 1);
+
+            string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
                 $"sendMessage?" +
                 $"message_thread_id={threadId}&" +
                 $"chat_id={optionsTelegram.chat_id_coins}&" +
@@ -305,13 +308,30 @@ namespace tlgrmApi
                 case 5:
                     threadId = optionsTelegram.message_thread_id_p22_5mins;
 
-                    if (addition.Equals("02"))
+                    if (addition.Equals("5mins_03v100mc"))
                     {
-                        threadId = optionsTelegram.message_thread_id_p22_5_02mins;
+                        threadId = optionsTelegram.message_thread_id_p25_5mins_v03_mc0to100k;
                     }
+
+                    if (addition.Equals("5mins_09v01_1mc"))
+                    {
+                        threadId = optionsTelegram.message_thread_id_p26_5mins_v09_mc100kto1m;
+                    }
+
                     break;
                 case 30:
                     threadId = optionsTelegram.message_thread_id_p21_30mins;
+
+                    if (addition.Equals("30mins_03v100mc"))
+                    {
+                        threadId = optionsTelegram.message_thread_id_p212_30mins_v03_mc0to100k;
+                    }
+
+                    if (addition.Equals("30mins_09v01_1mc"))
+                    {
+                        threadId = optionsTelegram.message_thread_id_p28_30mins_v09_mc100kto1m;
+                    }
+
                     break;
                 case 60:
                     threadId = optionsTelegram.message_thread_id_p20_60mins;
@@ -352,7 +372,7 @@ namespace tlgrmApi
                 var totalSupply = BigDecimal.Parse(item.EthTrainData.totalSupply);
                 var marketCap = totalSupply * (BigDecimal)item.EthTrainData.EthSwapEvents.FirstOrDefault().priceEth * (BigDecimal)ethPrice;
                 var ee = marketCap.ToString().Split('.')[0];
-                var marketCapStr = Regex.Replace( BigInteger.Parse(ee).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
+                var marketCapStr = Regex.Replace(BigInteger.Parse(ee).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
                 var volumeRiseCount = volumeRiseCountList.Where(x => x.EthTrainDataId == item.EthTrainDataId).ToList();
 
                 item.messageText =

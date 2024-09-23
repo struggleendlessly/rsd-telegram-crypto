@@ -7,7 +7,7 @@
         public int api_limit { get; set; }
         public int api_delay_worker { get; set; }
         public int api_delay_forech { get; set; }
-        public string bot_hash { get; set; } = "";
+        public List<string> bot_hash { get; set; } = [];
         public string chat_id_coins { get; set; } = "";
         public string message_thread_id_mainfilters { get; set; } = "";
         public string message_thread_id_healthCheck { get; set; } = "";
@@ -20,6 +20,10 @@
         public string message_thread_id_p22_5mins { get; set; } = "";
         public string message_thread_id_p22_5_02mins { get; set; } = "";
         public string message_thread_id_p23_1mins { get; set; } = "";
+        public string message_thread_id_p25_5mins_v03_mc0to100k { get; set; } = "";
+        public string message_thread_id_p26_5mins_v09_mc100kto1m { get; set; } = "";
+        public string message_thread_id_p212_30mins_v03_mc0to100k { get; set; } = "";
+        public string message_thread_id_p28_30mins_v09_mc100kto1m { get; set; } = "";
         public string etherscanUrl { get; set; } = "";
         public string dextoolsUrl { get; set; } = "";
         public string dexscreenerUrl { get; set; } = "";

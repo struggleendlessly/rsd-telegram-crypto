@@ -31,4 +31,10 @@
     <ProjectReference Include="..\eth_shared\eth_shared.csproj" />
     <ProjectReference Include="..\tlgrmApi\tlgrmApi.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

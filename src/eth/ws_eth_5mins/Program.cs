@@ -22,6 +22,14 @@ using ws_eth_5mins;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+string strWorkPath = Path.GetDirectoryName(strExeFilePath);
+
+builder.
+    Configuration.
+    SetBasePath(strWorkPath).
+    AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 Log.Logger = new LoggerConfiguration().
     Enrich.FromLogContext().
     WriteTo.Console().

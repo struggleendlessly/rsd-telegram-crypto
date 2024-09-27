@@ -782,7 +782,8 @@ namespace api_alchemy.Eth
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Error json: {json}", json);
+                    logger.LogError("Error jsonResponse: {json}", json);
+                    logger.LogError("Error jsonRequest: {json}", aa.ToString());
 
                     throw;
                 }

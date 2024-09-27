@@ -245,7 +245,7 @@ namespace eth_shared
                 EthTrainData.
                 Where(
                     x =>
-                    x.pairAddress != "no" &&
+                    x.pairAddress != "no" && x.pairAddress != "" &&
                     (x.DeadBlockNumber > lastBlockToProcess || x.DeadBlockNumber == 0) &&
                     x.blockNumberInt < lastBlockToProcess
                     ).

@@ -30,9 +30,9 @@ namespace ws_eth_dev
                 IScopedProcessingService scopedProcessingService =
                     scope.
                     ServiceProvider.
-                //GetRequiredKeyedService<IScopedProcessingService>("WorkerDevScoped");
+                GetRequiredKeyedService<IScopedProcessingService>("WorkerDevScoped");
                 //GetRequiredKeyedService<IScopedProcessingService>("WorkerScoped");
-                GetRequiredKeyedService<IScopedProcessingService>("Worker2Scoped");
+                //GetRequiredKeyedService<IScopedProcessingService>("Worker2Scoped");
                 //GetRequiredKeyedService<IScopedProcessingService>("Worker1Scoped");
                 //GetRequiredKeyedService<IScopedProcessingService>("Worker5MinisScoped");
 

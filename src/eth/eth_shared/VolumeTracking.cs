@@ -347,14 +347,21 @@ namespace eth_shared
             List<IEnumerable<EthTokensVolume>> res = [];
 
             var ww = dbContext.EthTrainData.Where(x => x.isDead == false).Select(x => x.Id).ToList();
-
-            res = await dbContext.
+            var eee =
+                await dbContext.
                 EthTokensVolumes.
                 Where(x => x.EthTrainDataId != null && ww.Contains((int)x.EthTrainDataId) &&
-                      x.periodInMins == periodInMins).
-                GroupBy(x => x.EthTrainDataId).
-                Select(g => g.OrderByDescending(row => row.blockIntEnd).Take(21)).
-                ToListAsync();
+                      x.periodInMins == periodInMins).ToListAsync();
+            res = eee.
+                 GroupBy(x => x.EthTrainDataId).
+                Select(g => g.OrderByDescending(row => row.blockIntEnd).Take(21)).ToList();
+            //res = await dbContext.
+            //    EthTokensVolumes.
+            //    Where(x => x.EthTrainDataId != null && ww.Contains((int)x.EthTrainDataId) &&
+            //          x.periodInMins == periodInMins).
+            //    GroupBy(x => x.EthTrainDataId).
+            //    Select(g => g.OrderByDescending(row => row.blockIntEnd).Take(21)).
+            //    ToListAsync();
 
             return res;
         }

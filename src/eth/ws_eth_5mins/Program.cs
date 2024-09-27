@@ -22,11 +22,10 @@ using ws_eth_5mins;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+//string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+string strExeFilePath = AppDomain.CurrentDomain.BaseDirectory;
 string strWorkPath = Path.GetDirectoryName(strExeFilePath);
 
-Console.WriteLine(strWorkPath);
-Console.WriteLine(strExeFilePath);
 
 builder.
     Configuration.

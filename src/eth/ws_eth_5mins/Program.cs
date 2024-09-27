@@ -25,6 +25,9 @@ var builder = Host.CreateApplicationBuilder(args);
 string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 string strWorkPath = Path.GetDirectoryName(strExeFilePath);
 
+Console.WriteLine(strWorkPath);
+Console.WriteLine(strExeFilePath);
+
 builder.
     Configuration.
     SetBasePath(strWorkPath).

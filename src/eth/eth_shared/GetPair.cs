@@ -171,7 +171,10 @@ namespace eth_shared
 
                     if (!string.IsNullOrEmpty(tokenAddress))
                     {
-                        res.Add((tokenAddress, item.hash, item.blockNumber));
+                        if (!res.Contains((tokenAddress, item.hash, item.blockNumber)))
+                        {
+                            res.Add((tokenAddress, item.hash, item.blockNumber));
+                        }
                     }
                 }
             }
@@ -187,7 +190,10 @@ namespace eth_shared
             {
                 if (item.to is not null)
                 {
-                    res.Add((item.to, item.hash, item.blockNumber));
+                    if (!res.Contains((item.to, item.hash, item.blockNumber)))
+                    {
+                        res.Add((item.to, item.hash, item.blockNumber));
+                    }
                 }
             }
 
@@ -226,11 +232,13 @@ namespace eth_shared
                     if (t.functionName.Contains("openTrading", StringComparison.InvariantCultureIgnoreCase))
                     {
                         resO.Add(t);
+                        continue;
                     }
 
                     if (t.functionName.Contains("addLiquidity", StringComparison.InvariantCultureIgnoreCase))
                     {
                         resA.Add(t);
+                        continue;
                     }
                 }
             }

@@ -18,7 +18,8 @@ namespace api_alchemy.Eth
         private readonly int batchSize = 50;
 
         private readonly ILogger logger;
-        private readonly HttpClient httpClient;
+        private readonly HttpClient httpClientAlchemy;
+        private readonly HttpClient httpClientLocalNode;
         private readonly OptionsAlchemy optionsAlchemy;
         private string vAndApiKey;
         private readonly int apiKeysCount = 0;
@@ -37,8 +38,11 @@ namespace api_alchemy.Eth
             optionsAlchemy = _optionsAlchemy.Value;
             var url = optionsAlchemy.UrlBase.Replace("{{{chainName}}}", optionsAlchemy.ChainNames.Etherium);
 
-            this.httpClient = httpClient.CreateClient("Api");
-            this.httpClient.BaseAddress = new Uri(url);
+            this.httpClientAlchemy = httpClient.CreateClient("Api");
+            this.httpClientAlchemy.BaseAddress = new Uri(url);
+
+            this.httpClientLocalNode = httpClient.CreateClient("Api");
+            this.httpClientLocalNode.BaseAddress = new Uri(optionsAlchemy.UrlBaseLocalNode);
 
             Random rnd = new Random();
             var apiKeyIndex = rnd.Next(0, optionsAlchemy.ApiKeys.Length - 1);
@@ -172,7 +176,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(vAndApiKey, httpContent);
 
             logger.LogInformation("EthApi lastBlockNumber: {response}", response.RequestMessage);
 
@@ -201,7 +205,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(vAndApiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(vAndApiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -255,7 +259,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -309,15 +313,21 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
                 List<getTransactionReceiptDTO>? t = [];
 
+                if (json.Contains("-32700", StringComparison.InvariantCultureIgnoreCase))
+                {
+
+                }
+
                 try
                 {
+
                     t = await response.Content.ReadFromJsonAsync<List<getTransactionReceiptDTO>>();
 
                     if (t is not null)
@@ -365,7 +375,8 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            //httpClientAlchemy !!!!!!!!!!!!!
+            var response = await httpClientAlchemy.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -396,7 +407,9 @@ namespace api_alchemy.Eth
             List<EthTrainData> EthTrainData,
             int apiKeyIndex)
         {
+            int tryCount = 0;
             var apiKey = GetvAndApiKey(apiKeyIndex);
+
             List<getBalance> res = new();
             StringBuilder aa = new();
 
@@ -421,8 +434,16 @@ namespace api_alchemy.Eth
                 aa.ToString(),
                 Encoding.UTF8,
                 "application/json");
-
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            HttpResponseMessage response = new();
+        repeat:
+            if (tryCount == 0)
+            {
+                response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
+            }
+            else
+            {
+                response = await httpClientAlchemy.PostAsync(apiKey, httpContent);
+            }
 
             if (response.IsSuccessStatusCode)
             {
@@ -435,6 +456,12 @@ namespace api_alchemy.Eth
 
                     if (t is not null)
                     {
+                        if (json.Contains("-32002") && tryCount == 0)
+                        {
+                            tryCount++;
+                            goto repeat;
+                        }
+
                         res = t;
                     }
                 }
@@ -480,7 +507,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -540,7 +567,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -599,7 +626,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -641,8 +668,8 @@ namespace api_alchemy.Eth
                 data,
                 Encoding.UTF8,
                 "application/json");
-
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            //httpClientAlchemy !!!!!!!!!!!!!
+            var response = await httpClientAlchemy.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -675,7 +702,8 @@ namespace api_alchemy.Eth
                                 Encoding.UTF8,
                                 "application/json");
 
-                            response = await httpClient.PostAsync(apiKey, httpContent);
+                            //httpClientAlchemy !!!!!!!!!!!!!
+                            response = await httpClientAlchemy.PostAsync(apiKey, httpContent);
 
                             t = await response.Content.ReadFromJsonAsync<getAssetTransfersDTO>();
 
@@ -736,7 +764,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -799,7 +827,7 @@ namespace api_alchemy.Eth
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await httpClient.PostAsync(apiKey, httpContent);
+            var response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
 
             if (response.IsSuccessStatusCode)
             {

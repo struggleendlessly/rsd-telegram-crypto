@@ -8,17 +8,11 @@ using eth_shared.Map;
 using etherscan;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 using Nethereum.Util;
 
 using Shared.DTO;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text.RegularExpressions;
 
 namespace eth_shared
 {

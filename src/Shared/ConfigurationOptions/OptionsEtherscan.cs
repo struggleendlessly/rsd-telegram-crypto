@@ -4,6 +4,7 @@
     {
         public static string SectionName { get; } = "ApiAlchemy";
 
+        public string UrlBaseLocalNode { get; set; } = "";
         public string UrlBase { get; set; } = "";
         public string UrlVersion { get; set; } = "v2";
         public string[] ApiKeys { get; set; } = [];

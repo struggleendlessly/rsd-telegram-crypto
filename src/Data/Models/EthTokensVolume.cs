@@ -3,6 +3,7 @@
 namespace Data.Models
 {
     [Index(nameof(blockIntEnd))]
+    [Index(nameof(periodInMins))]
     public class EthTokensVolume
     {
         public int Id { get; set; }

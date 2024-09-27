@@ -75,9 +75,13 @@ namespace eth_shared
                 {
                     var t = new EthSwapEvents();
                     t.blockNumberInt = lastBlockToProcess;
-
-                    dbContext.EthSwapEvents.Add(t);
-                    await dbContext.SaveChangesAsync();
+                    var isExsist = dbContext.EthSwapEvents.Any(x => x.blockNumberInt == t.blockNumberInt);
+                    
+                    if (!isExsist)
+                    {
+                        dbContext.EthSwapEvents.Add(t);
+                        await dbContext.SaveChangesAsync();
+                    }
                 }
                 else
                 {

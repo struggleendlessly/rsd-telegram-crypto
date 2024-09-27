@@ -22,6 +22,7 @@ namespace eth_shared
         private readonly tlgrmApi.tlgrmApi tlgrmApi;
         private readonly EtherscanApi etherscanApi;
         private readonly GetWalletAge getWalletAge;
+        private readonly IsDeadBySwaps isDeadBySwaps;
         private readonly GetSourceCode getSourceCode;
         private readonly GetSwapEvents getSwapEvents;
         private readonly GetTokenSniffer getTokenSniffer;
@@ -48,7 +49,8 @@ namespace eth_shared
             VolumePrepare volumePrepare,
             VolumeTracking volumeTracking,
             GetSwapEventsETHUSD getSwapEventsETHUSD,
-            GetBalanceOnCreating getBalanceOnCreating
+            GetBalanceOnCreating getBalanceOnCreating,
+            IsDeadBySwaps isDeadBySwaps
             )
         {
             this._logger = logger;
@@ -66,6 +68,7 @@ namespace eth_shared
             this.getTokenSniffer = getTokenSniffer;
             this.getSwapEventsETHUSD = getSwapEventsETHUSD;
             this.getBalanceOnCreating = getBalanceOnCreating;
+            this.isDeadBySwaps = isDeadBySwaps;
 
             _cron = CronExpression.Parse(schedule);
         }
@@ -118,8 +121,8 @@ namespace eth_shared
                 /////////////////////
 
                 _logger.LogInformation("Worker WorkerDevScoped volumePrepare .Start(5)");
-
-                //await volumePrepare.Start(5, 100);
+                await isDeadBySwaps.Start();
+                await volumePrepare.Start(60, 100);
                 await volumeTracking.Start(5);
                 /////////////////////
                 var timeEnd = DateTimeOffset.Now;

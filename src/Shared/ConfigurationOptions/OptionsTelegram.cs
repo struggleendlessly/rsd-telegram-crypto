@@ -24,6 +24,33 @@
         public string message_thread_id_p26_5mins_v09_mc100kto1m { get; set; } = "";
         public string message_thread_id_p212_30mins_v03_mc0to100k { get; set; } = "";
         public string message_thread_id_p28_30mins_v09_mc100kto1m { get; set; } = "";
+
+        public string closed_chat_id_coins { get; set; } = "";
+        public string closed_message_thread_id_p0_newTokens { get; set; } = "";
+        public string closed_message_thread_id_p10_livePairs { get; set; } = "";
+        public string closed_message_thread_id_p20_60mins { get; set; } = "";
+        public string closed_message_thread_id_p21_30mins { get; set; } = "";
+        public string closed_message_thread_id_p22_5mins { get; set; } = "";
+        public string closed_message_thread_id_p22_5_02mins { get; set; } = "";
+        public string closed_message_thread_id_p23_1mins { get; set; } = "";
+        public string closed_message_thread_id_p25_5mins_v03_mc0to100k { get; set; } = "";
+        public string closed_message_thread_id_p26_5mins_v09_mc100kto1m { get; set; } = "";
+        public string closed_message_thread_id_p212_30mins_v03_mc0to100k { get; set; } = "";
+        public string closed_message_thread_id_p28_30mins_v09_mc100kto1m { get; set; } = "";
+
+        public string public_chat_id_coins { get; set; } = "";
+        public string public_message_thread_id_p0_newTokens { get; set; } = "";
+        public string public_message_thread_id_p10_livePairs { get; set; } = "";
+        public string public_message_thread_id_p20_60mins { get; set; } = "";
+        public string public_message_thread_id_p21_30mins { get; set; } = "";
+        public string public_message_thread_id_p22_5mins { get; set; } = "";
+        public string public_message_thread_id_p22_5_02mins { get; set; } = "";
+        public string public_message_thread_id_p23_1mins { get; set; } = "";
+        public string public_message_thread_id_p25_5mins_v03_mc0to100k { get; set; } = "";
+        public string public_message_thread_id_p26_5mins_v09_mc100kto1m { get; set; } = "";
+        public string public_message_thread_id_p212_30mins_v03_mc0to100k { get; set; } = "";
+        public string public_message_thread_id_p28_30mins_v09_mc100kto1m { get; set; } = "";
+
         public string etherscanUrl { get; set; } = "";
         public string dextoolsUrl { get; set; } = "";
         public string dexscreenerUrl { get; set; } = "";

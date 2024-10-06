@@ -237,6 +237,29 @@ namespace eth_shared
             }
 
             await dbContext.SaveChangesAsync();
+
+            var t_public =
+                tlgrmApi.
+                SendP20(
+                    ethTrainData,
+                    blocks,
+                    validated,
+                    volumeRiseCount,
+                    periodInMins,
+                    addition,
+                    "public");
+
+            var t_closed =
+                tlgrmApi.
+                SendP20(
+                    ethTrainData,
+                    blocks,
+                    validated,
+                    volumeRiseCount,
+                    periodInMins,
+                    addition,
+                    "closed");
+
         }
 
         private List<EthTokensVolumeAvarageDTO> Validate(

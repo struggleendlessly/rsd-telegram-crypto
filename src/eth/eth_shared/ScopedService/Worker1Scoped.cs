@@ -263,6 +263,9 @@ namespace eth_shared
             }
 
             await dbContext.SaveChangesAsync();
+
+            var t_public = await tlgrmApi.SendPO(ethTrainData, blocks, "public");
+            var t_closed = await tlgrmApi.SendPO(ethTrainData, blocks, "closed");
         }
     }
 }

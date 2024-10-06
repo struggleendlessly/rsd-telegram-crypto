@@ -438,7 +438,8 @@ namespace api_alchemy.Eth
         repeat:
             if (tryCount == 0)
             {
-                response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
+                //response = await httpClientLocalNode.PostAsync(apiKey, httpContent);
+                response = await httpClientAlchemy.PostAsync(apiKey, httpContent);
             }
             else
             {

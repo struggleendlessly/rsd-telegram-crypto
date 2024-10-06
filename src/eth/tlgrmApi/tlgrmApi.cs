@@ -82,7 +82,8 @@ namespace tlgrmApi
 
         public async Task<long> SendSequest(
             string threadId,
-            string text)
+            string text,
+            string chat_id)
         {
             var res = 0L;
 
@@ -91,7 +92,7 @@ namespace tlgrmApi
             string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
                 $"sendMessage?" +
                 $"message_thread_id={threadId}&" +
-                $"chat_id={optionsTelegram.chat_id_coins}&" +
+                $"chat_id={chat_id}&" +
                 $"text={text}&" +
                 $"parse_mode=MarkDown&" +
                 $"disable_web_page_preview=true";
@@ -239,21 +240,56 @@ namespace tlgrmApi
         }
         public async Task<List<P0_DTO>> SendPO(
             List<EthTrainData> ethTrainDatas,
-            List<EthBlocks> ethBlocks)
+            List<EthBlocks> ethBlocks,
+            string env = ""
+            )
         {
             List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
-            var threadId = optionsTelegram.message_thread_id_p0;
+            var threadId = "";
+            var chat_id = "";
+
+            switch (env)
+            {
+                case "public":
+                    threadId = optionsTelegram.public_message_thread_id_p0_newTokens;
+                    chat_id = optionsTelegram.public_chat_id_coins;
+                    break;
+
+                case "closed":
+                    threadId = optionsTelegram.closed_message_thread_id_p0_newTokens;
+                    chat_id = optionsTelegram.closed_chat_id_coins;
+                    break;
+
+                default:
+                    threadId = optionsTelegram.message_thread_id_p0; 
+                    chat_id = optionsTelegram.chat_id_coins;
+                    break;
+            }
 
             foreach (var item in collection)
             {
-                item.messageText =
-                    item.line_tokenName + " \n" +
-                    item.line_tokenAddress + " \n" +
-                    item.line_tokenSupply + " \n" +
-                    item.line_WalletAgeAndBalance + " \n" +
-                    item.line_WalletFromType;
+                switch (env)
+                {
+                    //case "":
+                    //    item.messageText =
+                    //        item.line_tokenName + " \n" +
+                    //        item.line_tokenAddress + " \n" +
+                    //        item.line_tokenSupply + " \n" +
+                    //        item.line_WalletAgeAndBalance + " \n" +
+                    //        item.line_WalletFromType;
+                    //    break;
 
-                var t = await SendSequest(threadId, item.messageText);
+                    default:
+                        item.messageText =
+                            item.line_tokenName + " \n" +
+                            item.line_tokenAddress + " \n" +
+                            item.line_tokenSupply + " \n" +
+                            item.line_WalletAgeAndBalance + " \n" +
+                            item.line_WalletFromType;
+                        break;
+                }
+
+                var t = await SendSequest(threadId, item.messageText, chat_id);
                 item.tlgrmMsgId = t;
             }
 
@@ -261,10 +297,31 @@ namespace tlgrmApi
         }
         public async Task<List<P0_DTO>> SendP1O(
             List<EthTrainData> ethTrainDatas,
-            List<EthBlocks> ethBlocks)
+            List<EthBlocks> ethBlocks,
+            string env = "")
         {
             List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
-            var threadId = optionsTelegram.message_thread_id_p10;
+
+            var threadId = "";
+            var chat_id = "";
+
+            switch (env)
+            {
+                case "public":
+                    threadId = optionsTelegram.public_message_thread_id_p10_livePairs;
+                    chat_id = optionsTelegram.public_chat_id_coins;
+                    break;
+
+                case "closed":
+                    threadId = optionsTelegram.closed_message_thread_id_p10_livePairs;
+                    chat_id = optionsTelegram.closed_chat_id_coins;
+                    break;
+
+                default:
+                    threadId = optionsTelegram.message_thread_id_p10;
+                    chat_id = optionsTelegram.chat_id_coins;
+                    break;
+            }
 
             foreach (var item in collection)
             {
@@ -280,7 +337,7 @@ namespace tlgrmApi
 
             foreach (var item in collection)
             {
-                var t = await SendSequest(threadId, item.messageText);
+                var t = await SendSequest(threadId, item.messageText, chat_id);
                 item.tlgrmMsgId = t;
             }
 
@@ -293,12 +350,29 @@ namespace tlgrmApi
             List<EthTokensVolumeAvarageDTO> validated,
             List<EthTokensVolume> volumeRiseCountList,
             int message_thread_id_p20mins,
-            string addition = "")
+            string addition = "",
+            string env = "")
         {
             var ethPrice = await etherscanApi.getEthPrice();
             List<P0_DTO> collection = ProcessDataForMessage(ethTrainDatas, ethBlocks);
 
             var threadId = "";
+            var chat_id = "";
+
+            switch (env)
+            {
+                case "public":
+                    chat_id = optionsTelegram.public_chat_id_coins;
+                    break;
+
+                case "closed":
+                    chat_id = optionsTelegram.closed_chat_id_coins;
+                    break;
+
+                default:
+                    chat_id = optionsTelegram.chat_id_coins;
+                    break;
+            }
 
             switch (message_thread_id_p20mins)
             {
@@ -306,35 +380,128 @@ namespace tlgrmApi
                     threadId = optionsTelegram.message_thread_id_p23_1mins;
                     break;
                 case 5:
-                    threadId = optionsTelegram.message_thread_id_p22_5mins;
+                    switch (env)
+                    {
+                        case "public":
+                            threadId = optionsTelegram.public_message_thread_id_p22_5mins;
+
+                            break;
+
+                        case "closed":
+                            threadId = optionsTelegram.closed_message_thread_id_p22_5mins;
+                            break;
+
+                        default:
+                            threadId = optionsTelegram.message_thread_id_p22_5mins;
+                            break;
+                    }
 
                     if (addition.Equals("5mins_03v100mc"))
                     {
-                        threadId = optionsTelegram.message_thread_id_p25_5mins_v03_mc0to100k;
+                        switch (env)
+                        {
+                            case "public":
+                                threadId = optionsTelegram.public_message_thread_id_p25_5mins_v03_mc0to100k;
+                                break;
+
+                            case "closed":
+                                threadId = optionsTelegram.closed_message_thread_id_p25_5mins_v03_mc0to100k;
+                                break;
+
+                            default:
+                                threadId = optionsTelegram.message_thread_id_p25_5mins_v03_mc0to100k;
+                                break;
+                        }
                     }
 
                     if (addition.Equals("5mins_09v01_1mc"))
                     {
-                        threadId = optionsTelegram.message_thread_id_p26_5mins_v09_mc100kto1m;
+                        switch (env)
+                        {
+                            case "public":
+                                threadId = optionsTelegram.public_message_thread_id_p26_5mins_v09_mc100kto1m;
+                                break;
+
+                            case "closed":
+                                threadId = optionsTelegram.closed_message_thread_id_p26_5mins_v09_mc100kto1m;
+                                break;
+
+                            default:
+                                threadId = optionsTelegram.message_thread_id_p26_5mins_v09_mc100kto1m;
+                                break;
+                        }
                     }
 
                     break;
                 case 30:
-                    threadId = optionsTelegram.message_thread_id_p21_30mins;
+                    switch (env)
+                    {
+                        case "public":
+                            threadId = optionsTelegram.public_message_thread_id_p21_30mins;
+                            break;
+
+                        case "closed":
+                            threadId = optionsTelegram.closed_message_thread_id_p21_30mins;
+                            break;
+
+                        default:
+                            threadId = optionsTelegram.message_thread_id_p21_30mins;
+                            break;
+                    }
 
                     if (addition.Equals("30mins_03v100mc"))
                     {
-                        threadId = optionsTelegram.message_thread_id_p212_30mins_v03_mc0to100k;
+                        switch (env)
+                        {
+                            case "public":
+                                threadId = optionsTelegram.public_message_thread_id_p212_30mins_v03_mc0to100k;
+                                break;
+
+                            case "closed":
+                                threadId = optionsTelegram.closed_message_thread_id_p212_30mins_v03_mc0to100k;
+                                break;
+
+                            default:
+                                threadId = optionsTelegram.message_thread_id_p212_30mins_v03_mc0to100k;
+                                break;
+                        }
                     }
 
                     if (addition.Equals("30mins_09v01_1mc"))
                     {
-                        threadId = optionsTelegram.message_thread_id_p28_30mins_v09_mc100kto1m;
+                        switch (env)
+                        {
+                            case "public":
+                                threadId = optionsTelegram.public_message_thread_id_p28_30mins_v09_mc100kto1m;
+                                break;
+
+                            case "closed":
+                                threadId = optionsTelegram.closed_message_thread_id_p28_30mins_v09_mc100kto1m;
+                                break;
+
+                            default:
+                                threadId = optionsTelegram.message_thread_id_p28_30mins_v09_mc100kto1m;
+                                break;
+                        }
                     }
 
                     break;
                 case 60:
-                    threadId = optionsTelegram.message_thread_id_p20_60mins;
+                    switch (env)
+                    {
+                        case "public":
+                            threadId = optionsTelegram.public_message_thread_id_p20_60mins;
+                            break;
+
+                        case "closed":
+                            threadId = optionsTelegram.closed_message_thread_id_p20_60mins;
+                            break;
+
+                        default:
+                            threadId = optionsTelegram.message_thread_id_p20_60mins;
+                            break;
+                    }
+
                     break;
             }
 
@@ -392,7 +559,7 @@ namespace tlgrmApi
 
             foreach (var item in collection)
             {
-                var t = await SendSequest(threadId, item.messageText);
+                var t = await SendSequest(threadId, item.messageText, chat_id);
                 item.tlgrmMsgId = t;
             }
 

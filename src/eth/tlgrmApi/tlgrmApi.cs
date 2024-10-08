@@ -542,19 +542,37 @@ namespace tlgrmApi
                 var marketCapStr = Regex.Replace(BigInteger.Parse(ee).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
                 var volumeRiseCount = volumeRiseCountList.Where(x => x.EthTrainDataId == item.EthTrainDataId).ToList();
 
-                item.messageText =
-                    item.line_tokenName + " \n" +
-                    item.line_tokenAddress + " \n" +
+                switch (env)
+                {
+                    case "public":
+                        item.messageText =
+                            item.line_tokenName + " \n" +
+                            item.line_tokenAddress + " \n" +
 
-                    $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
-                    $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} {item.currency}  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} {item.currency} \n" +
-                    $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
-                    $"{xxx} {x:0.##} X \n" +
-                    $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()} \n" +
-                    $"{icons["antenna"]} Market Cap: {marketCapStr} \n" +
-                    $"{icons["SCROLL"]} Count of triggers: {volumeRiseCount.Count} \n" +
-                    $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
-                    $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
+                            $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
+                            $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
+                            $"{icons["antenna"]} Market Cap: {marketCapStr} \n" +
+                            $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
+                            $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
+                        break;
+
+                    default:
+                        item.messageText =
+                            item.line_tokenName + " \n" +
+                            item.line_tokenAddress + " \n" +
+
+                            $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
+                            $"{icons["buy"]} Buy av  {(decimal)average.volumePositiveEthAverage:0.##} {item.currency}  {icons["sell"]} Sell av  {(decimal)average.volumeNegativeEthAverage:0.##} {item.currency} \n" +
+                            $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
+                            $"{xxx} {x:0.##} X \n" +
+                            $"{icons["calendar"]} {average.last.blockIntStartDate.ToShortTimeString()} / {average.last.blockIntEndDate.ToShortTimeString()} \n" +
+                            $"{icons["antenna"]} Market Cap: {marketCapStr} \n" +
+                            $"{icons["SCROLL"]} Count of triggers: {volumeRiseCount.Count} \n" +
+                            $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
+                            $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
+                        break;
+                }
+
             }
 
             foreach (var item in collection)

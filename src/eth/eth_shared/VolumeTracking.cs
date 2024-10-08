@@ -238,6 +238,7 @@ namespace eth_shared
 
             await dbContext.SaveChangesAsync();
 
+            Thread.Sleep(180_000); 
             var t_public =
                 tlgrmApi.
                 SendP20(

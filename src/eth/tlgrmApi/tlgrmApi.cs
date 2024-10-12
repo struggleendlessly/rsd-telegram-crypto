@@ -18,8 +18,11 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Numerics;
 using System.Text.RegularExpressions;
+using System.Web;
 
 using tlgrmApi.Models;
+
+using static System.Net.Mime.MediaTypeNames;
 
 namespace tlgrmApi
 {
@@ -216,7 +219,7 @@ namespace tlgrmApi
                     sourceWalletName = $"{isWalletKnown.Name} Wallet";
                     sourceWalletIcon = icons["snowflake"];
                 }
-                val.line_tokenName = $"{icons["lightning"]} [{val.name}({val.symbol})]({optionsTelegram.etherscanUrl}token/{val.contractAddress})";
+                val.line_tokenName =$"{icons["lightning"]} [{HttpUtility.UrlEncode(val.name)}({HttpUtility.UrlEncode(val.symbol)})]({optionsTelegram.etherscanUrl}token/{val.contractAddress})";
                 val.line_tokenAddress = $"{val.ABIICon}`{val.contractAddress}`";
                 val.line_tokenSupply = $"{icons["coin"]} `{val.totalSupply}`";
                 val.line_WalletAgeAndBalance = $"{val.walletIcon} [{val.walletAge}  {val.balanceIcon} {val.balanceOnCreating} {val.currency}]({optionsTelegram.etherscanUrl}address/{val.from})";

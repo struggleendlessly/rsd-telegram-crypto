@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cronos" Version="0.8.4" />
-    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="8.103.5" />
+    <PackageReference Include="Z.EntityFramework.Extensions.EFCore" Version="8.103.6" />
   </ItemGroup>
 
 </Project>

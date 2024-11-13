@@ -22,8 +22,8 @@ namespace Data
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlServer($"Server=192.168.0.70,1433;Initial Catalog=crypta;Persist Security Info=False;User ID=n100Sql;Password=5bgv%BGV5bgv%BGV;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;");
+        //protected override void OnConfiguring(DbContextOptionsBuilder options)
+        //    => options.UseSqlServer($"Server=192.168.0.70,1433;Initial Catalog=crypta;Persist Security Info=False;User ID=n100Sql;Password=5bgv%BGV5bgv%BGV;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;");
 
     }
 }

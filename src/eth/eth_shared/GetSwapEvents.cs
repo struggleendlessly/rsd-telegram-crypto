@@ -76,7 +76,7 @@ namespace eth_shared
                     var t = new EthSwapEvents();
                     t.blockNumberInt = lastBlockToProcess;
                     var isExsist = dbContext.EthSwapEvents.Any(x => x.blockNumberInt == t.blockNumberInt);
-                    
+
                     if (!isExsist)
                     {
                         dbContext.EthSwapEvents.Add(t);
@@ -269,14 +269,18 @@ namespace eth_shared
 
             List<(string, string, string)> t = new();
 
-            foreach (var item in ethTrainDatas)
+            if (lastProcessedBlock <= lastBlockToProcess)
             {
-                t.Add((item.pairAddress, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
+                foreach (var item in ethTrainDatas)
+                {
+                    t.Add((item.pairAddress, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
+                }
+
+                Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
+
+                res = await apiAlchemy.executeBatchCall(t, apiMethod, diff);
             }
 
-            Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
-
-            res = await apiAlchemy.executeBatchCall(t, apiMethod, diff);
 
             return res;
         }

@@ -176,11 +176,14 @@ namespace eth_shared
 
             List<(string, string, string)> t = new();
 
-            t.Add((pairAddressETHUSD, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
+            if (lastProcessedBlock <= lastBlockToProcess)
+            {
+                t.Add((pairAddressETHUSD, "0x" + lastProcessedBlock.ToString("x"), "0x" + lastBlockToProcess.ToString("x")));
 
-            Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
+                Func<List<(string, string, string)>, int, Task<List<getSwapDTO>>> apiMethod = apiAlchemy.getSwapLogs;
 
-            res = await apiAlchemy.executeBatchCall(t, apiMethod, 1);
+                res = await apiAlchemy.executeBatchCall(t, apiMethod, 1);
+            }
 
             return res;
         }

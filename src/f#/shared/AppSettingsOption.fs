@@ -1,4 +1,4 @@
-﻿module AppSettingsOption
+﻿module AppSettingsOptionModule
 
 type LogLevel() =
     member val Default = "" with get, set
@@ -6,5 +6,6 @@ type LogLevel() =
 type Logging() =
     member val LogLevel = LogLevel() with get, set
 
-type AppSettings() =
+type AppSettingsOption() =
+    static member val SectionName = "Logging" with get
     member val Logging = Logging() with get, set

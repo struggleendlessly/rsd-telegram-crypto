@@ -8,53 +8,69 @@ open System.Threading.Tasks
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Configuration
-open AppSettingsOption
+open AppSettingsOptionModule
+open OpenTelemetryOptionModule
 open Polly
 open Polly.Extensions.Http
+open Serilog
+open Serilog.Sinks.OpenTelemetry
+open Serilog.Formatting.Compact
 
 module Program =
 
-
-    let configureSocketsHttpHandler: Func<HttpMessageHandler>  = Func<HttpMessageHandler>(
-        fun () -> new SocketsHttpHandler(MaxConnectionsPerServer = 10)
-        )
     let uncurry2 f = fun x y -> f (x, y)
 
-    let exponentially = 
-      float 
-      >> (uncurry2 Math.Pow 2)
-      >> TimeSpan.FromSeconds
+    let exponentially = float >> (uncurry2 Math.Pow 2) >> TimeSpan.FromSeconds
 
     [<EntryPoint>]
     let main args =
-        let builder = Host.CreateApplicationBuilder(args)
-        
-        // Add configuration to the builder
-        builder.Configuration
-            .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)
-            .AddEnvironmentVariables() |> ignore
 
-        builder.Services.Configure<AppSettings>(builder.Configuration) |> ignore
+        try
+            Log.Information("Starting up")
 
-        builder.Services.AddHttpClient("Api")  
-            .ConfigurePrimaryHttpMessageHandler(
-                Func<HttpMessageHandler>(
-                     fun _ -> new SocketsHttpHandler(MaxConnectionsPerServer = 10)
-                ))
-            .SetHandlerLifetime(TimeSpan.FromMinutes 5.)
-            .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
+            let builder = Host.CreateApplicationBuilder(args)
+            
+            builder.Configuration
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)
+                .AddEnvironmentVariables() |> ignore
 
-        builder.Services.AddHostedService<Worker>() |> ignore
+            builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
+            builder.Services.Configure<OpenTelemetryOption>(builder.Configuration.GetSection(OpenTelemetryOption.SectionName)) |> ignore
+            let openTelemetryOptions = builder.Configuration.Get<OpenTelemetryOption>()
 
-        let configuration = builder.Configuration
-        let appSettings = configuration.Get<AppSettings>()
-        let mySetting = appSettings.Logging.LogLevel.Default
+            Log.Logger <- LoggerConfiguration()
+                                .Enrich.FromLogContext()
+                                .WriteTo.Console(RenderedCompactJsonFormatter())
+                                .WriteTo.OpenTelemetry(fun x ->
+                                    x.Endpoint <- openTelemetryOptions.Url
+                                    x.Protocol <- OtlpProtocol.HttpProtobuf
+                                    x.Headers <- dict [ "X-Seq-ApiKey", openTelemetryOptions.ApiKey ]
+                                    x.ResourceAttributes <- dict [ "service.name", openTelemetryOptions.ServiceName ]
+                                )
+                                .CreateLogger()
 
-        printfn "MySetting: %s" mySetting
+            builder.Services.AddHttpClient("Api")  
+                .ConfigurePrimaryHttpMessageHandler(
+                    Func<HttpMessageHandler>(
+                        fun _ -> new SocketsHttpHandler(MaxConnectionsPerServer = 1000)
+                    ))
+                .SetHandlerLifetime(TimeSpan.FromMinutes 5.0)
+                .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
 
+            builder.Services.AddHostedService<Worker>() |> ignore
 
-        builder.Build().Run()
+            // Add Serilog
+            //builder.Logging. |> ignore
 
+            let configuration = builder.Configuration
+            let appSettings = configuration.Get<AppSettingsOption>()
+            let mySetting = appSettings.Logging.LogLevel.Default
 
-        0 // exit code
+            printfn "MySetting: %s" mySetting
+
+            builder.Build().Run()
+
+            0 // exit code
+         finally
+            Log.CloseAndFlush()

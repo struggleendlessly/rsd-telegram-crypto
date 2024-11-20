@@ -8,19 +8,25 @@ open System.Threading.Tasks
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.Logging
 open AppSettingsOptionModule
 open OpenTelemetryOptionModule
+open AlchemyOptionModule
 open Polly
 open Polly.Extensions.Http
 open Serilog
 open Serilog.Sinks.OpenTelemetry
 open Serilog.Formatting.Compact
+open alchemy
 
 module Program =
 
     let uncurry2 f = fun x y -> f (x, y)
 
     let exponentially = float >> (uncurry2 Math.Pow 2) >> TimeSpan.FromSeconds
+
+    //let myCustomFunction (logger: ILogger) =
+    //    logger.Information("My custom function is called")
 
     [<EntryPoint>]
     let main args =
@@ -37,6 +43,7 @@ module Program =
 
             builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
             builder.Services.Configure<OpenTelemetryOption>(builder.Configuration.GetSection(OpenTelemetryOption.SectionName)) |> ignore
+            builder.Services.Configure<AlchemyOption>(builder.Configuration.GetSection(AlchemyOption.SectionName)) |> ignore
             let openTelemetryOptions = builder.Configuration.Get<OpenTelemetryOption>()
 
             Log.Logger <- LoggerConfiguration()
@@ -58,10 +65,12 @@ module Program =
                 .SetHandlerLifetime(TimeSpan.FromMinutes 5.0)
                 .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
 
+            builder.Services.AddTransient<alchemy>() |> ignore
             builder.Services.AddHostedService<Worker>() |> ignore
 
-            // Add Serilog
-            //builder.Logging. |> ignore
+
+            // Register custom function as a singleton
+            //builder.Services.AddSingleton<Action<ILogger>>(myCustomFunction) |> ignore
 
             let configuration = builder.Configuration
             let appSettings = configuration.Get<AppSettingsOption>()

@@ -6,8 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="OpenTelemetryOption.fs" />
-    <Compile Include="AppSettingsOption.fs" />
+    <Compile Include="Extentions.fs" />
+    <Compile Include="Options\AlchemyOption.fs" />
+    <Compile Include="Options\OpenTelemetryOption.fs" />
+    <Compile Include="Options\AppSettingsOption.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
 

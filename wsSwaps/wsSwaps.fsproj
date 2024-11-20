@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\src\f#\apiClients\rpc\alchemy\alchemy.fsproj" />
     <ProjectReference Include="..\src\f#\shared\shared.fsproj" />
   </ItemGroup>
 </Project>

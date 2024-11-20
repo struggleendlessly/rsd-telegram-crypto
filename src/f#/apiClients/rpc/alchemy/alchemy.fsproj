@@ -6,7 +6,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="DTO\request\requestBaseDTO.fs" />
+    <Compile Include="UlrBuilder.fs" />
+    <Compile Include="ApiCaller.fs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\shared\shared.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTO\response\" />
+  </ItemGroup>
+  
 
 </Project>

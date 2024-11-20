@@ -11,6 +11,7 @@ open AppSettingsOptionModule
 open Microsoft.Extensions.Options
 open System.Net.Http
 open System.Text.Json
+open alchemy
 
 type GoogleResponse = { 
     message: string
@@ -19,7 +20,8 @@ type GoogleResponse = {
 type Worker(
     logger: ILogger<Worker>, 
     settings: IOptions<AppSettingsOption>, 
-    httpClientFactory: IHttpClientFactory
+    httpClientFactory: IHttpClientFactory,
+    alchemy: alchemy
     ) =
     inherit BackgroundService()
 
@@ -28,8 +30,8 @@ type Worker(
             while not ct.IsCancellationRequested do
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 logger.LogInformation("Logging level: {level}", settings.Value.Logging.LogLevel.Default)
-             
-
+                
+                let ee = alchemy.getBlockByNumber() 3
                 use client = httpClientFactory.CreateClient("Api")
                 let! response = client.GetAsync "https://3908dca0d72445af90b8a3060008df171.api.mockbin.io" |> Async.AwaitTask 
                 //let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 

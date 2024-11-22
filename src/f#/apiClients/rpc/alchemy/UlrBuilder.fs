@@ -1,13 +1,13 @@
 ﻿module UlrBuilder
 
 open System.Text.Json
-open requestBaseDTO
+open requestSingleDTO
 open Extensions
 
 let getBlockByNumber (blockNumber: int) =
      let request = 
              { 
-                 requestBaseDTO.Default 
+                 requestSingleDTO.Default 
                  with 
                     method = "eth_getBlockByNumber"; 
                     _params = [| 
@@ -17,6 +17,6 @@ let getBlockByNumber (blockNumber: int) =
                     id = blockNumber
              } 
 
-     let res = JsonSerializer.Serialize(request)
+     //let res = JsonSerializer.Serialize request
     
-     res
+     request

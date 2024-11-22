@@ -1,8 +1,8 @@
-﻿module requestBaseDTO
+﻿module requestSingleDTO
 
 open System.Text.Json.Serialization
 
-type requestBaseDTO = {
+type requestSingleDTO = {
     jsonrpc: string
     method: string
     [<JsonPropertyName("params")>]

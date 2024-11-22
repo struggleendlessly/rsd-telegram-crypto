@@ -18,6 +18,8 @@ open Serilog
 open Serilog.Sinks.OpenTelemetry
 open Serilog.Formatting.Compact
 open alchemy
+open UlrBuilder
+open System.Text.Json
 
 module Program =
 
@@ -27,7 +29,14 @@ module Program =
 
     //let myCustomFunction (logger: ILogger) =
     //    logger.Information("My custom function is called")
+    //let prepareChunks numbers =        
+    //     numbers  
+    //     |> Seq.chunkBySize 5 
+    //     |> Seq.mapi (fun index value -> index, value |> Seq.map getBlockByNumber |> JsonSerializer.Serialize) 
+    //     |> Seq.iter (fun (index, value) -> printfn "Index: %d, Value:%s" index  value  )
 
+    //     printfn "Index:"
+    //     ""
     [<EntryPoint>]
     let main args =
 
@@ -48,7 +57,7 @@ module Program =
 
             Log.Logger <- LoggerConfiguration()
                                 .Enrich.FromLogContext()
-                                .WriteTo.Console(RenderedCompactJsonFormatter())
+                                .WriteTo.Console(new RenderedCompactJsonFormatter())
                                 .WriteTo.OpenTelemetry(fun x ->
                                     x.Endpoint <- openTelemetryOptions.Url
                                     x.Protocol <- OtlpProtocol.HttpProtobuf
@@ -71,6 +80,18 @@ module Program =
 
             // Register custom function as a singleton
             //builder.Services.AddSingleton<Action<ILogger>>(myCustomFunction) |> ignore
+            //let prepareChunks numbers = 
+            //    numbers  
+            //    |> Seq.chunkBySize 5 
+            //    |> Seq.mapi (fun index value -> index, (value |> Seq.map getBlockByNumber ) |> JsonSerializer.Serialize ) 
+            //    |> Seq.iter (fun (index, value) -> printfn "Index: %d, Value:%s" index  value  )
+            //let numbers = seq { 121235670 .. 121235674 }
+            //let t = prepareChunks numbers
+            //let e = 
+            //    numbers  
+            //    |> Seq.chunkBySize 5 
+            //    |> Seq.mapi (fun index value -> index, value |> Seq.map getBlockByNumber |> JsonSerializer.Serialize) 
+            //    |> Seq.iter (fun (index, value) -> printfn "Index: %d, Value:%s" index  value  )
 
             let configuration = builder.Configuration
             let appSettings = configuration.Get<AppSettingsOption>()

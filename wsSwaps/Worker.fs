@@ -30,7 +30,7 @@ type Worker(
             while not ct.IsCancellationRequested do
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 logger.LogInformation("Logging level: {level}", settings.Value.Logging.LogLevel.Default)
-                let numbers = seq { 121235670 .. 121235680 }
+                let numbers = seq { 21252610 .. 21252620 } |> Seq.toArray
                 //let aa = prepareChunks numbers
                 let ee = alchemy.getBlockByNumber() numbers 
                 //logger.LogInformation("Response from Alchemy: {@ee}", ee)

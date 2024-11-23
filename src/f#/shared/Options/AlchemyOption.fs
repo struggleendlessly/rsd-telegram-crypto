@@ -10,5 +10,5 @@ type AlchemyOption() =
     member val UrlBaseLocalNode = "" with get, set
     member val UrlBase = "" with get, set
     member val UrlVersion = "" with get, set
-    member val ApiKeys = [||] with get, set
+    member val ApiKeys : string[] = [||] with get, set
     member val ChainNames = ChainNames() with get, set

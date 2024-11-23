@@ -77,7 +77,22 @@ module Program =
             builder.Services.AddTransient<alchemy>() |> ignore
             builder.Services.AddHostedService<Worker>() |> ignore
 
+            //// Define the API keys 
+            //let apiKeys = [| "key1"; "key2"; "key3"; "key4"; "key5"; "key6"; "key7" |] 
+            //// Function to get the API key based on request index 
+            //let getApiKey (requestIndex: int) : string = 
+            //    apiKeys.[requestIndex % apiKeys.Length] 
+            //// Simulate 100 parallel requests and print the corresponding API key for each 
+            //let simulateRequests totalRequests = 
+            //    [| 0 .. totalRequests - 1 |] 
+            //    |> Array.Parallel.iter (fun requestIndex -> 
+            //        let apiKey = getApiKey requestIndex 
+            //        printfn "Request %d uses API Key: %s" requestIndex apiKey 
+                    
+            //        ) 
 
+            //// Simulate 100 
+            //simulateRequests 100
             // Register custom function as a singleton
             //builder.Services.AddSingleton<Action<ILogger>>(myCustomFunction) |> ignore
             //let prepareChunks numbers = 

@@ -51,7 +51,7 @@ type alchemy(
     member this.ShuffleApiKeys()  = 
          Random().Shuffle alchemySettings.ApiKeys
 
-    member private this.chunksRequest<'T>(uriBuilder) : int[] -> 'T[]  = 
+    member private this.chunksRequest<'T> uriBuilder : int[] -> 'T[]  = 
         Array.map uriBuilder 
         >> Array.chunkBySize 50 
         >> Array.Parallel.mapi this.makeRequest<'T>
@@ -63,7 +63,7 @@ type alchemy(
         >> request index 
         >> Async.map JsonSerializer.Deserialize<'T>
 
-    member private this.singleRequest<'T>(uriBuilder) : unit -> 'T =
+    member private this.singleRequest<'T> uriBuilder : unit -> 'T =
         uriBuilder 
         >> JsonSerializer.Serialize 
         >> request 0 

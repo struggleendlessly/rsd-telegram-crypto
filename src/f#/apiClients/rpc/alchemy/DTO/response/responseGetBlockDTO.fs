@@ -71,3 +71,5 @@ type responseGetBlockDTO = {
     id: int
     result: Result
 }
+
+type responseGetBlocksDTO = responseGetBlockDTO[]

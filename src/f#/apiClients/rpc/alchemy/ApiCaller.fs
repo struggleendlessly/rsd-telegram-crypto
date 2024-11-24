@@ -10,9 +10,8 @@ open System
 open System.Text
 open System.Threading.Tasks
 open System.Text.Json
-
-
-
+open Async
+open requestSingleDTO
 
 type alchemy(
     logger: ILogger<alchemy>, 
@@ -27,7 +26,7 @@ type alchemy(
     let getApiKey index = 
         $"/v2/{alchemySettings.ApiKeys.[index % alchemySettings.ApiKeys.Length]}"
 
-    let request index json= 
+    let request index json : Async<string>= 
          task {
             
             let url = alchemySettings.UrlBase.Replace("{{{chainName}}}", alchemySettings.ChainNames.Etherium);
@@ -39,30 +38,28 @@ type alchemy(
 
             logger.LogInformation( "Request: {s}", json)
 
-            let! response = client.PostAsync(getApiKey index, httpContent)  
+            let! response = client.PostAsync (getApiKey index, httpContent )
             let! content = response.Content.ReadAsStringAsync() 
 
             //logger.LogInformation( "response: {s}", content)
 
             return content
-         }
+         } 
+         |> Async.AwaitTask
 
-    let convertJson (json: Async<string>) : Async<'T> = 
-        async {
-            let! res = json
-            let res = System.Text.Json.JsonSerializer.Deserialize<'T>(res)
-            return res
-        }
+    member this.makeRequest<'T>(index): requestSingleDTO[] ->  Async<'T> = 
+        JsonSerializer.Serialize 
+        >> request index 
+        >> Async.map JsonSerializer.Deserialize<'T>
 
-    let prepareChunks blocks =        
-         blocks 
-         |> Array.Parallel.map getBlockByNumber
-         |> Array.chunkBySize 5 
-         |> Array.Parallel.mapi (fun index value -> value |> JsonSerializer.Serialize |> request index |> Async.AwaitTask) 
-         |> Async.Parallel
-         |> Async.RunSynchronously
+    member this.prepareChunks<'T>() : int[] -> 'T[]  = 
+          Array.Parallel.map getBlockByNumber
+          >> Array.chunkBySize 5 
+          >> Array.Parallel.mapi this.makeRequest<'T>
+          >> Async.Parallel
+          >> Async.RunSynchronously  
 
-    member this.getBlockByNumber() =
-        prepareChunks
-        // getBlockByNumber >> request >> convertJson<responseGetBlockDTO>
+    member this.getBlockByNumber  = 
+        this.prepareChunks<responseGetBlocksDTO>
+        
 

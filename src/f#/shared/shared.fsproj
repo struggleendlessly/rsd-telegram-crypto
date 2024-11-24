@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="fp\Async.fs" />
     <Compile Include="Extentions.fs" />
     <Compile Include="Options\AlchemyOption.fs" />
     <Compile Include="Options\OpenTelemetryOption.fs" />

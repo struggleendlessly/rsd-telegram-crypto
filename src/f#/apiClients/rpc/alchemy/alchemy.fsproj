@@ -9,6 +9,7 @@
     <Compile Include="DTO\response\responseGetBlockDTO.fs" />
     <Compile Include="DTO\request\requestSingleDTO.fs" />
     <Compile Include="DTO\request\requestBatchDTO.fs" />
+    <Compile Include="eee.fs" />
     <Compile Include="UlrBuilder.fs" />
     <Compile Include="ApiCaller.fs" />
   </ItemGroup>

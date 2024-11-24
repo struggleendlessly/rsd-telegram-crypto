@@ -30,20 +30,10 @@ type Worker(
             while not ct.IsCancellationRequested do
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 logger.LogInformation("Logging level: {level}", settings.Value.Logging.LogLevel.Default)
+
                 let numbers = seq { 21252610 .. 21252620 } |> Seq.toArray
-                //let aa = prepareChunks numbers
+
                 let ee = alchemy.getBlockByNumber() numbers 
-                //logger.LogInformation("Response from Alchemy: {@ee}", ee)
-                //use client = httpClientFactory.CreateClient("Api")
-
-                //let! response = client.GetAsync "https://3908dca0d72445af90b8a3060008df171.api.mockbin.io" |> Async.AwaitTask 
-                //let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
-                //let googleResponse = JsonSerializer.Deserialize<GoogleResponse>(content)
-
-                //printfn "Response from Google: %s" content
-
-                // we run synchronously
-                // to allow the fsi to finish the pending tasks
 
                 do! Task.Delay(1000)
         }

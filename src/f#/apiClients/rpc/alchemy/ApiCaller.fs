@@ -12,6 +12,7 @@ open System.Threading.Tasks
 open System.Text.Json
 open Async
 open requestSingleDTO
+open responseGetLastBlockDTO
 
 type alchemy(
     logger: ILogger<alchemy>, 
@@ -21,7 +22,7 @@ type alchemy(
 
     let alchemySettings = alchemyOptions.Value;
 
-    do Random().Shuffle alchemySettings.ApiKeys
+    //do this.ShuffleApiKeys()
 
     let getApiKey index = 
         $"/v2/{alchemySettings.ApiKeys.[index % alchemySettings.ApiKeys.Length]}"
@@ -47,19 +48,33 @@ type alchemy(
          } 
          |> Async.AwaitTask
 
-    member this.makeRequest<'T>(index): requestSingleDTO[] ->  Async<'T> = 
+    member this.ShuffleApiKeys()  = 
+         Random().Shuffle alchemySettings.ApiKeys
+
+    member private this.chunksRequest<'T>(uriBuilder) : int[] -> 'T[]  = 
+        Array.map uriBuilder 
+        >> Array.chunkBySize 50 
+        >> Array.Parallel.mapi this.makeRequest<'T>
+        >> Async.Parallel
+        >> Async.RunSynchronously  
+
+    member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
         JsonSerializer.Serialize 
         >> request index 
         >> Async.map JsonSerializer.Deserialize<'T>
 
-    member this.prepareChunks<'T>() : int[] -> 'T[]  = 
-          Array.Parallel.map getBlockByNumber
-          >> Array.chunkBySize 5 
-          >> Array.Parallel.mapi this.makeRequest<'T>
-          >> Async.Parallel
-          >> Async.RunSynchronously  
+    member private this.singleRequest<'T>(uriBuilder) : unit -> 'T =
+        uriBuilder 
+        >> JsonSerializer.Serialize 
+        >> request 0 
+        >> Async.map JsonSerializer.Deserialize<'T>
+        >> Async.RunSynchronously  
+
+    member this.getLastBlockNumber  = 
+        this.singleRequest<responseGetLastBlockDTO> getLastBlockNumber
 
     member this.getBlockByNumber  = 
-        this.prepareChunks<responseGetBlocksDTO>
-        
+        this.chunksRequest<responseGetBlocksDTO> getBlockByNumber
 
+
+        

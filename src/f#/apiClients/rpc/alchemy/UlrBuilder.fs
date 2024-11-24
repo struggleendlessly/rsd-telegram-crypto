@@ -20,3 +20,15 @@ let getBlockByNumber (blockNumber: int) =
      //let res = JsonSerializer.Serialize request
     
      request
+
+let getLastBlockNumber _ =
+     let request = 
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_blockNumber"; 
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+     request

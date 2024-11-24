@@ -1,6 +1,7 @@
 ﻿module responseGetBlockDTO
 
 open System.Collections.Generic
+open responseErrorDTO
 
 type AccessList = {
     address: string
@@ -70,6 +71,7 @@ type responseGetBlockDTO = {
     jsonrpc: string
     id: int
     result: Result
+    error: responseErrorDTO
 }
 
 type responseGetBlocksDTO = responseGetBlockDTO[]

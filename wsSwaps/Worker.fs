@@ -34,7 +34,8 @@ type Worker(
                 let numbers = seq { 21252610 .. 21252620 } |> Seq.toArray
 
                 alchemy.ShuffleApiKeys()
-                //let blocks = alchemy.getBlockByNumber() numbers 
+
+                let blocks = alchemy.getBlockByNumber numbers 
                 let lastBlock = alchemy.getLastBlockNumber() 
 
                 do! Task.Delay(1000)

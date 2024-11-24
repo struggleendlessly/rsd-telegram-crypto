@@ -5,7 +5,7 @@ open requestSingleDTO
 open Extensions
 
 let getBlockByNumber (blockNumber: int) =
-     let request = 
+     let res = 
              { 
                  requestSingleDTO.Default 
                  with 
@@ -19,10 +19,10 @@ let getBlockByNumber (blockNumber: int) =
 
      //let res = JsonSerializer.Serialize request
     
-     request
+     res
 
 let getLastBlockNumber _ =
-     let request = 
+     let res = 
              { 
                  requestSingleDTO.Default 
                  with 
@@ -31,4 +31,4 @@ let getLastBlockNumber _ =
 
      //let res = JsonSerializer.Serialize request
     
-     request
+     res

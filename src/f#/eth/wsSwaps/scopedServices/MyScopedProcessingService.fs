@@ -26,5 +26,5 @@ type MyScopedProcessingService(
                 let blocks = alchemy.getBlockByNumber numbers 
                 let lastBlock = alchemy.getLastBlockNumber() 
 
-                do! Task.Delay(1000)
+                logger.LogInformation("Last block: {lastBlock}", lastBlock)
             }

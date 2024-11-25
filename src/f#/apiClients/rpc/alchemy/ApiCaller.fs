@@ -1,5 +1,6 @@
 ﻿namespace alchemy
 
+
 open System.Net.Http
 open Microsoft.Extensions.Options
 open AlchemyOptionModule
@@ -13,14 +14,18 @@ open System.Text.Json
 open Async
 open requestSingleDTO
 open responseGetLastBlockDTO
+open dbMigration
+open System.Linq
 
 type alchemy(
     logger: ILogger<alchemy>, 
     alchemyOptions: IOptions<AlchemyOption>, 
-    httpClientFactory: IHttpClientFactory
+    httpClientFactory: IHttpClientFactory,
+    ethDb: ethDB
     ) as this =
 
     let alchemySettings = alchemyOptions.Value;
+    let fabric = ethDb
 
     //do this.ShuffleApiKeys()
 
@@ -76,5 +81,5 @@ type alchemy(
     member this.getBlockByNumber  = 
         this.chunksRequest<responseGetBlocksDTO> getBlockByNumber
 
-
-        
+    member this.readData  = 
+        ethDb.MyEntity.ToList()

@@ -12,12 +12,13 @@ using Microsoft.EntityFrameworkCore;
 
 using nethereum;
 
+using Nethereum.ABI.EIP712;
+
 using Serilog;
 using Serilog.Sinks.OpenTelemetry;
 
 using Shared;
 using Shared.ConfigurationOptions;
-
 using ws_eth_dev;
 
 var builder = Host.CreateApplicationBuilder(args);

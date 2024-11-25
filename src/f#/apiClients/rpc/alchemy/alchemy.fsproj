@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\eth\dbMigration\dbMigration.csproj" />
     <ProjectReference Include="..\..\..\shared\shared.fsproj" />
   </ItemGroup>
   

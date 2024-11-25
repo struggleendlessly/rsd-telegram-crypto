@@ -1,42 +1,26 @@
 namespace wsSwaps
 
-open System
-open System.Collections.Generic
-open System.Linq
 open System.Threading
 open System.Threading.Tasks
+open System.Collections.Generic
+
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
-open AppSettingsOptionModule
-open Microsoft.Extensions.Options
-open System.Net.Http
-open System.Text.Json
-open alchemy
-open UlrBuilder
+open Microsoft.Extensions.DependencyInjection
 
-type GoogleResponse = { 
-    message: string
-}
+open IScopedProcessingService
 
 type Worker(
-    logger: ILogger<Worker>, 
-    settings: IOptions<AppSettingsOption>, 
-    httpClientFactory: IHttpClientFactory,
-    alchemy: alchemy
-    ) =
+        logger: ILogger<Worker>, 
+        serviceScopeFactory: IServiceScopeFactory) =
     inherit BackgroundService()
-    override _.ExecuteAsync(ct: CancellationToken) =
+
+    override this.ExecuteAsync(stoppingToken: CancellationToken) =
         task {
-            while not ct.IsCancellationRequested do
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                logger.LogInformation("Logging level: {level}", settings.Value.Logging.LogLevel.Default)
-
-                let numbers = seq { 21252610 .. 21252620 } |> Seq.toArray
-
-                alchemy.ShuffleApiKeys()
-
-                let blocks = alchemy.getBlockByNumber numbers 
-                let lastBlock = alchemy.getLastBlockNumber() 
-
-                do! Task.Delay(1000)
+            while not stoppingToken.IsCancellationRequested do
+                use scope = serviceScopeFactory.CreateScope()
+                let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
+                let scopedProcessingService = serviceFactory.["WorkerService1"]
+                do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                do! Task.Delay(1000, stoppingToken)
         }

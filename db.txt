@@ -27,6 +27,7 @@ cd H:\rsd-telegram-crypto\src
 dotnet ef migrations add In26 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
 
 dotnet ef migrations add In26 -o migrations --project dbMigration --startup-project dbMigration
+dotnet ef database update --project dbMigration --startup-project dbMigration
 
 dotnet ef database update --project Shared --startup-project WorkerServiceRead
 

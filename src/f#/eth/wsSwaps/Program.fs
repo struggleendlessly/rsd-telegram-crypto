@@ -22,6 +22,9 @@ open alchemy
 open UlrBuilder
 open System.Text.Json
 
+open Microsoft.EntityFrameworkCore;
+open dbMigration
+
 module Program =
 
     let uncurry2 f = fun x y -> f (x, y)
@@ -50,6 +53,11 @@ module Program =
                 .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)
                 .AddEnvironmentVariables() |> ignore
+
+            let connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            builder.Services.AddDbContext<ethDB>(
+                fun options -> options.UseSqlServer(connectionString)|> ignore) 
+                |> ignore
 
             builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
             builder.Services.Configure<OpenTelemetryOption>(builder.Configuration.GetSection(OpenTelemetryOption.SectionName)) |> ignore

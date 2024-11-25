@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
@@ -23,7 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\f#\apiClients\rpc\alchemy\alchemy.fsproj" />
-    <ProjectReference Include="..\src\f#\shared\shared.fsproj" />
+    <ProjectReference Include="..\..\apiClients\rpc\alchemy\alchemy.fsproj" />
+    <ProjectReference Include="..\..\shared\shared.fsproj" />
+    <ProjectReference Include="..\dbMigration\dbMigration.csproj" />
   </ItemGroup>
 </Project>

@@ -2,46 +2,38 @@ namespace wsSwaps
 
 open System
 open System.Collections.Generic
-open System.Linq
 open System.Net.Http
-open System.Threading.Tasks
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Configuration
-open Microsoft.Extensions.Logging
+
 open AppSettingsOptionModule
 open OpenTelemetryOptionModule
 open AlchemyOptionModule
-open responseGetBlockDTO
+
 open Polly
 open Polly.Extensions.Http
+
 open Serilog
 open Serilog.Sinks.OpenTelemetry
 open Serilog.Formatting.Compact
+
 open alchemy
-open UlrBuilder
-open System.Text.Json
+
 open IScopedProcessingService
-open MyScopedProcessingService
+open scopedSwapsETH
+open scopedLastBlock
+open scopedSwapsTokens
+
 open Microsoft.EntityFrameworkCore;
 open dbMigration
+
 
 module Program =
 
     let uncurry2 f = fun x y -> f (x, y)
-
     let exponentially = float >> (uncurry2 Math.Pow 2) >> TimeSpan.FromSeconds
 
-    //let myCustomFunction (logger: ILogger) =
-    //    logger.Information("My custom function is called")
-    //let prepareChunks numbers =        
-    //     numbers  
-    //     |> Seq.chunkBySize 5 
-    //     |> Seq.mapi (fun index value -> index, value |> Seq.map getBlockByNumber |> JsonSerializer.Serialize) 
-    //     |> Seq.iter (fun (index, value) -> printfn "Index: %d, Value:%s" index  value  )
-
-    //     printfn "Index:"
-    //     ""
     [<EntryPoint>]
     let main args =
 
@@ -86,16 +78,21 @@ module Program =
                 .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
 
             builder.Services.AddScoped<alchemy>() |> ignore
-            builder.Services.AddScoped<MyScopedProcessingService>() |> ignore
+            builder.Services.AddScoped<scopedSwapsETH>() |> ignore
+            builder.Services.AddScoped<scopedSwapsTokens>() |> ignore
+            builder.Services.AddScoped<scopedLastBlock>() |> ignore
 
             builder.Services.AddScoped<IDictionary<string, IScopedProcessingService>>(
                 fun sp -> 
                     let dict = new Dictionary<string, IScopedProcessingService>() 
-                    dict.Add("WorkerService1", sp.GetRequiredService<MyScopedProcessingService>() :> IScopedProcessingService) 
-
+                    dict.Add("scopedSwapsETH", sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
+                    dict.Add("scopedSwapsTokens", sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
+                    dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            builder.Services.AddHostedService<Worker>() |> ignore
+            //builder.Services.AddHostedService<swapsETH>() |> ignore
+            //builder.Services.AddHostedService<swapsTokens>() |> ignore
+            builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore
 

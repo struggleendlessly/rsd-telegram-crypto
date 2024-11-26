@@ -1,4 +1,4 @@
-﻿module MyScopedProcessingService
+﻿module scopedSwapsTokens
 
 open System
 open System.Threading
@@ -10,8 +10,8 @@ open IScopedProcessingService
 
 open alchemy
 
-type MyScopedProcessingService(
-        logger: ILogger<MyScopedProcessingService>,
+type scopedSwapsTokens(
+        logger: ILogger<scopedSwapsTokens>,
         alchemy: alchemy) =
     interface IScopedProcessingService with
 
@@ -22,7 +22,6 @@ type MyScopedProcessingService(
                 let numbers = seq { 21252610 .. 21252620 } |> Seq.toArray
 
                 alchemy.ShuffleApiKeys()
-                let e = alchemy.readData
                 let blocks = alchemy.getBlockByNumber numbers 
                 let lastBlock = alchemy.getLastBlockNumber() 
 

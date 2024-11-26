@@ -10,8 +10,8 @@ open Microsoft.Extensions.DependencyInjection
 
 open IScopedProcessingService
 
-type Worker(
-        logger: ILogger<Worker>, 
+type swapsETH(
+        logger: ILogger<swapsETH>, 
         serviceScopeFactory: IServiceScopeFactory) =
     inherit BackgroundService()
 
@@ -20,7 +20,7 @@ type Worker(
             while not stoppingToken.IsCancellationRequested do
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
-                let scopedProcessingService = serviceFactory.["WorkerService1"]
+                let scopedProcessingService = serviceFactory.["scopedSwapsETH"]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
                 do! Task.Delay(1000, stoppingToken)
         }

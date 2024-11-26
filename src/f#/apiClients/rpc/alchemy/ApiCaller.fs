@@ -1,31 +1,26 @@
 ﻿namespace alchemy
 
-
+open System
 open System.Net.Http
+open System.Text
+open System.Text.Json
+
 open Microsoft.Extensions.Options
+open Microsoft.Extensions.Logging
+
+open UlrBuilder
 open AlchemyOptionModule
 open responseGetBlockDTO
-open Microsoft.Extensions.Logging
-open UlrBuilder
-open System
-open System.Text
-open System.Threading.Tasks
-open System.Text.Json
-open Async
 open requestSingleDTO
 open responseGetLastBlockDTO
-open dbMigration
-open System.Linq
 
 type alchemy(
     logger: ILogger<alchemy>, 
     alchemyOptions: IOptions<AlchemyOption>, 
-    httpClientFactory: IHttpClientFactory,
-    ethDb: ethDB
+    httpClientFactory: IHttpClientFactory
     ) as this =
 
     let alchemySettings = alchemyOptions.Value;
-    let fabric = ethDb
 
     //do this.ShuffleApiKeys()
 
@@ -80,6 +75,3 @@ type alchemy(
 
     member this.getBlockByNumber  = 
         this.chunksRequest<responseGetBlocksDTO> getBlockByNumber
-
-    member this.readData  = 
-        ethDb.MyEntity.ToList()

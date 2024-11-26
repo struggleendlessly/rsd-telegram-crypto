@@ -18,9 +18,9 @@
         public static EthBlocksEntity Default()
         {
             var res = new EthBlocksEntity();
-            res.numberInt = 21271122;
+            res.numberInt = 21274941;
 
             return res;
-         }
+        }
     }
 }

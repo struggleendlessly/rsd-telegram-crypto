@@ -97,6 +97,8 @@ module Program =
 
             builder.Services.AddHostedService<Worker>() |> ignore
 
+            builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore
+
             let configuration = builder.Configuration
             let appSettings = configuration.Get<AppSettingsOption>()
             let mySetting = appSettings.Logging.LogLevel.Default

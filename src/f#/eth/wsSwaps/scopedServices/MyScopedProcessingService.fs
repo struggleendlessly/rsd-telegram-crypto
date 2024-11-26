@@ -21,7 +21,7 @@ type MyScopedProcessingService(
 
                 let numbers = seq { 21252610 .. 21252620 } |> Seq.toArray
 
-                //alchemy.ShuffleApiKeys()
+                alchemy.ShuffleApiKeys()
                 let e = alchemy.readData
                 let blocks = alchemy.getBlockByNumber numbers 
                 let lastBlock = alchemy.getLastBlockNumber() 

@@ -51,24 +51,24 @@ type alchemy(
     member this.ShuffleApiKeys()  = 
          Random().Shuffle alchemySettings.ApiKeys
 
-    member private this.chunksRequest<'T> uriBuilder : int[] -> 'T[]  = 
+    member private this.chunksRequest<'T> uriBuilder : int[] -> Async<'T[]>  = 
         Array.map uriBuilder 
         >> Array.chunkBySize 50 
         >> Array.Parallel.mapi this.makeRequest<'T>
         >> Async.Parallel
-        >> Async.RunSynchronously  
+        //>> Async.RunSynchronously  
 
     member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
         JsonSerializer.Serialize 
         >> request index 
         >> Async.map JsonSerializer.Deserialize<'T>
 
-    member private this.singleRequest<'T> uriBuilder : unit -> 'T =
+    member private this.singleRequest<'T> uriBuilder : unit -> Async<'T> =
         uriBuilder 
         >> JsonSerializer.Serialize 
         >> request 0 
         >> Async.map JsonSerializer.Deserialize<'T>
-        >> Async.RunSynchronously  
+        //>> Async.RunSynchronously  
 
     member this.getLastBlockNumber  = 
         this.singleRequest<responseGetLastBlockDTO> getLastBlockNumber

@@ -27,7 +27,7 @@ open scopedSwapsTokens
 
 open Microsoft.EntityFrameworkCore;
 open dbMigration
-
+open Extensions
 
 module Program =
 
@@ -95,6 +95,16 @@ module Program =
             builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore
+
+            let asyncTask1 = async { return 10 }
+            let asyncTask2 x = async { return x * 2 }
+
+            let boundTask = Async.Bind asyncTask2 asyncTask1
+
+            let result = Async.RunSynchronously boundTask
+
+            printfn "Result: %d" result // Output: 20
+
 
             let configuration = builder.Configuration
             let appSettings = configuration.Get<AppSettingsOption>()

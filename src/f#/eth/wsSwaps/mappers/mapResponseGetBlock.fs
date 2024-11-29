@@ -5,17 +5,18 @@ open dbMigration.models
 open responseGetBlockDTO
 open Extensions
 
-let map responseGetBlocksDTO = 
+let map (responseGetBlocksDTO: responseGetBlockDTO) = 
     let res = new EthBlocksEntity()
+    let block = responseGetBlocksDTO.result
 
-    res.numberInt <- responseGetBlocksDTO.number.ToInt()
-    res.numberHex <- responseGetBlocksDTO.number
+    res.numberInt <- block.number.ToInt()
+    res.numberHex <- block.number
 
-    res.timestampUnix <- responseGetBlocksDTO.timestamp
-    res.timestampNormal <-  DateTimeOffset.FromUnixTimeSeconds(responseGetBlocksDTO.timestamp.ToInt64()).UtcDateTime 
+    res.timestampUnix <- block.timestamp
+    res.timestampNormal <-  DateTimeOffset.FromUnixTimeSeconds(block.timestamp.HexToInt64()).UtcDateTime 
 
-    res.baseFeePerGas <- responseGetBlocksDTO.baseFeePerGas
-    res.gasLimit <- responseGetBlocksDTO.gasLimit
-    res.gasUsed <- responseGetBlocksDTO.gasUsed
+    res.baseFeePerGas <- block.baseFeePerGas
+    res.gasLimit <- block.gasLimit
+    res.gasUsed <- block.gasUsed
 
     res

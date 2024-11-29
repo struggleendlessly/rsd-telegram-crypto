@@ -14,6 +14,7 @@ open alchemy
 open System.Threading.Tasks
 open Microsoft.EntityFrameworkCore
 open responseGetBlockDTO
+open responseGetLastBlockDTO
 
 type BlockDetectionResult = 
     | NewBlocks of responseGetBlocksDTO[] 
@@ -36,10 +37,40 @@ type scopedLastBlock(
                 | false -> result
         } |> Async.AwaitTask
 
+    let f g x = g x
+    let getLastKnownBlockInDB1 = 
+        task {
+            let! result = 
+                ethDB.EthBlocksEntities
+                    .OrderByDescending(fun x -> x.numberInt)
+                    .FirstOrDefaultAsync()              
+            return 
+                match isNull result with 
+                | true -> EthBlocksEntity.Default() 
+                | false -> result
+        }
+    let createSeq1 (start: Async<EthBlocksEntity>) (end1:unit -> Async<responseGetLastBlockDTO>) = 
+        async{
+            let! startAsync  = start
+            let! endAsync = end1()
+            
+            let startBlock = startAsync.numberInt + 1
+            let endBlock = endAsync.blockInt
+
+            match endBlock > startBlock with
+            | true -> 
+                logger.LogInformation("New block detected: {lastBlock}", startBlock) 
+                return seq { startBlock .. endBlock } |> Seq.toArray
+            | false -> 
+                logger.LogInformation("No new blocks detected") 
+                return seq { 0.. 0 } |> Seq.toArray
+        }
+
+    let t = createSeq1 getLastKnownBlockInDB alchemy.getLastBlockNumber
+
     let getBlocks startBlock endBlock = 
-        seq { startBlock + 1 .. endBlock } 
-        |> Seq.toArray
-        |> alchemy.getBlockByNumber         
+        createSeq1
+         alchemy.getBlockByNumber         
 
     let detectNewBlocks  = 
         let firstBlock = getLastKnownBlockInDB |> Async.RunSynchronously
@@ -57,8 +88,8 @@ type scopedLastBlock(
     //let processDB = function
     //    | NewBlocks blocks -> 
     //        blocks
-    //        |> Array.iter(fun block -> 
-    //            let entity = ethDB.EthBlocksEntities.FromBlockDTO(block)
+    //        |> Array.Parallel.iter(fun block -> 
+    //            let entity = block |> mapResponseGetBlock.map
     //            ethDB.EthBlocksEntities.Add(entity) |> ignore
     //        )
     //        ethDB.SaveChangesAsync() |> ignore
@@ -72,11 +103,16 @@ type scopedLastBlock(
 
                 let aaa = 
                     match e with
-                    | Some(NewBlocks (blocks: responseGetBlocksDTO[])) -> 
+                    | Some(NewBlocks blocks) -> 
                         blocks
                         |> Array.collect id
-                    | _ -> Array.empty<responseGetBlockDTO>
+                        |> Array.Parallel.map(fun block -> 
+                            block 
+                            |> mapResponseGetBlock.map
+                        )
+                    | _ -> Array.empty<EthBlocksEntity>
 
-                return aaa
+                ethDB.EthBlocksEntities.AddRangeAsync(aaa) |> ignore
+                return ethDB.SaveChangesAsync() 
                 //logger.LogInformation("Last block: {lastBlock}", lastBlock)
             }

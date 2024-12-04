@@ -11,7 +11,7 @@ open IScopedProcessingService
 open dbMigration
 open dbMigration.models
 open alchemy
-open System.Threading.Tasks
+open Extensions
 open Microsoft.EntityFrameworkCore
 open responseGetBlockDTO
 open responseGetLastBlockDTO
@@ -25,7 +25,7 @@ type scopedLastBlock(
         alchemy: alchemy,
         ethDB: ethDB) as this =
 
-    let getLastKnownBlockInDB = 
+    let getLastKnownBlockInDB _= 
         task {
             let! result = 
                 ethDB.EthBlocksEntities
@@ -37,18 +37,6 @@ type scopedLastBlock(
                 | false -> result
         } |> Async.AwaitTask
 
-    let f g x = g x
-    let getLastKnownBlockInDB1 = 
-        task {
-            let! result = 
-                ethDB.EthBlocksEntities
-                    .OrderByDescending(fun x -> x.numberInt)
-                    .FirstOrDefaultAsync()              
-            return 
-                match isNull result with 
-                | true -> EthBlocksEntity.Default() 
-                | false -> result
-        }
     let createSeq1 (start: Async<EthBlocksEntity>) (end1:unit -> Async<responseGetLastBlockDTO>) = 
         async{
             let! startAsync  = start
@@ -63,27 +51,56 @@ type scopedLastBlock(
                 return seq { startBlock .. endBlock } |> Seq.toArray
             | false -> 
                 logger.LogInformation("No new blocks detected") 
-                return seq { 0.. 0 } |> Seq.toArray
+                return seq { 0.. -1 } |> Seq.toArray
         }
 
-    let t = createSeq1 getLastKnownBlockInDB alchemy.getLastBlockNumber
+   // let t = createSeq1 getLastKnownBlockInDB alchemy.getLastBlockNumber
+    let processBlocks blocks = 
+        async {
+               return
+                    blocks
+                    |> Array.collect id
+                    |> Array.Parallel.map(fun block -> 
+                        block 
+                        |> mapResponseGetBlock.map
+                    )
+            }
 
-    let getBlocks startBlock endBlock = 
-        createSeq1
-         alchemy.getBlockByNumber         
+    //let saveToDB blocks = 
+    //    async {
 
-    let detectNewBlocks  = 
-        let firstBlock = getLastKnownBlockInDB |> Async.RunSynchronously
-        let lastBlock = alchemy.getLastBlockNumber().blockInt
 
-        match lastBlock > firstBlock.numberInt with
-        | true -> 
-            logger.LogInformation("New block detected: {lastBlock}", lastBlock) 
-            let res = getBlocks firstBlock.numberInt lastBlock
-            Some(NewBlocks res) 
-        | false -> 
-            logger.LogInformation("No new blocks detected") 
-            None
+    //        ethDB.EthBlocksEntities.AddRangeAsync(blocks) |> ignore
+    //        return ethDB.SaveChangesAsync() 
+    //    }
+    let saveToDB blocks = 
+        async {
+            if Array.isEmpty blocks then
+                return 0
+            else
+                do! ethDB.EthBlocksEntities.AddRangeAsync(blocks) |> Async.AwaitTask
+                let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
+                return result
+        }
+
+    let getBlocks startBlock = 
+         createSeq1 startBlock
+         >> Async.Bind alchemy.getBlockByNumber      
+         >> Async.Bind processBlocks
+         >> Async.Bind saveToDB
+
+    //let detectNewBlocks  = 
+    //    let firstBlock = getLastKnownBlockInDB |> Async.RunSynchronously
+    //    let lastBlock = alchemy.getLastBlockNumber().blockInt
+
+    //    match lastBlock > firstBlock.numberInt with
+    //    | true -> 
+    //        logger.LogInformation("New block detected: {lastBlock}", lastBlock) 
+    //        let res = getBlocks firstBlock.numberInt lastBlock
+    //        Some(NewBlocks res) 
+    //    | false -> 
+    //        logger.LogInformation("No new blocks detected") 
+    //        None
 
     //let processDB = function
     //    | NewBlocks blocks -> 
@@ -99,20 +116,25 @@ type scopedLastBlock(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let e = detectNewBlocks
 
-                let aaa = 
-                    match e with
-                    | Some(NewBlocks blocks) -> 
-                        blocks
-                        |> Array.collect id
-                        |> Array.Parallel.map(fun block -> 
-                            block 
-                            |> mapResponseGetBlock.map
-                        )
-                    | _ -> Array.empty<EthBlocksEntity>
+                let lastKnownBlock = getLastKnownBlockInDB ()
+                let res = getBlocks 
+                            lastKnownBlock
+                            alchemy.getLastBlockNumber
+                          |> Async.RunSynchronously
+                return res
+                //let aaa = 
+                //    match e with
+                //    | blocks -> 
+                //        blocks
+                //        |> Array.collect id
+                //        |> Array.Parallel.map(fun block -> 
+                //            block 
+                //            |> mapResponseGetBlock.map
+                //        )
+                //    | _ -> Array.empty<EthBlocksEntity>
 
-                ethDB.EthBlocksEntities.AddRangeAsync(aaa) |> ignore
-                return ethDB.SaveChangesAsync() 
+                //ethDB.EthBlocksEntities.AddRangeAsync(aaa) |> ignore
+                //return ethDB.SaveChangesAsync() 
                 //logger.LogInformation("Last block: {lastBlock}", lastBlock)
             }

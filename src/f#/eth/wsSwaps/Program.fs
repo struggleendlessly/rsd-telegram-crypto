@@ -50,7 +50,7 @@ module Program =
             let connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
             builder.Services.AddDbContext<ethDB>(
                 (fun options -> options.UseSqlServer(connectionString)|> ignore),
-                ServiceLifetime.Transient) 
+                ServiceLifetime.Scoped) 
                 |> ignore
 
             builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore

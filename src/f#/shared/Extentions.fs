@@ -14,7 +14,7 @@ open System
         member this.HexToInt64() = Convert.ToInt64(this, 16)
 
     type Async with
-        member this.Bind (f: 'T -> Async<'U>) (asyncValue: Async<'T>) : Async<'U> =
+        static member Bind (f: 'T -> Async<'U>) (asyncValue: Async<'T>) : Async<'U> =
             async {
                 let! result = asyncValue
                 return! f result

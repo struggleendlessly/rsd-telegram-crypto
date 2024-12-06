@@ -13,6 +13,7 @@ open AlchemyOptionModule
 open responseGetBlockDTO
 open requestSingleDTO
 open responseGetLastBlockDTO
+open Extensions
 
 type alchemy(
     logger: ILogger<alchemy>, 
@@ -54,9 +55,8 @@ type alchemy(
     member private this.chunksRequest<'T> uriBuilder : int[] -> Async<'T[]>  = 
         Array.map uriBuilder 
         >> Array.chunkBySize 50 
-        >> Array.Parallel.mapi this.makeRequest<'T>
+        >> Array.mapi this.makeRequest<'T>
         >> Async.Parallel
-        //>> Async.RunSynchronously  
 
     member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
         JsonSerializer.Serialize 
@@ -68,7 +68,6 @@ type alchemy(
         >> JsonSerializer.Serialize 
         >> request 0 
         >> Async.map JsonSerializer.Deserialize<'T>
-        //>> Async.RunSynchronously  
 
     member this.getLastBlockNumber  = 
         this.singleRequest<responseGetLastBlockDTO> getLastBlockNumber

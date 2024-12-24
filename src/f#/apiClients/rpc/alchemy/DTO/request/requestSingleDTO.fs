@@ -18,3 +18,9 @@ with
               id = 0
           }
 
+type requestSwapDto = {
+    topics: string[]
+    address: string[]
+    fromBlock: string
+    toBlock: string
+}

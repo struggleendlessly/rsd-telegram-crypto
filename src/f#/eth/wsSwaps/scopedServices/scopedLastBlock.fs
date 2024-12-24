@@ -13,11 +13,11 @@ open dbMigration.models
 open alchemy
 open Extensions
 open Microsoft.EntityFrameworkCore
-open responseGetBlockDTO
-open responseGetLastBlockDTO
+open responseGetBlock
+open responseGetLastBlock
 
 type BlockDetectionResult = 
-    | NewBlocks of responseGetBlocksDTO[] 
+    | NewBlocks of responseGetBlocks[] 
     | NoNewBlocks
 
 type scopedLastBlock(

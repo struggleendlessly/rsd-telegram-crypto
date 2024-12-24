@@ -10,9 +10,10 @@ open Microsoft.Extensions.Logging
 
 open UlrBuilder
 open AlchemyOptionModule
-open responseGetBlockDTO
+open responseGetBlock
 open requestSingleDTO
-open responseGetLastBlockDTO
+open responseGetLastBlock
+open responseSwap
 open Extensions
 
 type alchemy(
@@ -52,7 +53,7 @@ type alchemy(
     member this.ShuffleApiKeys()  = 
          Random().Shuffle alchemySettings.ApiKeys
 
-    member private this.chunksRequest<'T> uriBuilder : int[] -> Async<'T[]>  = 
+    member private this.chunksRequest<'T, 'B> uriBuilder : 'B[] -> Async<'T[]>  = 
         Array.map uriBuilder 
         >> Array.chunkBySize 50 
         >> Array.mapi this.makeRequest<'T>
@@ -70,7 +71,13 @@ type alchemy(
         >> Async.map JsonSerializer.Deserialize<'T>
 
     member this.getLastBlockNumber  = 
-        this.singleRequest<responseGetLastBlockDTO> getLastBlockNumber
+        this.singleRequest<responseGetLastBlock> getLastBlockNumberUri
 
     member this.getBlockByNumber  = 
-        this.chunksRequest<responseGetBlocksDTO> getBlockByNumber
+        this.chunksRequest<responseGetBlocks, int> getBlockByNumberUri
+
+    member this.getBlockSwapsETH_USD  = 
+        let contractAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+        let topic = "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822"
+        
+        this.chunksRequest<responseSwap, int> (getSwapLogsUri contractAddress topic)

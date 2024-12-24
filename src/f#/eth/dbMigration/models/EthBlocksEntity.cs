@@ -15,10 +15,12 @@
         public string gasLimit { get; set; } = string.Empty;
         public string gasUsed { get; set; } = string.Empty;
 
+        public string hash { get; set; } = string.Empty;
+
         public static EthBlocksEntity Default()
         {
             var res = new EthBlocksEntity();
-            res.numberInt = 21329788;
+            res.numberInt = staticValues.blockNumberInt;
 
             return res;
         }

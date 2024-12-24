@@ -107,7 +107,7 @@ builder.Services.AddKeyedScoped<IScopedProcessingService, WorkerDevScoped>("Work
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker4Scoped>("Worker4Scoped");
 builder.Services.AddKeyedScoped<IScopedProcessingService, Worker5MinisScoped>("Worker5MinisScoped");
 
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<Worker2>();
 
 //builder.Services.AddHostedService<Worker4>();
 

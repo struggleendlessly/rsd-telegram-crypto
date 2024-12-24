@@ -89,6 +89,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "wsSwaps", "src\f#\eth\wsSwa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dbMigration", "src\f#\eth\dbMigration\dbMigration.csproj", "{46388E5E-C5FE-4B7E-8E9B-50DFA898B1EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apiWebBrowserParser", "src\v3\apiWebBrowserParser\apiWebBrowserParser.csproj", "{DD65EEE4-C27A-4C13-9DCA-39031F60A130}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +209,10 @@ Global
 		{46388E5E-C5FE-4B7E-8E9B-50DFA898B1EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46388E5E-C5FE-4B7E-8E9B-50DFA898B1EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46388E5E-C5FE-4B7E-8E9B-50DFA898B1EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD65EEE4-C27A-4C13-9DCA-39031F60A130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD65EEE4-C27A-4C13-9DCA-39031F60A130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD65EEE4-C27A-4C13-9DCA-39031F60A130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD65EEE4-C27A-4C13-9DCA-39031F60A130}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -235,6 +241,7 @@ Global
 		{0BA3E3BE-1BEB-4203-8AAD-1E9220E91D15} = {6A131978-1A0D-474D-812E-91643A07E044}
 		{DAB5238F-4C17-4211-AEBE-25D1641FA0BC} = {EE3A914E-2F2C-428B-B9C8-9E1293E2B990}
 		{46388E5E-C5FE-4B7E-8E9B-50DFA898B1EF} = {EE3A914E-2F2C-428B-B9C8-9E1293E2B990}
+		{DD65EEE4-C27A-4C13-9DCA-39031F60A130} = {9F11798A-F4A3-4D2D-8CBA-4C15D4709721}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D54AC4D8-ED12-40CF-BD73-23C6CD5E0CF1}

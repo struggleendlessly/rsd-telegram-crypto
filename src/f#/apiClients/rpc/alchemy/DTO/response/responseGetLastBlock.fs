@@ -1,14 +1,14 @@
-﻿module responseGetLastBlockDTO
+﻿module responseGetLastBlock
 
-open responseErrorDTO
+open responseError
 open Extensions
 open System
 
-type responseGetLastBlockDTO = {
+type responseGetLastBlock = {
     jsonrpc: string
     id: int
     result: string
-    error: responseErrorDTO option
+    error: responseError option
 }with 
     member this.blockInt = 
         match this.error with
@@ -18,4 +18,4 @@ type responseGetLastBlockDTO = {
             | true -> 0 
         | Some _ -> 0
 
-type responseGetLastBlocksDTO = responseGetLastBlockDTO[]
+type responseGetLastBlocks = responseGetLastBlock[]

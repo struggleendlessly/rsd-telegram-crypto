@@ -2,10 +2,10 @@
 
 open System
 open dbMigration.models
-open responseGetBlockDTO
+open responseGetBlock
 open Extensions
 
-let map (responseGetBlocksDTO: responseGetBlockDTO) = 
+let map (responseGetBlocksDTO: responseGetBlock) = 
     let res = new EthBlocksEntity()
     let block = responseGetBlocksDTO.result
 
@@ -18,5 +18,7 @@ let map (responseGetBlocksDTO: responseGetBlockDTO) =
     res.baseFeePerGas <- block.baseFeePerGas
     res.gasLimit <- block.gasLimit
     res.gasUsed <- block.gasUsed
+
+    res.hash <- block.hash
 
     res

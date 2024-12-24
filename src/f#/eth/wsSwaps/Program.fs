@@ -50,7 +50,7 @@ module Program =
             let connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
             builder.Services.AddDbContext<ethDB>(
                 (fun options -> options.UseSqlServer(connectionString)|> ignore),
-                ServiceLifetime.Scoped) 
+                ServiceLifetime.Transient) 
                 |> ignore
 
             builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
@@ -90,9 +90,9 @@ module Program =
                     dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            //builder.Services.AddHostedService<swapsETH>() |> ignore
+            builder.Services.AddHostedService<swapsETH>() |> ignore
             //builder.Services.AddHostedService<swapsTokens>() |> ignore
-            builder.Services.AddHostedService<lastBlock>() |> ignore
+            //builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore
 

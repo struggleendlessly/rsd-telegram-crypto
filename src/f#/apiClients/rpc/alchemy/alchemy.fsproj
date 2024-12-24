@@ -6,9 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="DTO\response\responseErrorDTO.fs" />
-    <Compile Include="DTO\response\responseGetLastBlockDTO.fs" />
-    <Compile Include="DTO\response\responseGetBlockDTO.fs" />
+    <Compile Include="DTO\response\responseError.fs" />
+    <Compile Include="DTO\response\responseSwap.fs" />
+    <Compile Include="DTO\response\responseGetLastBlock.fs" />
+    <Compile Include="DTO\response\responseGetBlock.fs" />
     <Compile Include="DTO\request\requestSingleDTO.fs" />
     <Compile Include="DTO\request\requestBatchDTO.fs" />
     <Compile Include="UlrBuilder.fs" />

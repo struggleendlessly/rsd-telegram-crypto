@@ -48,6 +48,9 @@ app.MapPost("/data",
         entity.Message,
         entity.ChatName);
 
+    entity.isSent = true;
+    await db.SaveChangesAsync();
+
     return Results.Ok();
 });
 

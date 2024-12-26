@@ -1,6 +1,4 @@
-﻿using dbMigration.models;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace apiWebBrowserParser.models
 {

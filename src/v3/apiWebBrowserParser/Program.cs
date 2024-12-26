@@ -1,10 +1,12 @@
-using apiWebBrowserParser.models;
+﻿using apiWebBrowserParser.models;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 
+using Shared;
 using Shared.ConfigurationOptions;
 using Shared.Telegram.Models;
 
@@ -14,6 +16,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+builder.Services.AddHttpClient("Api", client =>
+{
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var socketHandler = new SocketsHttpHandler
+    {
+        MaxConnectionsPerServer = int.MaxValue,
+        PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+    };
+    return socketHandler;
+})
+.SetHandlerLifetime(TimeSpan.FromMinutes(5))
+.AddPolicyHandler(PolicyHandlers.GetRetryPolicy());
+
 builder.Services.AddDbContext<telegramMessagesDB>(options => options.UseSqlServer(connectionString));
 
 builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(OptionsTelegram.SectionName));
@@ -42,11 +60,12 @@ app.MapPost("/data",
 
     db.messagesEntities.Add(entity);
     await db.SaveChangesAsync();
+    var t = """
+        <a href="https://www.defined.fi/sol/8cVqXcASuS61JhTLQkFdUz5PV5w7BE9RpcjDiGw5662t">SQUIDGAME(DALMATIAN)</a>
+        """;
+    var msg = await telegramApi.SendSequest(
 
-    var msg = telegramApi.SendSequest(
-        entity.Id.ToString(),
-        entity.Message,
-        entity.ChatName);
+        "t");
 
     entity.isSent = true;
     await db.SaveChangesAsync();
@@ -70,14 +89,19 @@ public class TelegramApi
 
     Random rnd = new Random();
 
-    public TelegramApi(IHttpClientFactory httpClient)
+    public TelegramApi(
+        IHttpClientFactory httpClient,
+        IOptions<OptionsTelegram> options)
     {
+        this.optionsTelegram = options.Value;
+
         this.httpClient = httpClient.CreateClient("Api");
+        this.httpClient.BaseAddress = new Uri(optionsTelegram.UrlBase);
+
     }
     public async Task<long> SendSequest(
-    string threadId,
-    string text,
-    string chat_id)
+
+    string text)
     {
         var res = 0L;
 
@@ -85,10 +109,10 @@ public class TelegramApi
 
         string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
             $"sendMessage?" +
-            $"message_thread_id={threadId}&" +
-            $"chat_id={chat_id}&" +
+            $"message_thread_id={optionsTelegram.message_thread_id_webscrapper}&" +
+            $"chat_id={optionsTelegram.chat_id_coins}&" +
             $"text={text}&" +
-            $"parse_mode=MarkDown&" +
+            $"parse_mode=HTML&" +
             $"disable_web_page_preview=true";
 
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");

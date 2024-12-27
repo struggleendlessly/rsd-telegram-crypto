@@ -53,19 +53,26 @@ app.MapPost("/data",
     //add ip check
     var entity = new messagesEntity
     {
-        Message = message.Message,
-        ChatName = message.ChatName.Trim().ToLower(),
+        Name = message.Name.Trim().ToLower(),
+        MK = message.MK,
+        Address = message.Address,
+
         isSent = false
     };
 
+    if (entity.Address.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
+    {
+        entity.isETH = true;
+    }
+    else
+    {
+        entity.isSolana = true;
+    }
+
     db.messagesEntities.Add(entity);
     await db.SaveChangesAsync();
-    var t = """
-        <a href="https://www.defined.fi/sol/8cVqXcASuS61JhTLQkFdUz5PV5w7BE9RpcjDiGw5662t">SQUIDGAME(DALMATIAN)</a>
-        """;
-    var msg = await telegramApi.SendSequest(
 
-        "t");
+    var msg = await telegramApi.SendSequest(entity);
 
     entity.isSent = true;
     await db.SaveChangesAsync();
@@ -78,8 +85,9 @@ app.Run();
 
 public class TelegramMessage
 {
-    public string Message { get; set; }
-    public string ChatName { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public double MK { get; set; }
+    public string Address { get; set; } = string.Empty;
 }
 
 public class TelegramApi
@@ -101,15 +109,37 @@ public class TelegramApi
     }
     public async Task<long> SendSequest(
 
-    string text)
+    messagesEntity telegramMessage)
     {
         var res = 0L;
 
+        var thread_id = telegramMessage switch
+        {
+            { MK: <= 100_000, isSolana: true  } => optionsTelegram.message_thread_id_solana_less100k,
+            { MK: <= 100_000, isETH: true  } => optionsTelegram.message_thread_id_eth_less100k,
+
+            { MK: (> 100_000) and (<= 300_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more100k_less300k,
+            { MK: (> 100_000) and (<= 300_000), isETH: true } => optionsTelegram.message_thread_id_eth_more100k_less300k,
+
+            { MK: (> 300_000) and (<= 1_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more300k_less1m,
+            { MK: (> 300_000) and (<= 1_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more300k_less1m,
+
+            { MK: (> 1_000_000) and (<= 10_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more1m_less10m,
+            { MK: (> 1_000_000) and (<= 10_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more1m_less10m,
+
+            _ => 0.ToString(),
+        };
+
         var bot_hashIndex = rnd.Next(0, optionsTelegram.bot_hash.Count - 1);
+
+        var text = 
+            $"Name: {telegramMessage.Name}\n" +
+            $"MK: {telegramMessage.MK}\n" +
+            $"Address: {telegramMessage.Address}";
 
         string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
             $"sendMessage?" +
-            $"message_thread_id={optionsTelegram.message_thread_id_webscrapper}&" +
+            $"message_thread_id={thread_id}&" +
             $"chat_id={optionsTelegram.chat_id_coins}&" +
             $"text={text}&" +
             $"parse_mode=HTML&" +

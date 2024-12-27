@@ -9,6 +9,17 @@
         public int api_delay_forech { get; set; }
         public List<string> bot_hash { get; set; } = [];
         public string chat_id_coins { get; set; } = "";
+
+        
+        public string message_thread_id_eth_more1m_less10m { get; set; } = "";
+        public string message_thread_id_solana_more1m_less10m { get; set; } = "";
+        public string message_thread_id_eth_more300k_less1m { get; set; } = "";
+        public string message_thread_id_solana_more300k_less1m { get; set; } = "";
+        public string message_thread_id_eth_more100k_less300k { get; set; } = "";
+        public string message_thread_id_solana_more100k_less300k { get; set; } = "";
+        public string message_thread_id_eth_less100k { get; set; } = "";
+        public string message_thread_id_solana_less100k { get; set; } = "";
+
         public string message_thread_id_mainfilters { get; set; } = "";
         public string message_thread_id_healthCheck { get; set; } = "";
         public string message_thread_id_botVerified { get; set; } = "";

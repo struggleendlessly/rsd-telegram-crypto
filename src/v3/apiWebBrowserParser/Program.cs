@@ -10,10 +10,8 @@ using Shared;
 using Shared.ConfigurationOptions;
 using Shared.Telegram.Models;
 
-using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -45,7 +43,7 @@ app.MapGet("/", () => "Hello World!");
 app.MapPost("/data",
     async (
         [FromBody] TelegramMessage message,
-        HttpContext context, 
+        HttpContext context,
         telegramMessagesDB db,
         TelegramApi telegramApi) =>
 {
@@ -115,8 +113,8 @@ public class TelegramApi
 
         var thread_id = telegramMessage switch
         {
-            { MK: <= 100_000, isSolana: true  } => optionsTelegram.message_thread_id_solana_less100k,
-            { MK: <= 100_000, isETH: true  } => optionsTelegram.message_thread_id_eth_less100k,
+            { MK: <= 100_000, isSolana: true } => optionsTelegram.message_thread_id_solana_less100k,
+            { MK: <= 100_000, isETH: true } => optionsTelegram.message_thread_id_eth_less100k,
 
             { MK: (> 100_000) and (<= 300_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more100k_less300k,
             { MK: (> 100_000) and (<= 300_000), isETH: true } => optionsTelegram.message_thread_id_eth_more100k_less300k,
@@ -132,7 +130,7 @@ public class TelegramApi
 
         var bot_hashIndex = rnd.Next(0, optionsTelegram.bot_hash.Count - 1);
 
-        var text = 
+        var text =
             $"Name: {telegramMessage.Name}\n" +
             $"MK: {telegramMessage.MK}\n" +
             $"Address: {telegramMessage.Address}";

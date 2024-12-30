@@ -36,6 +36,17 @@ builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(Opt
 
 builder.Services.AddTransient<TelegramApi>();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyAllowSpecificOrigins,
+                          policy =>
+                          {
+                              policy.WithOrigins("https://web.telegram.org")
+                                                  .AllowAnyHeader()
+                                                  .AllowAnyMethod();
+                          });
+});
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");

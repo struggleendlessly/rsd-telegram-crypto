@@ -14,6 +14,8 @@ using Shared.ConfigurationOptions;
 using Shared.Telegram.Models;
 
 using System.Net;
+using System.Numerics;
+using System.Text.RegularExpressions;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,6 +118,7 @@ public class TelegramMessage
 
 public class TelegramApi
 {
+    Dictionary<string, string> icons = new();
     private readonly HttpClient httpClient;
     private readonly OptionsTelegram optionsTelegram;
 
@@ -130,6 +133,31 @@ public class TelegramApi
         this.httpClient = httpClient.CreateClient("Api");
         this.httpClient.BaseAddress = new Uri(optionsTelegram.UrlBase);
 
+        icons.Add("greenBook", "%F0%9F%93%97");
+        icons.Add("redBook", "%F0%9F%93%95");
+        icons.Add("lightning", "%E2%9A%A1");
+        icons.Add("coin", "%F0%9F%AA%99");
+        icons.Add("chart", "%F0%9F%92%B9");
+        icons.Add("whiteCircle", "%E2%9A%AA");
+        icons.Add("yellowCircle", "%F0%9F%9F%A1");
+        icons.Add("orangeCircle", "%F0%9F%9F%A0");
+        icons.Add("redCircle", "%F0%9F%94%B4");
+        icons.Add("star", "%E2%9C%A8");
+        icons.Add("snowflake", "%E2%9C%B3");
+        icons.Add("poops", "%F0%9F%92%A9");
+        icons.Add("rocket", "%F0%9F%9A%80");
+        icons.Add("flagRed", "%F0%9F%9A%A9");
+        icons.Add("buy", "%F0%9F%93%88");
+        icons.Add("sell", "%F0%9F%93%89");
+        icons.Add("squareYellow", "%F0%9F%9F%A8");
+        icons.Add("squareOrange", "%F0%9F%9F%A7");
+        icons.Add("squareRed", "%F0%9F%9F%A5");
+        icons.Add("fire", "%F0%9F%94%A5");
+        icons.Add("boom", "%F0%9F%92%A5");
+        icons.Add("clockSend", "%E2%8F%B3");
+        icons.Add("calendar", "%F0%9F%97%93");
+        icons.Add("antenna", "%F0%9F%93%B6");
+        icons.Add("SCROLL", "%F0%9F%93%9C");
     }
     public async Task<long> SendSequest(
 
@@ -158,18 +186,29 @@ public class TelegramApi
         };
 
         var bot_hashIndex = rnd.Next(0, optionsTelegram.bot_hash.Count - 1);
+        var mk = Regex.Replace(BigInteger.Parse(telegramMessage.MK.ToString()).ToString(), @"(?<=\d)(?=(\d{3})+$)", ".");
 
         var text =
-            $"Name: {telegramMessage.Name}\n" +
-            $"MK: {telegramMessage.MK}\n" +
-            $"Address: {telegramMessage.Address}";
+            $"{icons["lightning"]} {telegramMessage.Name}\n" +
+            $"{icons["antenna"]} {mk}\n"+
+            $"`{telegramMessage.Address}`\n";
+
+        if (telegramMessage.isSolana)
+        {
+            text +=
+                $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/solana/pair-explorer/{telegramMessage.Address}) ";
+        }
+        else
+        {
+            //text += $"{telegramMessage.Address}\n";
+        }
 
         string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
             $"sendMessage?" +
             $"message_thread_id={thread_id}&" +
             $"chat_id={optionsTelegram.chat_id_coins}&" +
             $"text={text}&" +
-            $"parse_mode=HTML&" +
+            $"parse_mode=MarkDown&" +
             $"disable_web_page_preview=true";
 
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");

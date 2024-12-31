@@ -13,6 +13,17 @@ using Shared.Telegram.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyAllowSpecificOrigins,
+                          policy =>
+                          {
+                              policy.WithOrigins("https://web.telegram.org")
+                                                  .AllowAnyHeader()
+                                                  .AllowAnyMethod();
+                          });
+});
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddHttpClient("Api", client =>
@@ -36,18 +47,9 @@ builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(Opt
 
 builder.Services.AddTransient<TelegramApi>();
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(MyAllowSpecificOrigins,
-                          policy =>
-                          {
-                              policy.WithOrigins("https://web.telegram.org")
-                                                  .AllowAnyHeader()
-                                                  .AllowAnyMethod();
-                          });
-});
 var app = builder.Build();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.MapGet("/", () => "Hello World!");
 
@@ -58,8 +60,14 @@ app.MapPost("/data",
         telegramMessagesDB db,
         TelegramApi telegramApi) =>
 {
+    var allowedIPs = new[] { "188.239.185.18", "::1" };
     var ipAddress = context.Connection.RemoteIpAddress?.ToString();
-    //add ip check
+   
+    if (!allowedIPs.Contains(ipAddress))
+    {
+        return Results.Unauthorized();
+    }
+
     var entity = new messagesEntity
     {
         Name = message.Name.Trim().ToLower(),

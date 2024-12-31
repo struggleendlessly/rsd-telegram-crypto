@@ -151,6 +151,9 @@ public class TelegramApi
             { MK: (> 1_000_000) and (<= 10_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more1m_less10m,
             { MK: (> 1_000_000) and (<= 10_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more1m_less10m,
 
+            { MK: (> 10_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more10m,
+            { MK: (> 10_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more10m,
+
             _ => 0.ToString(),
         };
 

@@ -1,4 +1,5 @@
 ﻿using apiWebBrowserParser.models;
+using apiWebBrowserParser.options;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +7,13 @@ using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 
+using Polly;
+
 using Shared;
 using Shared.ConfigurationOptions;
 using Shared.Telegram.Models;
+
+using System.Net;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +49,7 @@ builder.Services.AddHttpClient("Api", client =>
 builder.Services.AddDbContext<telegramMessagesDB>(options => options.UseSqlServer(connectionString));
 
 builder.Services.Configure<OptionsTelegram>(builder.Configuration.GetSection(OptionsTelegram.SectionName));
+builder.Services.Configure<optionsIPs>(builder.Configuration.GetSection(optionsIPs.SectionName));
 
 builder.Services.AddTransient<TelegramApi>();
 
@@ -52,15 +58,16 @@ var app = builder.Build();
 app.UseCors(MyAllowSpecificOrigins);
 
 app.MapGet("/", () => "Hello World!");
-
+app.MapGet("/myip", (HttpContext context) => context.Connection.RemoteIpAddress?.ToString());
 app.MapPost("/data",
-    async (
+async (
         [FromBody] TelegramMessage message,
         HttpContext context,
         telegramMessagesDB db,
-        TelegramApi telegramApi) =>
+        TelegramApi telegramApi,
+        IOptions<optionsIPs> IoptionsIPs) =>
 {
-    var allowedIPs = new[] { "188.239.185.18", "::1" };
+    var allowedIPs = IoptionsIPs.Value.ips;
     var ipAddress = context.Connection.RemoteIpAddress?.ToString();
    
     if (!allowedIPs.Contains(ipAddress))

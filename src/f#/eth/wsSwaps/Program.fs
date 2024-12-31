@@ -28,6 +28,9 @@ open scopedSwapsTokens
 open Microsoft.EntityFrameworkCore;
 open dbMigration
 open Extensions
+open System.Numerics
+open ExtendedNumerics
+open System.Globalization
 
 module Program =
 

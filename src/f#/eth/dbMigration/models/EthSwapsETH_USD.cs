@@ -32,5 +32,12 @@ namespace dbMigration.models
 
             return res;
         }
+        public static EthSwapsETH_USD Default(int block)
+        {
+            var res = new EthSwapsETH_USD();
+            res.blockNumberInt = block;
+
+            return res;
+        }
     }
 }

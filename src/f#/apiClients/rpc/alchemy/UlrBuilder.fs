@@ -42,7 +42,8 @@ let getSwapLogsUri
              { 
                  requestSingleDTO.Default 
                  with 
-                    method = "eth_getLogs"; 
+                    method = "eth_getLogs"
+                    id = blockNumber
                     _params = [|
                                 { 
                                     topics = [|topic|] 

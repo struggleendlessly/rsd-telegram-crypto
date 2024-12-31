@@ -21,6 +21,9 @@ type responseSwap = {
     error: responseError option
 }
 
+type responseSwaps = {
+    responseSwaps: responseSwap[]
+}
 //{
 //  "id": 1,
 //  "jsonrpc": "2.0",
@@ -38,3 +41,4 @@ type responseSwap = {
 //    }
 //  ]
 //}
+

@@ -15,6 +15,7 @@ open Extensions
 open Microsoft.EntityFrameworkCore
 open responseGetBlock
 open responseGetLastBlock
+open responseSwap
 
 type scopedSwapsETH(
         logger: ILogger<scopedSwapsETH>,
@@ -57,6 +58,36 @@ type scopedSwapsETH(
                 return seq { startAsync + 1 .. endAsync } |> Seq.toArray
         }
 
+    let filterBlocks (blocks:responseSwap[]) = 
+              let filtered = blocks |> Array.filter (fun x -> not (Array.isEmpty x.result))
+
+              if Array.isEmpty filtered
+              then
+                     [| blocks |> Array.maxBy (fun x -> x.id) |]
+               else
+                     filtered
+
+    let saveToDB blocks = 
+        async {
+            if Array.isEmpty blocks then
+                return 0
+            else
+                do! ethDB.EthSwapsETH_USDEntities.AddRangeAsync(blocks) |> Async.AwaitTask
+                let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
+                return result
+        }  
+        
+    let processBlocks blocks = 
+        async {              
+               return 
+                        blocks
+                        |> Array.collect id
+                        |> filterBlocks
+                        |> Array.Parallel.map(fun block -> 
+                            block 
+                            |> mapResponseSwap.map
+                        )
+        }
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
@@ -66,7 +97,9 @@ type scopedSwapsETH(
                 let t = 
                         (getSeqToProcess 100)
                         |> Async.Bind alchemy.getBlockSwapsETH_USD  
-                        |> Async.RunSynchronously
+                        |> Async.Bind processBlocks
+                        |> Async.Bind saveToDB
+                        |> Async.RunSynchronously                      
 
                 return ()
             }

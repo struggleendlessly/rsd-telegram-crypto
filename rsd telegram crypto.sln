@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		helpMe.txt = helpMe.txt
 		linux setup.txt = linux setup.txt
 		ml metrix.txt = ml metrix.txt
+		webScrapperTelegram.js = webScrapperTelegram.js
 		windows service.txt = windows service.txt
 	EndProjectSection
 EndProject

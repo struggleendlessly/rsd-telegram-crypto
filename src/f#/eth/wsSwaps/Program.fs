@@ -84,7 +84,7 @@ module Program =
             builder.Services.AddScoped<scopedSwapsETH>() |> ignore
             builder.Services.AddScoped<scopedSwapsTokens>() |> ignore
             builder.Services.AddScoped<scopedLastBlock>() |> ignore
-
+            //let a = seq { 10..6..44 }
             builder.Services.AddScoped<IDictionary<string, IScopedProcessingService>>(
                 fun sp -> 
                     let dict = new Dictionary<string, IScopedProcessingService>() 
@@ -93,8 +93,8 @@ module Program =
                     dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            builder.Services.AddHostedService<swapsETH>() |> ignore
-            //builder.Services.AddHostedService<swapsTokens>() |> ignore
+            //builder.Services.AddHostedService<swapsETH>() |> ignore
+            builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore

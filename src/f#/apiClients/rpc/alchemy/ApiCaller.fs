@@ -78,6 +78,7 @@ type alchemy(
         this.chunksRequest<responseGetBlocks, int> getBlockByNumberUri
 
     member this.getBlockSwapsETH_USD  = 
-        let contractAddress = "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11";
-        let topic = "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822"
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri contractAddress topic)
+        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_DAI ethStrings.addressDai ethStrings.topicSwap ethStrings.ethChainBlocksIn5Minutes)
+
+    member this.getBlockSwapsETH_Tokens  = 
+        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token ethStrings.topicSwap ethStrings.ethChainBlocksIn5Minutes)

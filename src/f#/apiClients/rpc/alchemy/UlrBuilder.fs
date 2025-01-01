@@ -33,23 +33,50 @@ let getLastBlockNumberUri _ =
     
      res
 
-let getSwapLogsUri 
+let getSwapLogsUri_DAI 
         pairAddress 
         topic 
+        (chainBlockInMinutes: int)
         (blockNumber: int) =
 
+        let lastBlock = blockNumber + chainBlockInMinutes - 1
         let res =
              { 
                  requestSingleDTO.Default 
                  with 
                     method = "eth_getLogs"
-                    id = blockNumber
+                    id = lastBlock
                     _params = [|
                                 { 
                                     topics = [|topic|] 
                                     address = [|pairAddress|]
                                     fromBlock = blockNumber.ToHex()
-                                    toBlock = blockNumber.ToHex()
+                                    toBlock = lastBlock.ToHex()
+                                }
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res
+
+let getSwapLogsUri_Token
+        topic 
+        (chainBlockInMinutes: int)
+        (blockNumber: int) =
+
+        let lastBlock = blockNumber + chainBlockInMinutes - 1
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_getLogs"
+                    id = lastBlock
+                    _params = [|
+                                { 
+                                    topics = [|topic|] 
+                                    fromBlock = blockNumber.ToHex()
+                                    toBlock = lastBlock.ToHex()
                                 }
                               |]
              } 

@@ -24,3 +24,9 @@ type requestSwapDto = {
     fromBlock: string
     toBlock: string
 }
+
+type requestSwapDto_NoAddress = {
+    topics: string[]
+    fromBlock: string
+    toBlock: string
+}

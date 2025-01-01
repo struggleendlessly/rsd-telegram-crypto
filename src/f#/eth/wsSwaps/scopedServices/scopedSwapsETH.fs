@@ -2,20 +2,18 @@
 
 open System
 open System.Threading
-open System.Threading.Tasks
 open System.Linq
 
 open Microsoft.Extensions.Logging
+open Microsoft.EntityFrameworkCore
 
 open IScopedProcessingService
+open Extensions
+open responseSwap
+
+open alchemy
 open dbMigration
 open dbMigration.models
-open alchemy
-open Extensions
-open Microsoft.EntityFrameworkCore
-open responseGetBlock
-open responseGetLastBlock
-open responseSwap
 
 type scopedSwapsETH(
         logger: ILogger<scopedSwapsETH>,
@@ -46,16 +44,19 @@ type scopedSwapsETH(
                                 >> Option.defaultValue noBlock
                                 >> getNumberInt)
 
-    let getSeqToProcess n =
+    let getSeqToProcess n step =
         async{
             let! startAsync  = getLastKnownProcessedBlock()
             let! endAsync = getLastEthBlock()
             
             if endAsync - startAsync > n
             then
-                return seq { startAsync + 1 .. startAsync + n } |> Seq.toArray
-            else 
-                return seq { startAsync + 1 .. endAsync } |> Seq.toArray
+                return seq { startAsync + 1 .. step .. startAsync + n } |> Seq.toArray
+            elif endAsync - startAsync > step
+            then
+                return seq { startAsync + 1 .. step .. endAsync } |> Seq.toArray
+            else
+                return [||]
         }
 
     let filterBlocks (blocks:responseSwap[]) = 
@@ -93,9 +94,12 @@ type scopedSwapsETH(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
+                let t1 = 
+                        (getSeqToProcess 100 ethStrings.ethChainBlocksIn5Minutes)
+                        |> Async.RunSynchronously 
 
                 let t = 
-                        (getSeqToProcess 100)
+                        (getSeqToProcess 100 ethStrings.ethChainBlocksIn5Minutes)
                         |> Async.Bind alchemy.getBlockSwapsETH_USD  
                         |> Async.Bind processBlocks
                         |> Async.Bind saveToDB

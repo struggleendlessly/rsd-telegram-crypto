@@ -69,9 +69,12 @@ type scopedTokenInfo(
                     |> Array.collect id
                     |> Array.map (mapResponseEthCall.mapToken1 t0)
                     |> Array.map mapResponseEthCall.mapToken01toAddress
-         
-       
-         let a = t1 |> ethDB.EthTokenInfoEntities.AddRangeAsync                  
+         let elementsToExcluude = 
+                    t1
+                    |> Array.filter (fun x ->not (Array.contains x.AddressToken0 ethExcludeTokens.tokensExclude ) ||
+                                             not (Array.contains x.AddressToken1 ethExcludeTokens.tokensExclude ))
+         let filteredArray1 = t1 |> Array.filter (fun x -> not (Array.contains x elementsToExcluude))
+         let a = elementsToExcluude |> ethDB.EthTokenInfoEntities.AddRangeAsync                  
          
          ethDB.SaveChangesAsync() 
             |> Async.AwaitTask

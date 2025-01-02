@@ -91,7 +91,7 @@ type scopedSwapsTokens(
         |> Array.collect id 
         |> Array.collect (fun swap -> swap.result) 
         |> Array.map (fun res -> res.address) 
-        |> Array.filter (fun address -> not (tokensExclude |> Array.contains address))
+     //   |> Array.filter (fun address -> not (tokensExclude |> Array.contains address))
         |> Array.distinct
 
     let processBlocks (blocks: responseSwap array array) = 
@@ -119,12 +119,17 @@ type scopedSwapsTokens(
                         blocks[0]
                         |> Array.map (fun block -> 
                             block.result
-                            |> Array.groupBy (fun x -> x.address)                                                    
-                            |> Array.Parallel.map(fun (add, res) -> 
-                                (add, res)
-                                |> mapResponseSwap.mapResponseSwapResult block.id decimals.[add] price
-                                )
-                              ) 
+                            |> Array.groupBy (fun x -> x.address)    
+                            |> Array.filter (fun  (add, res) -> not (tokensExclude |> Array.contains add))
+                            //|> Array.Parallel.map(fun (add, res) -> 
+                            //    (add, res)
+                            //    |> mapResponseSwap.mapResponseSwapResult block.id decimals.[add] price
+                            //    )
+                            |> Array.Parallel.choose (fun (add, res) -> 
+                                match Map.tryFind add decimals with
+                                | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult block.id decimalValue price (add, res))
+                                | None -> None
+                              ) )
                         |> Array.collect id
 
                 return t
@@ -144,7 +149,7 @@ type scopedSwapsTokens(
                         (getSeqToProcess 30 ethStrings.ethChainBlocksIn5Minutes)
                         |> Async.Bind alchemy.getBlockSwapsETH_Tokens  
                         |> Async.Bind processBlocks
-                        //|> Async.Bind saveToDB
+                        |> Async.Bind saveToDB
                         |> Async.RunSynchronously 
                 return ()
 

@@ -44,6 +44,7 @@ let map (responseSwapDTO: responseSwap) =
 
 
 let mapResponseSwapResult blockId decimals ethPriceInCloseBlock (address:string , responseSwapDTO: responseSwap.Result []) = 
+    
     let res = new EthSwapsETH_Token()
     let datas =
         responseSwapDTO

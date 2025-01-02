@@ -16,6 +16,8 @@ open responseGetLastBlock
 open responseSwap
 open Extensions
 open responseSwap
+open responseEthCall
+open responseGetTransactionReceipt
 
 type alchemy(
     logger: ILogger<alchemy>, 
@@ -32,7 +34,7 @@ type alchemy(
 
     let request index json : Async<string>= 
          task {
-            
+            this.ShuffleApiKeys()
             let url = alchemySettings.UrlBase.Replace("{{{chainName}}}", alchemySettings.ChainNames.Etherium);
 
             use client = httpClientFactory.CreateClient "Api"
@@ -82,3 +84,15 @@ type alchemy(
 
     member this.getBlockSwapsETH_Tokens  = 
         this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token ethStrings.topicSwap ethStrings.ethChainBlocksIn5Minutes)
+
+    member this.getEthCall_decimals  = 
+        this.chunksRequest<responseEthCall[], string> getEthCall_decimals
+
+    member this.getEthCall_token0  = 
+        this.chunksRequest<responseEthCall[], string> getEthCall_token0
+
+    member this.getEthCall_token1  = 
+        this.chunksRequest<responseEthCall[], string> getEthCall_token1
+
+    member this.eth_getTransactionReceipt  = 
+        this.chunksRequest<responseGetTransactionReceipt[], string*string> eth_getTransactionReceipt

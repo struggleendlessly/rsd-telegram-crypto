@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dbMigration;
 
@@ -11,9 +12,11 @@ using dbMigration;
 namespace dbMigration.migrations
 {
     [DbContext(typeof(ethDB))]
-    partial class ethDBModelSnapshot : ModelSnapshot
+    [Migration("20250101150524_In7")]
+    partial class In7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,9 +112,6 @@ namespace dbMigration.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("priceETH_USD")
-                        .HasColumnType("float");
-
                     b.Property<double>("priceTokenInETH")
                         .HasColumnType("float");
 
@@ -199,24 +199,13 @@ namespace dbMigration.migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressPair")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AddressToken")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AddressToken0")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AddressToken1")
+                    b.Property<string>("Decimals")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Decimals")
-                        .HasColumnType("int");
 
                     b.Property<string>("NameLong")
                         .HasColumnType("nvarchar(max)");
@@ -225,10 +214,6 @@ namespace dbMigration.migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressPair");
-
-                    b.HasIndex("AddressToken");
 
                     b.ToTable("EthTokenInfoEntities");
                 });

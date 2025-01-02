@@ -10,6 +10,9 @@ open Microsoft.EntityFrameworkCore
 open IScopedProcessingService
 open Extensions
 open responseSwap
+open scopedTokenInfo
+open scopedSwapsETH
+open ethExcludeTokens
 
 open alchemy
 open dbMigration
@@ -18,6 +21,8 @@ open dbMigration.models
 type scopedSwapsTokens(
         logger: ILogger<scopedSwapsTokens>,
         alchemy: alchemy,
+        scopedTokenInfo: scopedTokenInfo,
+        scopedSwapsETH: scopedSwapsETH,
         ethDB: ethDB) =
 
     let getLastKnownProcessedBlock () =
@@ -76,47 +81,53 @@ type scopedSwapsTokens(
             if Array.isEmpty blocks then
                 return 0
             else
-                do! ethDB.EthSwapsETH_USDEntities.AddRangeAsync(blocks) |> Async.AwaitTask
+                do! ethDB.EthSwapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask
                 let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
                 return result
-        }  
+        }
+
+    let getDistinctPairAddresses (responseSwaps: responseSwap[][]) =
+        responseSwaps
+        |> Array.collect id 
+        |> Array.collect (fun swap -> swap.result) 
+        |> Array.map (fun res -> res.address) 
+        |> Array.filter (fun address -> not (tokensExclude |> Array.contains address))
+        |> Array.distinct
 
     let processBlocks (blocks: responseSwap array array) = 
         async {              
-                //let t1 =
-                //        blockso
-                //        |> Array.map (fun block -> 
-                //            block 
-                //            |> Array.collect (fun x -> x.result)                          
-                //             )
+                let tokenAddresses =
+                    blocks
+                    |> getDistinctPairAddresses
+                    |> scopedTokenInfo.getToken0and1
+
+                let! decimals =
+                    blocks
+                    |> getDistinctPairAddresses
+                    |> scopedTokenInfo.getDecimals
+
+                let min = blocks[0] |> Array.minBy (fun x -> x.id)
+                let max = blocks[0] |> Array.maxBy (fun x -> x.id)
+                let! price =
+                      blocks[0]
+                      |> Array.map (fun x -> float x.id) 
+                      |> Array.average
+                      |> int
+                      |> scopedSwapsETH.getPriceForBlock min.id max.id
 
                 let t =
                         blocks[0]
                         |> Array.map (fun block -> 
                             block.result
                             |> Array.groupBy (fun x -> x.address)                                                    
-                            |> Array.Parallel.map(fun v -> 
-                                v 
-                                |> mapResponseSwap.mapResponseSwapResult block.id
+                            |> Array.Parallel.map(fun (add, res) -> 
+                                (add, res)
+                                |> mapResponseSwap.mapResponseSwapResult block.id decimals.[add] price
                                 )
-                              )    
-                //let d = t[0]       
-                //            |> Array.Parallel.map(fun v -> 
-                //                v 
-                //                |> mapResponseSwap.mapResponseSwapResult
-                //                )
-                let t =
-                        blocks
-                        |> Array.map (fun block -> 
-                            block 
-                            |> Array.groupBy (fun x -> x.result)                                                    
-                            |> Array.Parallel.map(fun address rusults -> 
-                                rusults 
-                                |> mapResponseSwap.mapResponseSwapResult
-                                )
-                             )
+                              ) 
+                        |> Array.collect id
 
-                return ()
+                return t
         }
     interface IScopedProcessingService with
 
@@ -130,7 +141,7 @@ type scopedSwapsTokens(
                         |> Async.RunSynchronously 
 
                 let t = 
-                        (getSeqToProcess 120 ethStrings.ethChainBlocksIn5Minutes)
+                        (getSeqToProcess 30 ethStrings.ethChainBlocksIn5Minutes)
                         |> Async.Bind alchemy.getBlockSwapsETH_Tokens  
                         |> Async.Bind processBlocks
                         //|> Async.Bind saveToDB

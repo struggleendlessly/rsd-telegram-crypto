@@ -18,7 +18,7 @@ let map (responseSwapDTO: responseSwap) =
         
         let firstInOrder = [|ethStrings.addressETH; ethStrings.addressDai|] |> Array.sortWith ethStrings.comparer
 
-        let (EthIn, EthOut, TokenIn, TokenOut) = inOut firstInOrder data
+        let (EthIn, EthOut, TokenIn, TokenOut) = inOut 18 firstInOrder data
         res.blockNumberInt <- responseSwapDTO.id
         res.pairAddress <- va.address
 
@@ -43,14 +43,14 @@ let map (responseSwapDTO: responseSwap) =
     res
 
 
-let mapResponseSwapResult blockId (address:string , responseSwapDTO: responseSwap.Result []) = 
+let mapResponseSwapResult blockId decimals ethPriceInCloseBlock (address:string , responseSwapDTO: responseSwap.Result []) = 
     let res = new EthSwapsETH_Token()
     let datas =
         responseSwapDTO
         |> Array.map (fun x -> splitString x.data [| 32; 32; 32; 32; |])
 
     let firstInOrder = [|ethStrings.addressETH; address.ToLowerInvariant()|] |> Array.sortWith ethStrings.comparer
-    let (EthIn, EthOut, TokenIn, TokenOut) = inOutAvarage firstInOrder datas
+    let (EthIn, EthOut, TokenIn, TokenOut) = inOutAvarage decimals firstInOrder datas 
 
 
     res.blockNumberStartInt <- blockId - ethStrings.ethChainBlocksIn5Minutes
@@ -70,8 +70,8 @@ let mapResponseSwapResult blockId (address:string , responseSwapDTO: responseSwa
     res.EthIn <- EthIn.ToString()
     res.EthOut <- EthOut.ToString()
     res.TokenIn <- TokenIn.ToString()
-
     res.TokenOut <- TokenOut.ToString()
+    res.priceETH_USD <- ethPriceInCloseBlock
 
     if EthIn > 0 && TokenOut > 0 then
         res.priceTokenInETH <- Math.Round (float (EthIn / TokenOut), 10)

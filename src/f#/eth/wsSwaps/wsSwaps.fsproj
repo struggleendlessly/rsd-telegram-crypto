@@ -7,14 +7,16 @@
 
 
   <ItemGroup>
+    <Compile Include="mappers\mapResponseEthCall_decimals.fs" />
     <Compile Include="mappers\mapResponseSwap.fs" />
     <Compile Include="mappers\mapResponseGetBlock.fs" />
+    <Compile Include="scopedServices\scopedTokenInfo.fs" />
     <Compile Include="scopedServices\scopedLastBlock.fs" />
+    <Compile Include="scopedServices\scopedSwapsETH.fs" />
     <Compile Include="scopedServices\scopedSwapsTokens.fs" />
     <Compile Include="workers\lastBlock.fs" />
     <Compile Include="workers\swapsTokens.fs" />
     <Compile Include="workers\swapsETH.fs" />
-    <Compile Include="scopedServices\scopedSwapsETH.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

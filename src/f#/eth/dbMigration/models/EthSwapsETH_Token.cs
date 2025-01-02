@@ -23,6 +23,7 @@ namespace dbMigration.models
         public string TokenOut { get; set; } = string.Empty;
 
         public double priceTokenInETH { get; set; }
+        public double priceETH_USD { get; set; }
 
         public bool isBuyToken { get; set; }
         public bool isBuyEth { get; set; }

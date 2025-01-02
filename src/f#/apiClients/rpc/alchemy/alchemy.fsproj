@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <Compile Include="DTO\response\responseError.fs" />
+    <Compile Include="DTO\response\responseGetTransactionReceipt.fs" />
+    <Compile Include="DTO\response\responseEthCall.fs" />
     <Compile Include="DTO\response\responseSwap.fs" />
     <Compile Include="DTO\response\responseGetLastBlock.fs" />
     <Compile Include="DTO\response\responseGetBlock.fs" />

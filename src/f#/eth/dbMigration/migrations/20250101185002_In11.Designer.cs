@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dbMigration;
 
@@ -11,9 +12,11 @@ using dbMigration;
 namespace dbMigration.migrations
 {
     [DbContext(typeof(ethDB))]
-    partial class ethDBModelSnapshot : ModelSnapshot
+    [Migration("20250101185002_In11")]
+    partial class In11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,14 +209,6 @@ namespace dbMigration.migrations
                     b.Property<string>("AddressToken")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AddressToken0")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AddressToken1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Decimals")
                         .HasColumnType("int");

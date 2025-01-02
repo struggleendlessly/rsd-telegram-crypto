@@ -7,7 +7,7 @@ type requestSingleDTO = {
     method: string
     [<JsonPropertyName("params")>]
     _params: obj[]
-    id: int
+    id: obj
 }
 with
     static member Default = 
@@ -29,4 +29,9 @@ type requestSwapDto_NoAddress = {
     topics: string[]
     fromBlock: string
     toBlock: string
+}
+
+type requestEthCallDto_decimals = {
+    ``to``: string
+    data: string
 }

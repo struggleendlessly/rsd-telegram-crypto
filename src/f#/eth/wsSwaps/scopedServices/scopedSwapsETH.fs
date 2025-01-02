@@ -6,7 +6,7 @@ open System.Linq
 
 open Microsoft.Extensions.Logging
 open Microsoft.EntityFrameworkCore
-
+open System.Collections.Generic
 open IScopedProcessingService
 open Extensions
 open responseSwap
@@ -89,6 +89,34 @@ type scopedSwapsETH(
                             |> mapResponseSwap.map
                         )
         }
+
+    let createGenericList (values: 'T seq) : List<'T> = List<'T>(values)
+    let getDefaultPrice() =
+
+            let a = 
+                   ethDB.EthSwapsETH_USDEntities
+                    .OrderByDescending(fun x -> x.blockNumberInt)
+                    .FirstOrDefaultAsync()                   
+                    |> Async.AwaitTask
+            a
+
+    member this.getPriceForBlock min max (blockInt: int) =
+        async {
+            let! a =
+                ethDB.EthSwapsETH_USDEntities
+                    .Where(fun block -> block.blockNumberInt >= min && block.blockNumberInt <= max)
+                    .ToListAsync()
+                |> Async.AwaitTask
+
+            if a.Count = 0 then
+                let! defaultPrice = getDefaultPrice()
+                return defaultPrice.priceEthInUsd
+            else
+                let e = a
+                        |> List.ofSeq
+                        |> List.minBy (fun x -> Math.Abs(x.blockNumberInt - blockInt))
+                return e.priceEthInUsd
+        }        
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =

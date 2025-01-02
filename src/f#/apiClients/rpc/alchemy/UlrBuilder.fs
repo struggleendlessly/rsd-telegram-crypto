@@ -84,3 +84,84 @@ let getSwapLogsUri_Token
      //let res = JsonSerializer.Serialize request
     
         res
+
+let getEthCall_decimals
+        address =
+
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_call"
+                    id = address
+                    _params = [|
+                                { 
+                                    ``to`` = address
+                                    data = ethStrings.ethCall_decimals
+                                }
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res
+
+let getEthCall_token0
+        address =
+
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_call"
+                    id = address
+                    _params = [|
+                                { 
+                                    ``to`` = address
+                                    data = ethStrings.ethCall_token0
+                                }
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res
+
+let getEthCall_token1
+        address =
+
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_call"
+                    id = address
+                    _params = [|
+                                { 
+                                    ``to`` = address
+                                    data = ethStrings.ethCall_token1
+                                }
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res
+
+let eth_getTransactionReceipt
+        (address, trxHash) =
+
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_getTransactionReceipt"
+                    id = address
+                    _params = [|                                
+                                    trxHash                               
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res

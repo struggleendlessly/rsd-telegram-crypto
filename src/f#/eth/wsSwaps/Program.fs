@@ -24,6 +24,7 @@ open IScopedProcessingService
 open scopedSwapsETH
 open scopedLastBlock
 open scopedSwapsTokens
+open scopedTokenInfo
 
 open Microsoft.EntityFrameworkCore;
 open dbMigration
@@ -31,11 +32,27 @@ open Extensions
 open System.Numerics
 open ExtendedNumerics
 open System.Globalization
+open Polly.Timeout
+open System.Net
 
 module Program =
 
     let uncurry2 f = fun x y -> f (x, y)
     let exponentially = float >> (uncurry2 Math.Pow 2) >> TimeSpan.FromSeconds
+
+    let getRetryPolicy() : IAsyncPolicy<HttpResponseMessage> =
+        HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .Or<TimeoutRejectedException>()
+            .OrResult(fun msg -> msg.StatusCode = HttpStatusCode.NotFound || msg.StatusCode = HttpStatusCode.TooManyRequests)
+            .OrResult(fun msg -> 
+                let json = msg.Content.ReadAsStringAsync().Result.Contains(":429,")
+                json
+            )
+            .WaitAndRetryAsync(
+                6,
+                fun retryAttempt -> TimeSpan.FromSeconds(Math.Pow(2.0, float retryAttempt))
+            )
 
     [<EntryPoint>]
     let main args =
@@ -78,9 +95,11 @@ module Program =
                         fun _ -> new SocketsHttpHandler(MaxConnectionsPerServer = 1000)
                     ))
                 .SetHandlerLifetime(TimeSpan.FromMinutes 5.0)
+                .AddPolicyHandler(getRetryPolicy())
                 .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
 
             builder.Services.AddScoped<alchemy>() |> ignore
+            builder.Services.AddScoped<scopedTokenInfo>() |> ignore
             builder.Services.AddScoped<scopedSwapsETH>() |> ignore
             builder.Services.AddScoped<scopedSwapsTokens>() |> ignore
             builder.Services.AddScoped<scopedLastBlock>() |> ignore

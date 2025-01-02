@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="staticStrings\ethExcludeTokens.fs" />
     <Compile Include="staticStrings\ethStrings.fs" />
     <Compile Include="blockchain\data.fs" />
     <Compile Include="IScopedProcessingService.fs" />

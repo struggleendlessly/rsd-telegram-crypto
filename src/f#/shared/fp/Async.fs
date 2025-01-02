@@ -1,10 +1,16 @@
 ﻿module Async
 
     let map f op = async {
-        let! x = op
-        let value = f x
-        return value
+        try
+            let! x = op
+            let value = f x
+            return value
+        with
+        | ex ->
+            printfn "Error: %s" ex.Message
+            return raise ex
     }
+
 
     let (>=>) f g x = async { 
         let! y = f x 

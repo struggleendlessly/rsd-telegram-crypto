@@ -69,12 +69,15 @@ type scopedTokenInfo(
                     |> Array.collect id
                     |> Array.map (mapResponseEthCall.mapToken1 t0)
                     |> Array.map mapResponseEthCall.mapToken01toAddress
+
          let elementsToExcluude = 
                     t1
                     |> Array.filter (fun x ->not (Array.contains x.AddressToken0 ethExcludeTokens.tokensExclude ) ||
                                              not (Array.contains x.AddressToken1 ethExcludeTokens.tokensExclude ))
-         let filteredArray1 = t1 |> Array.filter (fun x -> not (Array.contains x elementsToExcluude))
-         let a = elementsToExcluude |> ethDB.EthTokenInfoEntities.AddRangeAsync                  
+
+         let a = elementsToExcluude 
+               // |> Array.distinctBy (fun x -> x.AddressToken)
+                |> ethDB.EthTokenInfoEntities.AddRangeAsync                  
          
          ethDB.SaveChangesAsync() 
             |> Async.AwaitTask
@@ -110,7 +113,7 @@ type scopedTokenInfo(
         |> ignore
 
         ethDB.EthTokenInfoEntities
-                    .Where(fun x -> addressPair.Contains(x.AddressPair))
+                    .Where(fun x -> addressPair.Contains(x.AddressPair) && x.Decimals > 0)
                     .ToListAsync()
                     |> Async.AwaitTask
                     |> Async.map (fun x -> x |> Seq.map (fun x -> (x.AddressPair, x.Decimals ))|> Map.ofSeq)

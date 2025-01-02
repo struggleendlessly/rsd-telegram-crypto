@@ -42,12 +42,12 @@ type alchemy(
 
             let httpContent = new StringContent( json, Encoding.UTF8, "application/json")
 
-            logger.LogInformation( "Request: {s}", json)
+            //logger.LogInformation( "Request: {s}", json)
 
             let! response = client.PostAsync (getApiKey index, httpContent )
             let! content = response.Content.ReadAsStringAsync() 
 
-            logger.LogInformation( "response: {s}", content)
+            //logger.LogInformation( "response: {s}", content)
 
             return content
          } 

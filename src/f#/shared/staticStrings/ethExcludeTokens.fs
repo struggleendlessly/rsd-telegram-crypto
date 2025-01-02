@@ -16,4 +16,15 @@ let tokensExclude =
          "0xa029a744b4e44e22f68a1bb9a848caafbf6bb233".ToLowerInvariant() //WETH/USDT
          "0x008d9d457ad0a75c83d9a5e2b8e4ce89232b5083".ToLowerInvariant() //WETH/USDT
          "0x048f0e7ea2cfd522a4a058d1b1bdd574a0486c46".ToLowerInvariant() //WETH/USDT
+         "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11".ToLowerInvariant() //DAI
+         "0x60a26d69263ef43e9a68964ba141263f19d71d51".ToLowerInvariant() //DAI
+         "0xc3d03e4f041fd4cd388c549ee2a29a9e5075882f".ToLowerInvariant() //DAI
+         "0x8faf958e36c6970497386118030e6297fff8d275".ToLowerInvariant() //DAI
+         "0x231b7589426ffe1b75405526fc32ac09d44364c4".ToLowerInvariant() //DAI
+         "0x7f517657496c09c43cc28d0ca131e35dcd557e02".ToLowerInvariant() //DAI
+         "0x8f400cfaa80a591d7d1ec51d928a7308f7cb099e".ToLowerInvariant() //DAI
+         "0xae461ca67b15dc8dc81ce7615e0320da1a9ab8d5".ToLowerInvariant() //DAI
+         "0x92c2fc5f306405eab0ff0958f6d85d7f8892cf4d".ToLowerInvariant() //DAI
+         "0x517f9dd285e75b599234f7221227339478d0fcc8".ToLowerInvariant() //DAI
+         "0x97d9877ff71e514864f7bfc37abda73d13245f55".ToLowerInvariant() //DAI
     |]

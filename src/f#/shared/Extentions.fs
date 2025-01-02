@@ -8,7 +8,13 @@ open System
         member this.ToInt64() = Convert.ToInt64 this
 
     type System.String with
-        member this.ToInt() = Convert.ToInt32(this, 16)
+        member this.ToInt() =
+            try
+                Convert.ToInt32(this, 16)
+            with
+            | :? System.FormatException
+            | :? System.OverflowException
+            | :? ArgumentException -> -1
 
     type System.String with
         member this.HexToInt64() = Convert.ToInt64(this, 16)

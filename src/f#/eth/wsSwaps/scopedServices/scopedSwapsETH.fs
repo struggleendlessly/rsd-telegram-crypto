@@ -61,8 +61,11 @@ type scopedSwapsETH(
 
     let filterBlocks (blocks:responseSwap[]) = 
               let filtered = blocks |> Array.filter (fun x -> not (Array.isEmpty x.result))
-
-              if Array.isEmpty filtered
+             
+              if Array.isEmpty blocks 
+              then
+                     blocks             
+              elif Array.isEmpty filtered
               then
                      [| blocks |> Array.maxBy (fun x -> x.id) |]
                else

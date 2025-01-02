@@ -106,14 +106,14 @@ type scopedSwapsTokens(
                     |> getDistinctPairAddresses
                     |> scopedTokenInfo.getDecimals
 
-                let min = blocks[0] |> Array.minBy (fun x -> x.id)
+                let min = blocks[0] |> Array.minBy (fun x -> x.id) 
                 let max = blocks[0] |> Array.maxBy (fun x -> x.id)
                 let! price =
                       blocks[0]
                       |> Array.map (fun x -> float x.id) 
                       |> Array.average
                       |> int
-                      |> scopedSwapsETH.getPriceForBlock min.id max.id
+                      |> scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
 
                 let t =
                         blocks[0]
@@ -146,7 +146,7 @@ type scopedSwapsTokens(
                         |> Async.RunSynchronously 
 
                 let t = 
-                        (getSeqToProcess 30 ethStrings.ethChainBlocksIn5Minutes)
+                        (getSeqToProcess 120 ethStrings.ethChainBlocksIn5Minutes)
                         |> Async.Bind alchemy.getBlockSwapsETH_Tokens  
                         |> Async.Bind processBlocks
                         |> Async.Bind saveToDB

@@ -81,6 +81,13 @@ type scopedTokenInfo(
             |> Async.RunSynchronously
             |> ignore
 
+         let tokens0and1 = ethDB.EthTokenInfoEntities
+                            .Where(fun x -> addressPair.Contains(x.AddressPair))
+                            .ToListAsync()
+                             |> Async.AwaitTask
+                             |> Async.RunSynchronously
+         tokens0and1
+
     member this.getDecimals (addressPair: string[]) =
         let enteties = ethDB.EthTokenInfoEntities
                         .Where(fun x ->  x.Decimals = 0 && not (x.AddressToken = ""))

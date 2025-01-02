@@ -127,7 +127,7 @@ type scopedSwapsTokens(
                             //    )
                             |> Array.Parallel.choose (fun (add, res) -> 
                                 match Map.tryFind add decimals with
-                                | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult block.id decimalValue price (add, res))
+                                | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult block.id tokenAddresses decimalValue price (add, res))
                                 | None -> None
                               ) )
                         |> Array.collect id

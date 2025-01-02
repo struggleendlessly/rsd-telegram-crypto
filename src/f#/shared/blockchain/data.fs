@@ -46,8 +46,8 @@ let inOut decimals (listT0T1: string[]) (listValues: BigInteger list) =
         else
             (1, 3, 0, 2)
     
-    let EthIn = toBigDecimalsWithPrecision decimals listValues.[ethIndex1]
-    let EthOut = toBigDecimalsWithPrecision decimals listValues.[ethIndex2]
+    let EthIn = toBigDecimalsWithPrecision 18 listValues.[ethIndex1]
+    let EthOut = toBigDecimalsWithPrecision 18 listValues.[ethIndex2]
     let TokenIn = toBigDecimalsWithPrecision decimals listValues.[tokenIndex1]
     let TokenOut = toBigDecimalsWithPrecision decimals listValues.[tokenIndex2]
 

@@ -34,7 +34,7 @@ type alchemy(
 
     let request index json : Async<string>= 
          task {
-            //this.ShuffleApiKeys()
+            this.ShuffleApiKeys()
             let url = alchemySettings.UrlBase.Replace("{{{chainName}}}", this.chainName);
 
             use client = httpClientFactory.CreateClient "Api"

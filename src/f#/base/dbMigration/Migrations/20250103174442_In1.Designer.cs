@@ -9,11 +9,11 @@ using dbMigration;
 
 #nullable disable
 
-namespace dbMigration.migrations
+namespace dbMigration.Migrations
 {
     [DbContext(typeof(ethDB))]
-    [Migration("20250101185002_In11")]
-    partial class In11
+    [Migration("20250103174442_In1")]
+    partial class In1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace dbMigration.migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("dbMigration.models.EthBlocksEntity", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthBlocksEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,7 +68,7 @@ namespace dbMigration.migrations
                     b.ToTable("EthBlocksEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_Token", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthSwapsETH_Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,7 +135,7 @@ namespace dbMigration.migrations
                     b.ToTable("EthSwapsETH_TokenEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_USD", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthSwapsETH_USD", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -194,7 +194,7 @@ namespace dbMigration.migrations
                     b.ToTable("EthSwapsETH_USDEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthTokenInfo", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthTokenInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -209,6 +209,14 @@ namespace dbMigration.migrations
                     b.Property<string>("AddressToken")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AddressToken0")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AddressToken1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Decimals")
                         .HasColumnType("int");

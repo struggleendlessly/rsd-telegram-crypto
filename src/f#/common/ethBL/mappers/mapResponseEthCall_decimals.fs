@@ -3,9 +3,10 @@
 open System
 open System.Numerics
 open System.Linq
-open dbMigration.models
+
 open responseEthCall
 open Extensions
+open ethCommonDB.models
 
 let mapDecimals (EthTokenInfos: EthTokenInfo seq) (response: responseEthCall) = 
     let res = EthTokenInfos.Where(fun x -> x.AddressToken = response.id.ToLowerInvariant()).FirstOrDefault()

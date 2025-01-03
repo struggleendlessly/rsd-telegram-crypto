@@ -1,9 +1,10 @@
 ﻿module mapResponseGetBlock
 
 open System
-open dbMigration.models
+
 open responseGetBlock
 open Extensions
+open ethCommonDB.models
 
 let map (responseGetBlocksDTO: responseGetBlock) = 
     let res = new EthBlocksEntity()
@@ -22,3 +23,7 @@ let map (responseGetBlocksDTO: responseGetBlock) =
     res.hash <- block.hash
 
     res
+
+let mapBlocks =          
+        Array.collect id
+        >> Array.Parallel.map map             

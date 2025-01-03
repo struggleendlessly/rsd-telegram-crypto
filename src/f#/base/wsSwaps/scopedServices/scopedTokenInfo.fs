@@ -13,7 +13,7 @@ open responseSwap
 
 open alchemy
 open dbMigration
-open dbMigration.models
+
 
 type scopedTokenInfo(
         logger: ILogger<scopedTokenInfo>,

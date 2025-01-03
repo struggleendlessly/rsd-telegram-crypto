@@ -36,6 +36,7 @@ open System.Globalization
 open Polly.Timeout
 open System.Net
 open Microsoft.Extensions.Options
+open ethCommonDB
 
 module Program =
 
@@ -70,7 +71,7 @@ module Program =
                 .AddEnvironmentVariables() |> ignore
 
             let connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-            builder.Services.AddDbContext<ethDB>(
+            builder.Services.AddDbContext<IEthDB, ethDB>(
                 (fun options -> options.UseSqlServer(connectionString)|> ignore),
                 ServiceLifetime.Transient) 
                 |> ignore
@@ -127,8 +128,8 @@ module Program =
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
             //builder.Services.AddHostedService<swapsETH>() |> ignore
-            builder.Services.AddHostedService<swapsTokens>() |> ignore
-            //builder.Services.AddHostedService<lastBlock>() |> ignore
+            //builder.Services.AddHostedService<swapsTokens>() |> ignore
+            builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore
 

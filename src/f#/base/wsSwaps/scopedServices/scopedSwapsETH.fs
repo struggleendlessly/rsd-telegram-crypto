@@ -13,7 +13,8 @@ open responseSwap
 
 open alchemy
 open dbMigration
-open dbMigration.models
+open ethCommonDB.models
+
 
 type scopedSwapsETH(
         logger: ILogger<scopedSwapsETH>,
@@ -21,7 +22,7 @@ type scopedSwapsETH(
         ethDB: ethDB) =
 
     let getLastKnownProcessedBlock () =
-        let noBlock = EthSwapsETH_USD.Default()
+        let noBlock = EthSwapsETH_USD.Default(24567082)
         let getNumberInt (x: EthSwapsETH_USD) = x.blockNumberInt
 
         ethDB.EthSwapsETH_USDEntities
@@ -33,7 +34,7 @@ type scopedSwapsETH(
                                 >> getNumberInt)
 
     let getLastEthBlock () =
-        let noBlock = EthBlocksEntity.Default()
+        let noBlock = EthBlocksEntity.Default(24567082)
         let getNumberInt (x: EthBlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities

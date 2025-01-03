@@ -16,7 +16,8 @@ open ethExcludeTokens
 
 open alchemy
 open dbMigration
-open dbMigration.models
+open ethCommonDB.models
+
 
 type scopedSwapsTokens(
         logger: ILogger<scopedSwapsTokens>,
@@ -26,7 +27,7 @@ type scopedSwapsTokens(
         ethDB: ethDB) =
 
     let getLastKnownProcessedBlock () =
-        let noBlock = EthSwapsETH_Token.Default()
+        let noBlock = EthSwapsETH_Token.Default(24567082)
         let getNumberInt (x: EthSwapsETH_Token) = x.blockNumberEndInt
 
         ethDB.EthSwapsETH_TokenEntities
@@ -38,7 +39,7 @@ type scopedSwapsTokens(
                                 >> getNumberInt)
 
     let getLastEthBlock () =
-        let noBlock = EthBlocksEntity.Default()
+        let noBlock = EthBlocksEntity.Default(24567082)
         let getNumberInt (x: EthBlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities

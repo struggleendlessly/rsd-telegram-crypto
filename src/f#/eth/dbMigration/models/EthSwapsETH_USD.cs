@@ -25,13 +25,6 @@ namespace dbMigration.models
         public bool isBuyDai { get; set; }
         public bool isBuyEth { get; set; }
 
-        public static EthSwapsETH_USD Default()
-        {
-            var res = new EthSwapsETH_USD();
-            res.blockNumberInt = staticValues.blockNumberInt;
-
-            return res;
-        }
         public static EthSwapsETH_USD Default(int block)
         {
             var res = new EthSwapsETH_USD();

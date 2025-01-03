@@ -1,20 +1,23 @@
 ﻿module scopedLastBlock
 
 open System
-open System.Threading
-open System.Threading.Tasks
 open System.Linq
+open System.Threading
 
 open Microsoft.Extensions.Logging
+open Microsoft.EntityFrameworkCore
 
 open IScopedProcessingService
-open dbMigration
-open dbMigration.models
+
 open alchemy
+open ethCommonDB
+open ethCommonDB.models
+
+open createSeq
 open Extensions
-open Microsoft.EntityFrameworkCore
 open responseGetBlock
 open responseGetLastBlock
+open mapResponseGetBlock
 
 type BlockDetectionResult = 
     | NewBlocks of responseGetBlocks[] 
@@ -23,10 +26,10 @@ type BlockDetectionResult =
 type scopedLastBlock(
         logger: ILogger<scopedLastBlock>,
         alchemy: alchemy,
-        ethDB: ethDB) as this =
+        ethDB: IEthDB) as this =
 
     let getLastKnownBlockInDB  =
-        let noBlock = EthBlocksEntity.Default()
+        let noBlock = EthBlocksEntity.Default(24567082)
         let getNumberInt (x: EthBlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities
@@ -43,29 +46,6 @@ type scopedLastBlock(
                 return a.blockInt
         }
 
-    let createSeq1 (start: Async<int>) (end1: Async<int>) = 
-        async{
-            let! startAsync  = start
-            let! endAsync = end1
-            
-            if endAsync - startAsync > 1000
-            then
-                return seq { startAsync + 1 .. startAsync + 1000 } |> Seq.toArray
-            else 
-                return seq { startAsync + 1 .. endAsync } |> Seq.toArray
-        }
-
-    let processBlocks blocks = 
-        async {
-               return
-                    blocks
-                    |> Array.collect id
-                    |> Array.Parallel.map(fun block -> 
-                        block 
-                        |> mapResponseGetBlock.map
-                    )
-            }
-
     let saveToDB blocks = 
         async {
             if Array.isEmpty blocks then
@@ -76,10 +56,10 @@ type scopedLastBlock(
                 return result
         }
 
-    let getBlocks startBlock = 
-         createSeq1 startBlock
-         >> Async.Bind alchemy.getBlockByNumber      
-         >> Async.Bind processBlocks
+    let getBlocks n startBlock = 
+         createSeq1 n startBlock
+         >> Async.Bind alchemy.getBlockByNumber  
+         >> Async.map mapBlocks
          >> Async.Bind saveToDB
 
     interface IScopedProcessingService with
@@ -89,7 +69,7 @@ type scopedLastBlock(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
                 let lastKnownBlock = getLastKnownBlockInDB
-                let res = getBlocks 
+                let res = getBlocks 1000
                                 getLastKnownBlockInDB
                                 getLastEthBlock
                           |> Async.RunSynchronously

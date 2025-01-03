@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace dbMigration.models
+namespace ethCommonDB.models
 {
-    [Index(nameof(blockNumberInt), IsUnique = false)]
+    [Index(nameof(blockNumberStartInt), IsUnique = false)]
+    [Index(nameof(blockNumberEndInt), IsUnique = false)]
 
-    public class EthSwapsETH_USD
+    public class EthSwapsETH_Token
     {
         public int Id { get; set; }
-        public int blockNumberInt { get; set; }
+        public int blockNumberStartInt { get; set;  }
+        public int blockNumberEndInt { get; set;  }
 
         public string pairAddress { get; set; } = string.Empty;
         public string txsHash { get; set; } = string.Empty;
@@ -20,22 +22,16 @@ namespace dbMigration.models
         public string TokenIn { get; set; } = string.Empty;
         public string TokenOut { get; set; } = string.Empty;
 
-        public double priceEthInUsd { get; set; }
+        public double priceTokenInETH { get; set; }
+        public double priceETH_USD { get; set; }
 
-        public bool isBuyDai { get; set; }
+        public bool isBuyToken { get; set; }
         public bool isBuyEth { get; set; }
 
-        public static EthSwapsETH_USD Default()
+        public static EthSwapsETH_Token Default(int block)
         {
-            var res = new EthSwapsETH_USD();
-            res.blockNumberInt = staticValues.blockNumberInt;
-
-            return res;
-        }
-        public static EthSwapsETH_USD Default(int block)
-        {
-            var res = new EthSwapsETH_USD();
-            res.blockNumberInt = block;
+            var res = new EthSwapsETH_Token();
+            res.blockNumberEndInt = block;
 
             return res;
         }

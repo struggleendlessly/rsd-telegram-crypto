@@ -1,20 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <UserSecretsId>dotnet-wsSwaps-434be7f0-a7ec-4cbf-93a9-7eddb89e02f4</UserSecretsId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-
   <ItemGroup>
-    <Compile Include="scopedServices\scopedSwapsETH.fs" />
-    <Compile Include="scopedServices\scopedTokenInfo.fs" />
-    <Compile Include="scopedServices\scopedSwapsTokens.fs" />
-    <Compile Include="workers\lastBlock.fs" />
-    <Compile Include="workers\swapsETH.fs" />
-    <Compile Include="workers\swapsTokens.fs" />
-    <Compile Include="Worker.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="logic\createSeq.fs" />
+    <Compile Include="mappers\mapResponseEthCall_decimals.fs" />
+    <Compile Include="mappers\mapResponseGetBlock.fs" />
+    <Compile Include="mappers\mapResponseSwap.fs" />
+    <Compile Include="scopedServices\scopedLastBlock.fs" />
   </ItemGroup>
   
   <ItemGroup>
@@ -34,9 +30,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\apiClients\rpc\alchemy\alchemy.fsproj" />
-    <ProjectReference Include="..\..\common\ethBL\ethBL.fsproj" />
-    <ProjectReference Include="..\..\common\ethCommonDB\ethCommonDB.csproj" />
     <ProjectReference Include="..\..\shared\shared.fsproj" />
-    <ProjectReference Include="..\dbMigration\dbMigration.csproj" />
+    <ProjectReference Include="..\ethCommonDB\ethCommonDB.csproj" />
+
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ type scopedSwapsETH(
         ethDB: ethDB) =
 
     let getLastKnownProcessedBlock () =
-        let noBlock = EthSwapsETH_USD.Default()
+        let noBlock = EthSwapsETH_USD.Default(21545152)
         let getNumberInt (x: EthSwapsETH_USD) = x.blockNumberInt
 
         ethDB.EthSwapsETH_USDEntities

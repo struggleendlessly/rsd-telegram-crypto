@@ -8,7 +8,7 @@ using dbMigration;
 
 #nullable disable
 
-namespace dbMigration.migrations
+namespace dbMigration.Migrations
 {
     [DbContext(typeof(ethDB))]
     partial class ethDBModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace dbMigration.migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("dbMigration.models.EthBlocksEntity", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthBlocksEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,7 +65,7 @@ namespace dbMigration.migrations
                     b.ToTable("EthBlocksEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_Token", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthSwapsETH_Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,7 +132,7 @@ namespace dbMigration.migrations
                     b.ToTable("EthSwapsETH_TokenEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_USD", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthSwapsETH_USD", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +191,7 @@ namespace dbMigration.migrations
                     b.ToTable("EthSwapsETH_USDEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthTokenInfo", b =>
+            modelBuilder.Entity("ethCommonDB.models.EthTokenInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

@@ -1,4 +1,4 @@
-﻿namespace dbMigration.models
+﻿namespace ethCommonDB.models
 {
     public class EthBlocksEntity
     {
@@ -17,10 +17,10 @@
 
         public string hash { get; set; } = string.Empty;
 
-        public static EthBlocksEntity Default()
+        public static EthBlocksEntity Default(int block)
         {
             var res = new EthBlocksEntity();
-            res.numberInt = staticValues.blockNumberInt;
+            res.numberInt = block;
 
             return res;
         }

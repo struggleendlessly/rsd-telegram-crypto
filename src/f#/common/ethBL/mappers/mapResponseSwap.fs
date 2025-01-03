@@ -2,13 +2,13 @@
 
 open System
 open System.Linq
-open dbMigration.models
 open responseSwap
 open Extensions
 open data
 open Nethereum.Util
 open ExtendedNumerics
 open System.Text.RegularExpressions
+open ethCommonDB.models
 
 let map (responseSwapDTO: responseSwap) = 
     let res = new EthSwapsETH_USD()

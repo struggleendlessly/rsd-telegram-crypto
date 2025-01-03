@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace dbMigration.models
+namespace ethCommonDB.models
 {
     [Index(nameof(AddressToken), IsUnique = false)]
     [Index(nameof(AddressPair), IsUnique = false)]

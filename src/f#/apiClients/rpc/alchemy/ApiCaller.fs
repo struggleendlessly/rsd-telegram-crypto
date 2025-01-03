@@ -79,11 +79,11 @@ type alchemy(
     member this.getBlockByNumber  = 
         this.chunksRequest<responseGetBlocks, int> getBlockByNumberUri
 
-    member this.getBlockSwapsETH_USD  = 
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_DAI ethStrings.addressDai ethStrings.topicSwap ethStrings.ethChainBlocksIn5Minutes)
+    member this.getBlockSwapsETH_USD addressDai topicSwap ethChainBlocksIn5Minutes = 
+        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_DAI addressDai topicSwap ethChainBlocksIn5Minutes)
 
-    member this.getBlockSwapsETH_Tokens  = 
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token ethStrings.topicSwap ethStrings.ethChainBlocksIn5Minutes)
+    member this.getBlockSwapsETH_Tokens topicSwap ethChainBlocksIn5Minutes = 
+        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token topicSwap ethChainBlocksIn5Minutes)
 
     member this.getEthCall_decimals  = 
         this.chunksRequest<responseEthCall[], string> getEthCall_decimals

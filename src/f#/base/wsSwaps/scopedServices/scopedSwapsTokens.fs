@@ -140,14 +140,9 @@ type scopedSwapsTokens(
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
-                let t1 = 
-                        (getSeqToProcess 120 ethStrings.ethChainBlocksIn5Minutes)
-
-                        |> Async.RunSynchronously 
-
                 let t = 
-                        (getSeqToProcess 120 ethStrings.ethChainBlocksIn5Minutes)
-                        |> Async.Bind alchemy.getBlockSwapsETH_Tokens  
+                        (getSeqToProcess 150 baseStrings.baseChainBlocksIn5Minutes)
+                        |> Async.Bind (alchemy.getBlockSwapsETH_Tokens  baseStrings.topicSwap baseStrings.baseChainBlocksIn5Minutes)
                         |> Async.Bind processBlocks
                         |> Async.Bind saveToDB
                         |> Async.RunSynchronously 

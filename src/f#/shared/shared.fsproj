@@ -6,8 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="staticStrings\solanaExcludeTokens.fs" />
+    <Compile Include="staticStrings\solanaStrings.fs" />
     <Compile Include="staticStrings\ethExcludeTokens.fs" />
     <Compile Include="staticStrings\ethStrings.fs" />
+    <Compile Include="staticStrings\baseExcludeTokens.fs" />
+    <Compile Include="staticStrings\baseStrings.fs" />
     <Compile Include="blockchain\data.fs" />
     <Compile Include="IScopedProcessingService.fs" />
     <Compile Include="fp\Async.fs" />

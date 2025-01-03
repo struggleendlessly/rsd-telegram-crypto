@@ -126,8 +126,8 @@ module Program =
                     dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            builder.Services.AddHostedService<swapsETH>() |> ignore
-            //builder.Services.AddHostedService<swapsTokens>() |> ignore
+            //builder.Services.AddHostedService<swapsETH>() |> ignore
+            builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore

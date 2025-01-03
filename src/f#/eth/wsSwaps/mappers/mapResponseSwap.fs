@@ -27,8 +27,8 @@ let map (responseSwapDTO: responseSwap) =
         res.pairAddress <- va.address
 
         res.txsHash <- va.transactionHash
-        res.from <- va.topics[1]   
-        res.``to`` <- va.topics[2]
+        res.from <- va.topics[1].Replace("000000000000000000000000", "")  
+        res.``to`` <- va.topics[2].Replace("000000000000000000000000", "")
 
         res.EthIn <- EthIn.ToString()
         res.EthOut <- EthOut.ToString()

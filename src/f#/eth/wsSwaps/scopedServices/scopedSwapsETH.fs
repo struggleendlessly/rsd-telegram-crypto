@@ -125,13 +125,10 @@ type scopedSwapsETH(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let t1 = 
-                        (getSeqToProcess 100 ethStrings.ethChainBlocksIn5Minutes)
-                        |> Async.RunSynchronously 
 
                 let t = 
                         (getSeqToProcess 100 ethStrings.ethChainBlocksIn5Minutes)
-                        |> Async.Bind alchemy.getBlockSwapsETH_USD  
+                        |> Async.Bind (alchemy.getBlockSwapsETH_USD ethStrings.addressDai ethStrings.topicSwap ethStrings.ethChainBlocksIn5Minutes )
                         |> Async.Bind processBlocks
                         |> Async.Bind saveToDB
                         |> Async.RunSynchronously                      

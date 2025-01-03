@@ -18,4 +18,5 @@
   <ItemGroup>
     <Folder Include="migrations\" />
   </ItemGroup>
+  
 </Project>

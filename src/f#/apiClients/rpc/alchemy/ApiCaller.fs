@@ -34,8 +34,8 @@ type alchemy(
 
     let request index json : Async<string>= 
          task {
-            this.ShuffleApiKeys()
-            let url = alchemySettings.UrlBase.Replace("{{{chainName}}}", alchemySettings.ChainNames.Etherium);
+            //this.ShuffleApiKeys()
+            let url = alchemySettings.UrlBase.Replace("{{{chainName}}}", this.chainName);
 
             use client = httpClientFactory.CreateClient "Api"
             client.BaseAddress <- Uri url
@@ -52,7 +52,7 @@ type alchemy(
             return content
          } 
          |> Async.AwaitTask
-
+    member val chainName = "" with get, set
     member this.ShuffleApiKeys()  = 
          Random().Shuffle alchemySettings.ApiKeys
 

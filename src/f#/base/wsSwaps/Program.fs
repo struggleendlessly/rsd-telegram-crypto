@@ -6,6 +6,7 @@ open System.Net.Http
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.Logging
 
 open AppSettingsOptionModule
 open OpenTelemetryOptionModule
@@ -34,6 +35,7 @@ open ExtendedNumerics
 open System.Globalization
 open Polly.Timeout
 open System.Net
+open Microsoft.Extensions.Options
 
 module Program =
 
@@ -98,7 +100,19 @@ module Program =
                 .AddPolicyHandler(getRetryPolicy())
                 .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
 
-            builder.Services.AddScoped<alchemy>() |> ignore
+            let optionsAlchemy = builder.Configuration.GetSection($"{AlchemyOption.SectionName}:ChainNames").Get<ChainNames>()
+            let configureAlchemy(logger: ILogger<alchemy>, alchemyOptions: IOptions<AlchemyOption>, httpClientFactory: IHttpClientFactory) =
+                let instance = alchemy(logger, alchemyOptions, httpClientFactory)
+                instance.chainName <- optionsAlchemy.Base
+                instance
+
+            builder.Services.AddScoped<alchemy>(fun sp ->
+                let logger = sp.GetRequiredService<ILogger<alchemy>>()
+                let alchemyOptions = sp.GetRequiredService<IOptions<AlchemyOption>>()
+                let httpClientFactory = sp.GetRequiredService<IHttpClientFactory>()
+                configureAlchemy(logger, alchemyOptions, httpClientFactory)) |> ignore
+
+            //builder.Services.AddScoped<alchemy>() |> ignore
             builder.Services.AddScoped<scopedTokenInfo>() |> ignore
             builder.Services.AddScoped<scopedSwapsETH>() |> ignore
             builder.Services.AddScoped<scopedSwapsTokens>() |> ignore
@@ -112,8 +126,8 @@ module Program =
                     dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            //builder.Services.AddHostedService<swapsETH>() |> ignore
-            builder.Services.AddHostedService<swapsTokens>() |> ignore
+            builder.Services.AddHostedService<swapsETH>() |> ignore
+            //builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore

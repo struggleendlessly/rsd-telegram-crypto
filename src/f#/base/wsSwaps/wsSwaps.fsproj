@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <UserSecretsId>dotnet-wsSwaps-434be7f0-a7ec-4cbf-93a9-7eddb89e02f4</UserSecretsId>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Compile Include="mappers\mapResponseEthCall_decimals.fs" />
+    <Compile Include="mappers\mapResponseGetBlock.fs" />
+    <Compile Include="mappers\mapResponseSwap.fs" />
+    <Compile Include="scopedServices\scopedLastBlock.fs" />
+    <Compile Include="scopedServices\scopedSwapsETH.fs" />
+    <Compile Include="scopedServices\scopedTokenInfo.fs" />
+    <Compile Include="scopedServices\scopedSwapsTokens.fs" />
+    <Compile Include="workers\lastBlock.fs" />
+    <Compile Include="workers\swapsETH.fs" />
+    <Compile Include="workers\swapsTokens.fs" />
+    <Compile Include="Worker.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.2.358" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="9.0.0" />
+    <PackageReference Include="Serilog" Version="4.1.0" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\apiClients\rpc\alchemy\alchemy.fsproj" />
+    <ProjectReference Include="..\..\shared\shared.fsproj" />
+    <ProjectReference Include="..\dbMigration\dbMigration.csproj" />
+  </ItemGroup>
+</Project>

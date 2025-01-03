@@ -3,6 +3,7 @@
 type ChainNames() =
     member val Etherium = "" with get, set
     member val Base = "" with get, set
+    member val Solana = "" with get, set
 
 type AlchemyOption() =
     static member val SectionName = "ApiAlchemy" with get

@@ -23,7 +23,7 @@ let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)=
         let firstInOrder = [|t0; t1|] 
                             |> Array.sortWith comparer
 
-        let (EthIn, EthOut, TokenIn, TokenOut) = inOut addressChainCoinDecimals firstInOrder data
+        let (EthIn, EthOut, TokenIn, TokenOut) = inOut firstInOrder[0] addressChainCoinDecimals firstInOrder data
         res.blockNumberInt <- responseSwapDTO.id
         res.pairAddress <- va.address
 
@@ -49,6 +49,7 @@ let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)=
 
 
 let mapResponseSwapResult 
+        addressChainCoin
         blocksIn5Minutes
         blockId 
         (token0and1: TokenInfo seq)  
@@ -66,7 +67,7 @@ let mapResponseSwapResult
     let firstInOrder = [|token0and1.AddressToken0; token0and1.AddressToken1|] 
                         |> Array.sortWith comparer
 
-    let (EthIn, EthOut, TokenIn, TokenOut) = inOutAvarage decimals firstInOrder datas 
+    let (EthIn, EthOut, TokenIn, TokenOut) = inOutAvarage addressChainCoin decimals firstInOrder datas 
 
     res.blockNumberStartInt <- blockId - blocksIn5Minutes
     res.blockNumberEndInt <- blockId
@@ -86,7 +87,7 @@ let mapResponseSwapResult
     res.``to`` <- to1
 
     // Regex to capture up to 5 decimal places
-    let regex = Regex(@"^\d+\.\d{0,5}")
+    let regex = Regex(@"^\d+\.\d{0,7}")
 
     res.EthIn <- regex.Match(EthIn.ToString()).ToString()
     res.EthOut <- regex.Match(EthOut.ToString()).ToString() 

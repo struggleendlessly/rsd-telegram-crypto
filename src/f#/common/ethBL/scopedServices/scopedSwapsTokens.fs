@@ -67,42 +67,55 @@ type scopedSwapsTokens(
         >> Array.distinct
     
     let processBlocks (blocks: responseSwap array array) = 
-        async {           
-                let distinctPairAddresses =
-                    blocks
-                    |> getDistinctPairAddresses
+        async {       
+                if Array.isEmpty blocks 
+                then
+                    let emptyArray : SwapsETH_Token array = [||]
+                    return emptyArray
+                else
 
-                let! tokenAddresses =
-                    distinctPairAddresses
-                    |> scopedTokenInfo.getToken0and1
+                    let distinctPairAddresses =
+                        blocks
+                        |> getDistinctPairAddresses
 
-                let! decimals =
-                    distinctPairAddresses
-                    |> scopedTokenInfo.getDecimals
+                    let! tokenAddresses =
+                        distinctPairAddresses
+                        |> scopedTokenInfo.getToken0and1
 
-                let min = blocks[0] |> Array.minBy (fun x -> x.id) 
-                let max = blocks[0] |> Array.maxBy (fun x -> x.id)
-                let! price =
-                      blocks[0]
-                      |> Array.map (fun x -> float x.id) 
-                      |> Array.average
-                      |> int
-                      |> scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
+                    let! decimals =
+                        distinctPairAddresses
+                        |> scopedTokenInfo.getDecimals
+            
+                    let min = blocks[0] |> Array.minBy (fun x -> x.id) 
+                    let max = blocks[0] |> Array.maxBy (fun x -> x.id)
+                    let! price =
+                          blocks[0]
+                          |> Array.map (fun x -> float x.id) 
+                          |> Array.average
+                          |> int
+                          |> scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
 
-                let t =
-                        blocks[0]
-                        |> Array.map (fun block -> 
-                            block.result
-                            |> Array.groupBy (fun x -> x.address)    
-                            |> Array.filter (fun  (add, res) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains add))
-                            |> Array.Parallel.choose (fun (add, res) -> 
-                                match Map.tryFind add decimals with
-                                | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult chainSettingsOption.BlocksIn5Minutes block.id tokenAddresses decimalValue price (add, res))
-                                | None -> None
-                              ) )
-                        |> Array.collect id
+                    let t =
+                            blocks[0]
+                            |> Array.map (fun block -> 
+                                block.result
+                                |> Array.groupBy (fun x -> x.address)    
+                                |> Array.filter (fun  (add, res) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains add))
+                                |> Array.Parallel.choose (fun (add, res) -> 
+                                    match Map.tryFind add decimals with
+                                    | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult 
+                                                                        chainSettingsOption.AddressChainCoin 
+                                                                        chainSettingsOption.BlocksIn5Minutes 
+                                                                        block.id 
+                                                                        tokenAddresses 
+                                                                        decimalValue 
+                                                                        price 
+                                                                        (add, res))
+                                    | None -> None
+                                  ) )
+                            |> Array.collect id
 
-                return t
+                    return t
         }
     interface IScopedProcessingService with
 
@@ -112,7 +125,7 @@ type scopedSwapsTokens(
 
                 let t = 
                         (getSeqToProcess 150 chainSettingsOption.BlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
-                        |> Async.Bind alchemy.getBlockSwapsETH_Tokens
+                        |> Async.Bind alchemy.getBlockSwapsETH_Tokens 
                         |> Async.Bind processBlocks
                         |> Async.map saveToDB
                         |> Async.RunSynchronously 

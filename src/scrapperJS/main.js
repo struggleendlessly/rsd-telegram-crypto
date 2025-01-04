@@ -40,7 +40,7 @@ function convertToNumeric(valueMk) {
 
 function logNewMessageRick(doc) {
     var parser = new DOMParser();
-    var doc = parser.parseFromString(yourHtmlString, 'text/html');
+    var doc = parser.parseFromString(doc, 'text/html');
     var element = doc.querySelector('.sender-title');
     
     var value = element.textContent.trim();
@@ -114,6 +114,7 @@ const callback = function(mutationsList, observer) {
                     var parser = new DOMParser(); // Parse the string as an HTML document 
                     var doc = parser.parseFromString(node.outerHTML, 'text/html');
                     var value = doc.querySelector('.sender-title').textContent.trim();
+                    debugger
                     if (value.includes("Phanes"))
                     {
                         logNewMessagePhanes(doc);  

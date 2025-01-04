@@ -32,14 +32,4 @@ var strongElementName = secondElementName.querySelector('strong');
 var valuenName = strongElementName.textContent.trim()
 console.log('Extracted name:', valuenName);
 
-// Log the HTML content of the node
-var nodeHtml = element.outerHTML;
-console.log('Node HTML:', nodeHtml);
-
-// Parse the HTML string back into a DOM element
-var parsedElement = parser.parseFromString(nodeHtml, 'text/html').querySelector('.sender-title');
-
-// Log the parsed element
-console.log('Parsed Element:', parsedElement);
-
 

@@ -1,53 +1,24 @@
-
-// Create a new DOMParser
 var parser = new DOMParser();
-
-// Parse the string as an HTML document
 var doc = parser.parseFromString(yourHtmlString, 'text/html');
-
-// Use querySelector to find the element
 var element = doc.querySelector('.sender-title');
 
-
-// Extract the value
 var value = element.textContent.trim();
 console.log('Extracted bot:', value);
 
+//var valueAddress = doc.querySelector('.embedded-text-wrapper').querySelector('span').textContent.trim();
+var elements = doc.querySelectorAll('[data-entity-type="MessageEntityCode"]')
+var valueAddress = elements[elements.length -1].textContent.trim();
+console.log('Extracted address:', valueAddress);
 
-var elements = doc.querySelector('[data-entity-type="MessageEntityCode"]');
-
-var valueAddress = "No address found";
-if (elements.length > 0)
-{
-    var address = elements[elements.length - 1];
-    var valueAddress = address.textContent.trim();
-    console.log('Extracted address:', valueAddress);
-}
-
-
-var mk = doc.querySelector('[data-entity-type="MessageEntityUnderline"]');
-var valueMk = mk.textContent.trim();
+var valueMk = elements[1].textContent.trim();
 console.log('Extracted MK:', valueMk);
 
 
 var elementsName = doc.querySelectorAll('[data-entity-type="MessageEntityUrl"]');
 var secondElementName = elementsName[1];
-var canvas = doc.querySelector('[data-entity-type="MessageEntityUrl"]');
-if (canvas)
-    var secondElementName = elementsName[0];
 
 var strongElementName = secondElementName.querySelector('strong');
 var valuenName = strongElementName.textContent.trim()
 console.log('Extracted name:', valuenName);
-
-// Log the HTML content of the node
-var nodeHtml = element.outerHTML;
-console.log('Node HTML:', nodeHtml);
-
-// Parse the HTML string back into a DOM element
-var parsedElement = parser.parseFromString(nodeHtml, 'text/html').querySelector('.sender-title');
-
-// Log the parsed element
-console.log('Parsed Element:', parsedElement);
 
 

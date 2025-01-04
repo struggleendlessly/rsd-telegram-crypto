@@ -18,7 +18,12 @@ function logNewMessagePhanes(doc) {
     var valuenName = strongElementName.textContent.trim()
     console.log('Extracted name:', valuenName);
 
-    // Your formatted currency string
+    var numericValue = convertToNumeric(valueMk);
+
+    sendPOSTRequest(valuenName, numericValue, valueAddress);
+}
+
+function convertToNumeric(valueMk) {
     var currencyString = valueMk; // or "$686.9M"
     var multiplier = 1;
 
@@ -30,42 +35,39 @@ function logNewMessagePhanes(doc) {
 
     var numericValue = parseFloat(currencyString.replace('$', '').replace(/[KM]/, '')) * multiplier;
     console.log(numericValue);
-}
+    return numericValue;    
+    }
 
 function logNewMessageRick(doc) {
-    var address = doc.querySelector('[data-entity-type="MessageEntityCode"]');
-    var valueAddress = address.textContent.trim();
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(yourHtmlString, 'text/html');
+    var element = doc.querySelector('.sender-title');
+    
+    var value = element.textContent.trim();
+    console.log('Extracted bot:', value);
+    
+    //var valueAddress = doc.querySelector('.embedded-text-wrapper').querySelector('span').textContent.trim();
+    var elements = doc.querySelectorAll('[data-entity-type="MessageEntityCode"]')
+    var valueAddress = elements[elements.length -1].textContent.trim();
     console.log('Extracted address:', valueAddress);
-
-    var mk = doc.querySelector('[data-entity-type="MessageEntityUnderline"]');
-    var valueMk = mk.textContent.trim();
+    
+    var valueMk = elements[1].textContent.trim();
     console.log('Extracted MK:', valueMk);
-
+    
     var elementsName = doc.querySelectorAll('[data-entity-type="MessageEntityUrl"]');
     var secondElementName = elementsName[1];
-    var canvas = doc.querySelector('[data-entity-type="MessageEntityUrl"]');
-    if (canvas)
-        var secondElementName = elementsName[0];
     
     var strongElementName = secondElementName.querySelector('strong');
     var valuenName = strongElementName.textContent.trim()
     console.log('Extracted name:', valuenName);
 
-    // Your formatted currency string
-    var currencyString = valueMk; // or "$686.9M"
-    var multiplier = 1;
-
-    if (currencyString.includes('K')) {
-        multiplier = 1000;
-    } else if (currencyString.includes('M')) {
-        multiplier = 1000000;
-    }
-
-    var numericValue = parseFloat(currencyString.replace('$', '').replace(/[KM]/, '')) * multiplier;
-    console.log(numericValue);
+    var numericValue = convertToNumeric(valueMk);
+    
+    sendPOSTRequest(valuenName, numericValue, valueAddress);
 }
 
 function sendPOSTRequest(valueName, numericValue, valueAddress) {
+    
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     

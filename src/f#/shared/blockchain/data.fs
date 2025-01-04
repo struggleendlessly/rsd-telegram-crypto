@@ -5,6 +5,8 @@ open Nethereum.Util
 open System
 open System.Globalization
 
+let comparer (x: string) (y: string) = StringComparer.OrdinalIgnoreCase.Compare(x, y)
+
 let splitString (hexString: string) (byteRanges: int []) =
     let bytes = 
         hexString.Substring(2) 

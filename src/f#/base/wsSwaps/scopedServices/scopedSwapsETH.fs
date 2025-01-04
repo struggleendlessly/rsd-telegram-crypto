@@ -12,17 +12,17 @@ open Extensions
 open responseSwap
 
 open alchemy
-open dbMigration
+open ethCommonDB
 open ethCommonDB.models
-
-
+open createSeq
+open baseStrings
 type scopedSwapsETH(
         logger: ILogger<scopedSwapsETH>,
         alchemy: alchemy,
-        ethDB: ethDB) =
+        ethDB: IEthDB) =
 
     let getLastKnownProcessedBlock () =
-        let noBlock = EthSwapsETH_USD.Default(24567082)
+        let noBlock = EthSwapsETH_USD.Default(baseStrings.defaultBlockNumber)
         let getNumberInt (x: EthSwapsETH_USD) = x.blockNumberInt
 
         ethDB.EthSwapsETH_USDEntities
@@ -34,7 +34,7 @@ type scopedSwapsETH(
                                 >> getNumberInt)
 
     let getLastEthBlock () =
-        let noBlock = EthBlocksEntity.Default(24567082)
+        let noBlock = EthBlocksEntity.Default(baseStrings.defaultBlockNumber)
         let getNumberInt (x: EthBlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities
@@ -44,33 +44,6 @@ type scopedSwapsETH(
                 |> Async.map (Option.ofObj 
                                 >> Option.defaultValue noBlock
                                 >> getNumberInt)
-
-    let getSeqToProcess n step =
-        async{
-            let! startAsync  = getLastKnownProcessedBlock()
-            let! endAsync = getLastEthBlock()
-            
-            if endAsync - startAsync > n
-            then
-                return seq { startAsync + 1 .. step .. startAsync + n } |> Seq.toArray
-            elif endAsync - startAsync > step
-            then
-                return seq { startAsync + 1 .. step .. endAsync } |> Seq.toArray
-            else
-                return [||]
-        }
-
-    let filterBlocks (blocks:responseSwap[]) = 
-              let filtered = blocks |> Array.filter (fun x -> not (Array.isEmpty x.result))
-             
-              if Array.isEmpty blocks 
-              then
-                     blocks             
-              elif Array.isEmpty filtered
-              then
-                     [| blocks |> Array.maxBy (fun x -> x.id) |]
-               else
-                     filtered
 
     let saveToDB blocks = 
         async {
@@ -128,7 +101,7 @@ type scopedSwapsETH(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
                 let t = 
-                        (getSeqToProcess 1000 baseStrings.baseChainBlocksIn5Minutes)
+                        (getSeqToProcess 1000 baseStrings.baseChainBlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
                         |> Async.Bind (alchemy.getBlockSwapsETH_USD baseStrings.addressDai baseStrings.topicSwap baseStrings.baseChainBlocksIn5Minutes )
                         |> Async.Bind processBlocks
                         |> Async.Bind saveToDB

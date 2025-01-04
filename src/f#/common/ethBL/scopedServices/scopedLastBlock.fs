@@ -16,7 +16,6 @@ open ethCommonDB.models
 open createSeq
 open Extensions
 open responseGetBlock
-open responseGetLastBlock
 open mapResponseGetBlock
 
 type BlockDetectionResult = 
@@ -57,7 +56,7 @@ type scopedLastBlock(
         }
 
     let getBlocks n startBlock = 
-         createSeq1 n startBlock
+         getSeqToProcess1 n startBlock
          >> Async.Bind alchemy.getBlockByNumber  
          >> Async.map mapBlocks
          >> Async.Bind saveToDB

@@ -5,7 +5,7 @@ namespace ethCommonDB.models
     [Index(nameof(blockNumberStartInt), IsUnique = false)]
     [Index(nameof(blockNumberEndInt), IsUnique = false)]
 
-    public class EthSwapsETH_Token
+    public class SwapsETH_Token
     {
         public int Id { get; set; }
         public int blockNumberStartInt { get; set;  }
@@ -28,9 +28,9 @@ namespace ethCommonDB.models
         public bool isBuyToken { get; set; }
         public bool isBuyEth { get; set; }
 
-        public static EthSwapsETH_Token Default(int block)
+        public static SwapsETH_Token Default(int block)
         {
-            var res = new EthSwapsETH_Token();
+            var res = new SwapsETH_Token();
             res.blockNumberEndInt = block;
 
             return res;

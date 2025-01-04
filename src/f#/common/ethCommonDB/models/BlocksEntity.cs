@@ -1,6 +1,6 @@
 ﻿namespace ethCommonDB.models
 {
-    public class EthBlocksEntity
+    public class BlocksEntity
     {
         public int Id { get; set; }
 
@@ -17,9 +17,9 @@
 
         public string hash { get; set; } = string.Empty;
 
-        public static EthBlocksEntity Default(int block)
+        public static BlocksEntity Default(int block)
         {
-            var res = new EthBlocksEntity();
+            var res = new BlocksEntity();
             res.numberInt = block;
 
             return res;

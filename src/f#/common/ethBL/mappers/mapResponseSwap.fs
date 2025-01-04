@@ -11,7 +11,7 @@ open System.Text.RegularExpressions
 open ethCommonDB.models
 
 let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)= 
-    let res = new EthSwapsETH_USD()
+    let res = new SwapsETH_USD()
 
     if Array.isEmpty responseSwapDTO.result
     then 
@@ -51,12 +51,12 @@ let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)=
 let mapResponseSwapResult 
         blocksIn5Minutes
         blockId 
-        (token0and1: EthTokenInfo seq)  
+        (token0and1: TokenInfo seq)  
         decimals 
         ethPriceInCloseBlock 
         (address:string , responseSwapDTO: responseSwap.Result []) = 
     
-    let res = new EthSwapsETH_Token()
+    let res = new SwapsETH_Token()
     let token0and1 = token0and1.Where(fun x -> x.AddressPair = address.ToLowerInvariant()).FirstOrDefault()
 
     let datas =

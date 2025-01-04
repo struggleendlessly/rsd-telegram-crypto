@@ -26,17 +26,15 @@ open scopedSwapsETH
 open scopedLastBlock
 open scopedSwapsTokens
 open scopedTokenInfo
+open scopedNames
 
 open Microsoft.EntityFrameworkCore;
 open dbMigration
-open Extensions
-open System.Numerics
-open ExtendedNumerics
-open System.Globalization
 open Polly.Timeout
 open System.Net
 open Microsoft.Extensions.Options
 open ChainSettingsOptionModule
+
 
 module Program =
 
@@ -128,9 +126,9 @@ module Program =
             builder.Services.AddScoped<IDictionary<string, IScopedProcessingService>>(
                 fun sp -> 
                     let dict = new Dictionary<string, IScopedProcessingService>() 
-                    dict.Add("scopedSwapsETH", sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
-                    dict.Add("scopedSwapsTokens", sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
-                    dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
+                    dict.Add(scopedSwapsETH, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
+                    dict.Add(scopedSwapsTokens, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
+                    dict.Add(scopedLastBlock, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
             builder.Services.AddHostedService<swapsETH>() |> ignore

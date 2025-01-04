@@ -28,8 +28,8 @@ type scopedLastBlock(
         ethDB: IEthDB) as this =
 
     let getLastKnownBlockInDB  =
-        let noBlock = EthBlocksEntity.Default(24567082)
-        let getNumberInt (x: EthBlocksEntity) = x.numberInt
+        let noBlock = BlocksEntity.Default(24567082)
+        let getNumberInt (x: BlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities
                 .OrderByDescending(fun x -> x.numberInt)

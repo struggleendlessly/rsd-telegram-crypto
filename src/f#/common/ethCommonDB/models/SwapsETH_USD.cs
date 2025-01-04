@@ -4,7 +4,7 @@ namespace ethCommonDB.models
 {
     [Index(nameof(blockNumberInt), IsUnique = false)]
 
-    public class EthSwapsETH_USD
+    public class SwapsETH_USD
     {
         public int Id { get; set; }
         public int blockNumberInt { get; set; }
@@ -26,9 +26,9 @@ namespace ethCommonDB.models
         public bool isBuyEth { get; set; }
 
 
-        public static EthSwapsETH_USD Default(int block)
+        public static SwapsETH_USD Default(int block)
         {
-            var res = new EthSwapsETH_USD();
+            var res = new SwapsETH_USD();
             res.blockNumberInt = block;
 
             return res;

@@ -4,7 +4,7 @@ namespace ethCommonDB.models
 {
     [Index(nameof(AddressToken), IsUnique = false)]
     [Index(nameof(AddressPair), IsUnique = false)]
-    public class EthTokenInfo
+    public class TokenInfo
     {
         public int Id { get; set; }
 

@@ -7,7 +7,7 @@ open Extensions
 open ethCommonDB.models
 
 let map (responseGetBlocksDTO: responseGetBlock) = 
-    let res = new EthBlocksEntity()
+    let res = new BlocksEntity()
     let block = responseGetBlocksDTO.result
 
     res.numberInt <- block.number.ToInt()

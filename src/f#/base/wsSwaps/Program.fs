@@ -30,10 +30,6 @@ open scopedTokenInfo
 
 open Microsoft.EntityFrameworkCore;
 open dbMigration
-open Extensions
-open System.Numerics
-open ExtendedNumerics
-open System.Globalization
 open Polly.Timeout
 open System.Net
 open Microsoft.Extensions.Options
@@ -140,8 +136,8 @@ module Program =
                     dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            builder.Services.AddHostedService<swapsETH>() |> ignore
-            //builder.Services.AddHostedService<swapsTokens>() |> ignore
+            //builder.Services.AddHostedService<swapsETH>() |> ignore
+            builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_base_swaps" ) |> ignore

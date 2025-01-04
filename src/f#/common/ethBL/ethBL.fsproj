@@ -10,6 +10,9 @@
     <Compile Include="mappers\mapResponseEthCall_decimals.fs" />
     <Compile Include="mappers\mapResponseGetBlock.fs" />
     <Compile Include="mappers\mapResponseSwap.fs" />
+    <Compile Include="scopedServices\scopedTokenInfo.fs" />
+    <Compile Include="scopedServices\scopedSwapsETH.fs" />
+    <Compile Include="scopedServices\scopedSwapsTokens.fs" />
     <Compile Include="scopedServices\scopedLastBlock.fs" />
   </ItemGroup>
   

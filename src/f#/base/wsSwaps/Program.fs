@@ -27,6 +27,7 @@ open scopedSwapsETH
 open scopedLastBlock
 open scopedSwapsTokens
 open scopedTokenInfo
+open scopedNames
 
 open Microsoft.EntityFrameworkCore;
 open dbMigration
@@ -131,9 +132,9 @@ module Program =
             builder.Services.AddScoped<IDictionary<string, IScopedProcessingService>>(
                 fun sp -> 
                     let dict = new Dictionary<string, IScopedProcessingService>() 
-                    dict.Add("scopedSwapsETH", sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
-                    dict.Add("scopedSwapsTokens", sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
-                    dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
+                    dict.Add(scopedSwapsETH, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
+                    dict.Add(scopedSwapsTokens, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
+                    dict.Add(scopedLastBlock, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
             //builder.Services.AddHostedService<swapsETH>() |> ignore

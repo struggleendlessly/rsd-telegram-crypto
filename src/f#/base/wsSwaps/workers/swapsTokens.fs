@@ -9,6 +9,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 
 open IScopedProcessingService
+open scopedNames
 
 type swapsTokens(
         logger: ILogger<swapsTokens>, 
@@ -20,7 +21,7 @@ type swapsTokens(
             while not stoppingToken.IsCancellationRequested do
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
-                let scopedProcessingService = serviceFactory.["scopedSwapsTokens"]
+                let scopedProcessingService = serviceFactory.[scopedSwapsTokens]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
                 do! Task.Delay(1000, stoppingToken)
         }

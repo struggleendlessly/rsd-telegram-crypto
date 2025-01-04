@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="staticStrings\scopedNames.fs" />
     <Compile Include="Options\ChainSettingsOption.fs" />
     <Compile Include="blockchain\data.fs" />
     <Compile Include="IScopedProcessingService.fs" />
@@ -21,10 +22,6 @@
     <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.2.358" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Nethereum.Util" Version="4.27.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="staticStrings\" />
   </ItemGroup>
 
 </Project>

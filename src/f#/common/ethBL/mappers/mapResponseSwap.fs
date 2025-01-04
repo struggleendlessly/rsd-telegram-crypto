@@ -10,7 +10,7 @@ open ExtendedNumerics
 open System.Text.RegularExpressions
 open ethCommonDB.models
 
-let map (responseSwapDTO: responseSwap) = 
+let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)= 
     let res = new EthSwapsETH_USD()
 
     if Array.isEmpty responseSwapDTO.result
@@ -20,9 +20,10 @@ let map (responseSwapDTO: responseSwap) =
         let va = responseSwapDTO.result[0]
         let data = splitString va.data [| 32; 32; 32; 32; |] // swap
         
-        let firstInOrder = [|ethStrings.addressETH; ethStrings.addressDai|] |> Array.sortWith ethStrings.comparer
+        let firstInOrder = [|t0; t1|] 
+                            |> Array.sortWith comparer
 
-        let (EthIn, EthOut, TokenIn, TokenOut) = inOut 18 firstInOrder data
+        let (EthIn, EthOut, TokenIn, TokenOut) = inOut addressChainCoinDecimals firstInOrder data
         res.blockNumberInt <- responseSwapDTO.id
         res.pairAddress <- va.address
 
@@ -48,6 +49,7 @@ let map (responseSwapDTO: responseSwap) =
 
 
 let mapResponseSwapResult 
+        blocksIn5Minutes
         blockId 
         (token0and1: EthTokenInfo seq)  
         decimals 
@@ -61,11 +63,12 @@ let mapResponseSwapResult
         responseSwapDTO
         |> Array.map (fun x -> splitString x.data [| 32; 32; 32; 32; |])
 
-    let firstInOrder = [|token0and1.AddressToken0; token0and1.AddressToken1|] |> Array.sortWith ethStrings.comparer
+    let firstInOrder = [|token0and1.AddressToken0; token0and1.AddressToken1|] 
+                        |> Array.sortWith comparer
+
     let (EthIn, EthOut, TokenIn, TokenOut) = inOutAvarage decimals firstInOrder datas 
 
-
-    res.blockNumberStartInt <- blockId - ethStrings.ethChainBlocksIn5Minutes
+    res.blockNumberStartInt <- blockId - blocksIn5Minutes
     res.blockNumberEndInt <- blockId
     
     res.pairAddress <- address

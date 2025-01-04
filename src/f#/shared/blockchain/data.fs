@@ -42,11 +42,11 @@ let toBigDecimalsWithPrecision precision (bigInt: BigInteger) =
     BigDecimal.Parse(combinedStr)
 
 let inOut decimals (listT0T1: string[]) (listValues: BigInteger list) =
-    let (ethIndex1, ethIndex2, tokenIndex1, tokenIndex2) =
-        if String.Equals(listT0T1.[0], ethStrings.addressETH, StringComparison.InvariantCultureIgnoreCase) then
-            (0, 2, 1, 3)
-        else
-            (1, 3, 0, 2)
+    let (ethIndex1, ethIndex2, tokenIndex1, tokenIndex2) = (0, 2, 1, 3)
+        //if String.Equals(listT0T1.[0], addressChainCoin, StringComparison.InvariantCultureIgnoreCase) then
+        //    (0, 2, 1, 3)
+        //else
+        //    (1, 3, 0, 2)
     
     let EthIn = toBigDecimalsWithPrecision 18 listValues.[ethIndex1]
     let EthOut = toBigDecimalsWithPrecision 18 listValues.[ethIndex2]

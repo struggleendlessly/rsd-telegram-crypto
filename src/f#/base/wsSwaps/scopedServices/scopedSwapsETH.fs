@@ -6,7 +6,7 @@ open System.Linq
 
 open Microsoft.Extensions.Logging
 open Microsoft.EntityFrameworkCore
-open System.Collections.Generic
+
 open IScopedProcessingService
 open Extensions
 open responseSwap
@@ -15,14 +15,19 @@ open alchemy
 open ethCommonDB
 open ethCommonDB.models
 open createSeq
-open baseStrings
+open Microsoft.Extensions.Options
+open ChainSettingsOptionModule
+
 type scopedSwapsETH(
         logger: ILogger<scopedSwapsETH>,
         alchemy: alchemy,
+        chainSettingsOption:  IOptions<ChainSettingsOption>,
         ethDB: IEthDB) =
 
+    let chainSettingsOption = chainSettingsOption.Value;
+
     let getLastKnownProcessedBlock () =
-        let noBlock = EthSwapsETH_USD.Default(baseStrings.defaultBlockNumber)
+        let noBlock = EthSwapsETH_USD.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: EthSwapsETH_USD) = x.blockNumberInt
 
         ethDB.EthSwapsETH_USDEntities
@@ -34,7 +39,7 @@ type scopedSwapsETH(
                                 >> getNumberInt)
 
     let getLastEthBlock () =
-        let noBlock = EthBlocksEntity.Default(baseStrings.defaultBlockNumber)
+        let noBlock = EthBlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: EthBlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities
@@ -55,33 +60,26 @@ type scopedSwapsETH(
                 return result
         }  
         
-    let processBlocks blocks = 
-        async {              
-               return 
-                        blocks
-                        |> Array.collect id
-                        |> filterBlocks
-                        |> Array.Parallel.map(fun block -> 
-                            block 
-                            |> mapResponseSwap.map
-                        )
-        }
-
-    let createGenericList (values: 'T seq) : List<'T> = List<'T>(values)
+    let processBlocks =                    
+        Array.collect id
+        >> validateBlocks
+        >> Array.Parallel.map(fun block -> 
+            block 
+            |> mapResponseSwap.mapETH_USD chainSettingsOption.AddressChainCoinDecimals chainSettingsOption.AddressChainCoin chainSettingsOption.AddressStableCoin
+        )
+        
     let getDefaultPrice() =
+        ethDB.EthSwapsETH_USDEntities
+            .OrderByDescending(fun x -> x.blockNumberInt)
+            .FirstOrDefaultAsync()                   
+            |> Async.AwaitTask
 
-            let a = 
-                   ethDB.EthSwapsETH_USDEntities
-                    .OrderByDescending(fun x -> x.blockNumberInt)
-                    .FirstOrDefaultAsync()                   
-                    |> Async.AwaitTask
-            a
-
-    member this.getPriceForBlock min max (blockInt: int) =
+    member this.getPriceForBlock min max blockInt =
         async {
             let! a =
                 ethDB.EthSwapsETH_USDEntities
                     .Where(fun block -> block.blockNumberInt >= min && block.blockNumberInt <= max)
+                    .Take(10)
                     .ToListAsync()
                 |> Async.AwaitTask
 
@@ -89,10 +87,9 @@ type scopedSwapsETH(
                 let! defaultPrice = getDefaultPrice()
                 return defaultPrice.priceEthInUsd
             else
-                let e = a
-                        |> List.ofSeq
-                        |> List.minBy (fun x -> Math.Abs(x.blockNumberInt - blockInt))
-                return e.priceEthInUsd
+                return  a
+                        |> Seq.minBy (fun x -> Math.Abs(x.blockNumberInt - blockInt))
+                        |> fun x -> x.priceEthInUsd
         }        
 
     interface IScopedProcessingService with
@@ -101,9 +98,9 @@ type scopedSwapsETH(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
                 let t = 
-                        (getSeqToProcess 1000 baseStrings.baseChainBlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
-                        |> Async.Bind (alchemy.getBlockSwapsETH_USD baseStrings.addressDai baseStrings.topicSwap baseStrings.baseChainBlocksIn5Minutes )
-                        |> Async.Bind processBlocks
+                        (getSeqToProcess 1000 chainSettingsOption.BlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
+                        |> Async.Bind alchemy.getBlockSwapsETH_USD
+                        |> Async.map processBlocks
                         |> Async.Bind saveToDB
                         |> Async.RunSynchronously                      
 

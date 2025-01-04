@@ -25,7 +25,7 @@ type responseSwaps = {
     responseSwaps: responseSwap[]
 }
 
-let filterBlocks (blocks:responseSwap[]) = 
+let validateBlocks (blocks:responseSwap[]) = 
             let filtered = blocks |> Array.filter (fun x -> not (Array.isEmpty x.result))
              
             if Array.isEmpty blocks 

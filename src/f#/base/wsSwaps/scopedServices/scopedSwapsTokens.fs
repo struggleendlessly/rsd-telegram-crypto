@@ -8,26 +8,30 @@ open Microsoft.Extensions.Logging
 open Microsoft.EntityFrameworkCore
 
 open IScopedProcessingService
+open ChainSettingsOptionModule
 open Extensions
 open responseSwap
 open scopedTokenInfo
 open scopedSwapsETH
-open ethExcludeTokens
 open createSeq
 
 open alchemy
 open ethCommonDB
 open ethCommonDB.models
+open Microsoft.Extensions.Options
 
 type scopedSwapsTokens(
         logger: ILogger<scopedSwapsTokens>,
         alchemy: alchemy,
         scopedTokenInfo: scopedTokenInfo,
         scopedSwapsETH: scopedSwapsETH,
+        chainSettingsOption:  IOptions<ChainSettingsOption>,
         ethDB: IEthDB) =
 
+    let chainSettingsOption = chainSettingsOption.Value;
+
     let getLastKnownProcessedBlock () =
-        let noBlock = EthSwapsETH_Token.Default(baseStrings.defaultBlockNumber)
+        let noBlock = EthSwapsETH_Token.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: EthSwapsETH_Token) = x.blockNumberEndInt
 
         ethDB.EthSwapsETH_TokenEntities
@@ -39,7 +43,7 @@ type scopedSwapsTokens(
                                 >> getNumberInt)
 
     let getLastEthBlock () =
-        let noBlock = EthBlocksEntity.Default(baseStrings.defaultBlockNumber)
+        let noBlock = EthBlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: EthBlocksEntity) = x.numberInt
 
         ethDB.EthBlocksEntities
@@ -51,32 +55,29 @@ type scopedSwapsTokens(
                                 >> getNumberInt)
 
     let saveToDB blocks = 
-        async {
-            if Array.isEmpty blocks then
-                return 0
-            else
-                do! ethDB.EthSwapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask
-                let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
-                return result
-        }
-
+                ethDB.EthSwapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask |> ignore
+                let result = ethDB.SaveChangesAsync() |> Async.AwaitTask
+                result
+        
     let getDistinctPairAddresses =
         Array.collect id 
         >> Array.collect (fun swap -> swap.result) 
         >> Array.map (fun res -> res.address) 
-        >> Array.filter (fun address -> not (tokensExclude |> Array.contains address))
+        >> Array.filter (fun address -> not (chainSettingsOption.ExcludedAddresses |> Array.contains address))
         >> Array.distinct
     
     let processBlocks (blocks: responseSwap array array) = 
-        async {              
-                let tokenAddresses =
+        async {           
+                let distinctPairAddresses =
                     blocks
                     |> getDistinctPairAddresses
+
+                let! tokenAddresses =
+                    distinctPairAddresses
                     |> scopedTokenInfo.getToken0and1
 
                 let! decimals =
-                    blocks
-                    |> getDistinctPairAddresses
+                    distinctPairAddresses
                     |> scopedTokenInfo.getDecimals
 
                 let min = blocks[0] |> Array.minBy (fun x -> x.id) 
@@ -93,14 +94,10 @@ type scopedSwapsTokens(
                         |> Array.map (fun block -> 
                             block.result
                             |> Array.groupBy (fun x -> x.address)    
-                            |> Array.filter (fun  (add, res) -> not (tokensExclude |> Array.contains add))
-                            //|> Array.Parallel.map(fun (add, res) -> 
-                            //    (add, res)
-                            //    |> mapResponseSwap.mapResponseSwapResult block.id decimals.[add] price
-                            //    )
+                            |> Array.filter (fun  (add, res) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains add))
                             |> Array.Parallel.choose (fun (add, res) -> 
                                 match Map.tryFind add decimals with
-                                | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult block.id tokenAddresses decimalValue price (add, res))
+                                | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult chainSettingsOption.BlocksIn5Minutes block.id tokenAddresses decimalValue price (add, res))
                                 | None -> None
                               ) )
                         |> Array.collect id
@@ -114,10 +111,10 @@ type scopedSwapsTokens(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
                 let t = 
-                        (getSeqToProcess 150 baseStrings.baseChainBlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
-                        |> Async.Bind (alchemy.getBlockSwapsETH_Tokens  baseStrings.topicSwap baseStrings.baseChainBlocksIn5Minutes)
+                        (getSeqToProcess 150 chainSettingsOption.BlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
+                        |> Async.Bind alchemy.getBlockSwapsETH_Tokens
                         |> Async.Bind processBlocks
-                        |> Async.Bind saveToDB
+                        |> Async.map saveToDB
                         |> Async.RunSynchronously 
                 return ()
 

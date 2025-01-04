@@ -86,7 +86,8 @@ let getSwapLogsUri_Token
         res
 
 let getEthCall_decimals
-        address =
+        address
+        ethCall_decimals =
 
         let res =
              { 
@@ -97,7 +98,7 @@ let getEthCall_decimals
                     _params = [|
                                 { 
                                     ``to`` = address
-                                    data = ethStrings.ethCall_decimals
+                                    data = ethCall_decimals
                                 }
                               |]
              } 
@@ -107,7 +108,8 @@ let getEthCall_decimals
         res
 
 let getEthCall_token0
-        address =
+        address 
+        ethCall_token0 =
 
         let res =
              { 
@@ -118,7 +120,7 @@ let getEthCall_token0
                     _params = [|
                                 { 
                                     ``to`` = address
-                                    data = ethStrings.ethCall_token0
+                                    data = ethCall_token0
                                 }
                               |]
              } 
@@ -128,7 +130,8 @@ let getEthCall_token0
         res
 
 let getEthCall_token1
-        address =
+        address 
+        ethCall_token1 =
 
         let res =
              { 
@@ -139,7 +142,7 @@ let getEthCall_token1
                     _params = [|
                                 { 
                                     ``to`` = address
-                                    data = ethStrings.ethCall_token1
+                                    data = ethCall_token1
                                 }
                               |]
              } 

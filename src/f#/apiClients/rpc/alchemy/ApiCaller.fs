@@ -18,14 +18,17 @@ open Extensions
 open responseSwap
 open responseEthCall
 open responseGetTransactionReceipt
+open ChainSettingsOptionModule
 
 type alchemy(
     logger: ILogger<alchemy>, 
     alchemyOptions: IOptions<AlchemyOption>, 
+    chainSettingsOption: IOptions<ChainSettingsOption>, 
     httpClientFactory: IHttpClientFactory
     ) as this =
 
     let alchemySettings = alchemyOptions.Value;
+    let chainSettingsOption = chainSettingsOption.Value;
 
     //do this.ShuffleApiKeys()
 
@@ -79,20 +82,20 @@ type alchemy(
     member this.getBlockByNumber  = 
         this.chunksRequest<responseGetBlocks, int> getBlockByNumberUri
 
-    member this.getBlockSwapsETH_USD addressDai topicSwap ethChainBlocksIn5Minutes = 
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_DAI addressDai topicSwap ethChainBlocksIn5Minutes)
+    member this.getBlockSwapsETH_USD = 
+        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_DAI chainSettingsOption.AddressStableCoin chainSettingsOption.TopicSwap chainSettingsOption.BlocksIn5Minutes)
 
-    member this.getBlockSwapsETH_Tokens topicSwap ethChainBlocksIn5Minutes = 
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token topicSwap ethChainBlocksIn5Minutes)
+    member this.getBlockSwapsETH_Tokens = 
+        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token chainSettingsOption.TopicSwap chainSettingsOption.BlocksIn5Minutes)
 
     member this.getEthCall_decimals  = 
-        this.chunksRequest<responseEthCall[], string> getEthCall_decimals
+        this.chunksRequest<responseEthCall[], string> (getEthCall_decimals chainSettingsOption.EthCall_decimals)
 
     member this.getEthCall_token0  = 
-        this.chunksRequest<responseEthCall[], string> getEthCall_token0
+        this.chunksRequest<responseEthCall[], string> (getEthCall_token0 chainSettingsOption.EthCall_token0)
 
     member this.getEthCall_token1  = 
-        this.chunksRequest<responseEthCall[], string> getEthCall_token1
+        this.chunksRequest<responseEthCall[], string> (getEthCall_token1 chainSettingsOption.EthCall_token1)
 
     member this.eth_getTransactionReceipt  = 
         this.chunksRequest<responseGetTransactionReceipt[], string*string> eth_getTransactionReceipt

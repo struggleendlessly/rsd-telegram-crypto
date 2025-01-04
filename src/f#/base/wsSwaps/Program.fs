@@ -11,6 +11,7 @@ open Microsoft.Extensions.Logging
 open AppSettingsOptionModule
 open OpenTelemetryOptionModule
 open AlchemyOptionModule
+open ChainSettingsOptionModule
 
 open Polly
 open Polly.Extensions.Http
@@ -79,7 +80,11 @@ module Program =
             builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
             builder.Services.Configure<OpenTelemetryOption>(builder.Configuration.GetSection(OpenTelemetryOption.SectionName)) |> ignore
             builder.Services.Configure<AlchemyOption>(builder.Configuration.GetSection(AlchemyOption.SectionName)) |> ignore
-            let openTelemetryOptions = builder.Configuration.Get<OpenTelemetryOption>()
+            builder.Services.Configure<ChainSettingsOption>(builder.Configuration.GetSection(ChainSettingsOption.SectionName)) |> ignore
+
+            let aet = builder.Configuration.GetSection($"{ChainSettingsOption.SectionName}").Get<ChainSettingsOption>()
+
+            let openTelemetryOptions = builder.Configuration.GetSection($"{OpenTelemetryOption.SectionName}").Get<OpenTelemetryOption>()
 
             Log.Logger <- LoggerConfiguration()
                                 .Enrich.FromLogContext()
@@ -102,16 +107,24 @@ module Program =
                 .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
 
             let optionsAlchemy = builder.Configuration.GetSection($"{AlchemyOption.SectionName}:ChainNames").Get<ChainNames>()
-            let configureAlchemy(logger: ILogger<alchemy>, alchemyOptions: IOptions<AlchemyOption>, httpClientFactory: IHttpClientFactory) =
-                let instance = alchemy(logger, alchemyOptions, httpClientFactory)
-                instance.chainName <- optionsAlchemy.Base
-                instance
+
+            let configureAlchemy(
+                logger: ILogger<alchemy>, 
+                alchemyOptions: IOptions<AlchemyOption>, 
+                chainSettingsOption: IOptions<ChainSettingsOption>,
+                httpClientFactory: IHttpClientFactory
+                ) =
+                    let instance = alchemy(logger, alchemyOptions,chainSettingsOption, httpClientFactory)
+                    instance.chainName <- optionsAlchemy.Base
+                    instance
 
             builder.Services.AddScoped<alchemy>(fun sp ->
                 let logger = sp.GetRequiredService<ILogger<alchemy>>()
                 let alchemyOptions = sp.GetRequiredService<IOptions<AlchemyOption>>()
+                let chainSettingsOption = sp.GetRequiredService<IOptions<ChainSettingsOption>>()
                 let httpClientFactory = sp.GetRequiredService<IHttpClientFactory>()
-                configureAlchemy(logger, alchemyOptions, httpClientFactory)) |> ignore
+                configureAlchemy(logger, alchemyOptions, chainSettingsOption, httpClientFactory)) |> ignore
+
 
             //builder.Services.AddScoped<alchemy>() |> ignore
             builder.Services.AddScoped<scopedTokenInfo>() |> ignore
@@ -127,27 +140,11 @@ module Program =
                     dict.Add("scopedLastBlock", sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                     dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-            //builder.Services.AddHostedService<swapsETH>() |> ignore
+            builder.Services.AddHostedService<swapsETH>() |> ignore
             //builder.Services.AddHostedService<swapsTokens>() |> ignore
-            builder.Services.AddHostedService<lastBlock>() |> ignore
+            //builder.Services.AddHostedService<lastBlock>() |> ignore
 
-            builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_eth_findTokens" ) |> ignore
-
-            let asyncTask1 = async { return 10 }
-            let asyncTask2 x = async { return x * 2 }
-
-            let boundTask = Async.Bind asyncTask2 asyncTask1
-
-            let result = Async.RunSynchronously boundTask
-
-            printfn "Result: %d" result // Output: 20
-
-
-            let configuration = builder.Configuration
-            let appSettings = configuration.Get<AppSettingsOption>()
-            let mySetting = appSettings.Logging.LogLevel.Default
-
-            printfn "MySetting: %s" mySetting
+            builder.Services.AddWindowsService(fun options -> options.ServiceName <- "ws_base_swaps" ) |> ignore
 
             builder.Build().Run()
 

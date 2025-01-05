@@ -117,23 +117,24 @@ module Program =
             let httpClientFactory = sp.GetRequiredService<IHttpClientFactory>()
             configureAlchemy(logger, alchemyOptions, chainSettingsOption, httpClientFactory)) |> ignore
 
-
+        builder.Services.AddScoped<scopedLastSlot>() |> ignore
 
         builder.Services.AddScoped<scopedTokenInfo>() |> ignore
         builder.Services.AddScoped<scopedSwapsETH>() |> ignore
         builder.Services.AddScoped<scopedSwapsTokens>() |> ignore
-        builder.Services.AddScoped<scopedLastBlock>() |> ignore
+
         builder.Services.AddScoped<IDictionary<string, IScopedProcessingService>>(
             fun sp -> 
                 let dict = new Dictionary<string, IScopedProcessingService>() 
+                dict.Add(scopedLastSlot, sp.GetRequiredService<scopedLastSlot>() :> IScopedProcessingService) 
+
                 dict.Add(scopedSwapsETH, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
                 dict.Add(scopedSwapsTokens, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
-                dict.Add(scopedLastBlock, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
                 dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
+        builder.Services.AddHostedService<lastSlot>() |> ignore
         //builder.Services.AddHostedService<swapsETH>() |> ignore
-        builder.Services.AddHostedService<swapsTokens>() |> ignore
-        //builder.Services.AddHostedService<lastBlock>() |> ignore
+        //builder.Services.AddHostedService<swapsTokens>() |> ignore
 
         builder.Services.AddWindowsService(fun options -> options.ServiceName <- openTelemetryOptions.ServiceName ) |> ignore
         builder.Build().Run()

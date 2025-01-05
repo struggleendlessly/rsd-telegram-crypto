@@ -1,19 +1,19 @@
 ﻿module ApiCallerSOL
 
-
 open System.Net.Http
 open System.Text.Json
 
 open Microsoft.Extensions.Options
 open Microsoft.Extensions.Logging
 
-
+open apiCaller
+open UlrBuilderSOL
 open AlchemyOptionModule
+open ChainSettingsOptionModule
 
 open requestSingleDTO
 
-open ChainSettingsOptionModule
-open apiCaller
+open responseGetSlots
 
 type alchemySOL(
     logger: ILogger<alchemySOL>, 
@@ -38,6 +38,7 @@ type alchemySOL(
     member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
         JsonSerializer.Serialize 
         >> request 
+                logger
                 alchemySettings.ApiKeys 
                 url  
                 httpClientFactory 
@@ -48,11 +49,12 @@ type alchemySOL(
         uriBuilder 
         >> JsonSerializer.Serialize 
         >> request 
+                 logger
                  alchemySettings.ApiKeys 
                  url
                  httpClientFactory 
                  0 
         >> Async.map JsonSerializer.Deserialize<'T>
 
-    //member this.getLastBlockNumber  = 
-    //    this.singleRequest<responseGetLastBlock> getLastBlockNumberUri
+    member this.getLastSlot  = 
+        this.singleRequest<responseGetSlots> getSlotLeader

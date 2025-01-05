@@ -4,17 +4,16 @@ open System.Text.Json
 open requestSingleDTO
 open Extensions
 
-let getBlockByNumberUri (blockNumber: int) =
+let getSlotLeader () =
      let res = 
              { 
                  requestSingleDTO.Default 
                  with 
-                    method = "eth_getBlockByNumber"; 
+                    method = "getSlot"; 
                     _params = [| 
-                                blockNumber.ToHex(); 
-                                true 
+                                
                               |]; 
-                    id = blockNumber
+                    id = "1"
              } 
 
      //let res = JsonSerializer.Serialize request

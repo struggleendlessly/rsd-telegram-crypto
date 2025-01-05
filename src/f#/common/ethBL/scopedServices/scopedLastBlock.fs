@@ -32,7 +32,7 @@ type scopedLastBlock(
     let chainSettingsOption = chainSettingsOption.Value;
 
     let getLastKnownBlockInDB  =
-        let noBlock = BlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
+        let noBlock = BlocksEntity.Default(int chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: BlocksEntity) = x.numberInt
 
         ethDB.blocksEntities

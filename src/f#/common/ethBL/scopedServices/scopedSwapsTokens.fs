@@ -31,7 +31,7 @@ type scopedSwapsTokens(
     let chainSettingsOption = chainSettingsOption.Value;
 
     let getLastKnownProcessedBlock () =
-        let noBlock = SwapsETH_Token.Default(chainSettingsOption.DefaultBlockNumber)
+        let noBlock = SwapsETH_Token.Default(int chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: SwapsETH_Token) = x.blockNumberEndInt
 
         ethDB.swapsETH_TokenEntities
@@ -43,7 +43,7 @@ type scopedSwapsTokens(
                                 >> getNumberInt)
 
     let getLastEthBlock () =
-        let noBlock = BlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
+        let noBlock = BlocksEntity.Default(int chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: BlocksEntity) = x.numberInt
 
         ethDB.blocksEntities

@@ -37,7 +37,7 @@ type ChainSettingsOption() =
         with get() = internalExcludedAddresses
         and set(value:string []) = internalExcludedAddresses <- value |> Array.map (fun x -> x.ToLowerInvariant())
 
-    member val DefaultBlockNumber = 0 with get, set
+    member val DefaultBlockNumber: uint64 = 0UL with get, set
     member val BlocksIn5Minutes = 0 with get, set
     member val AddressChainCoinDecimals = 0 with get, set
     static member val SectionName = "ChainSettings" with get

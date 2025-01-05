@@ -40,6 +40,7 @@ type alchemyEVM(
     member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
         JsonSerializer.Serialize 
         >> request 
+                logger
                 alchemySettings.ApiKeys 
                 url  
                 httpClientFactory 
@@ -50,6 +51,7 @@ type alchemyEVM(
         uriBuilder 
         >> JsonSerializer.Serialize 
         >> request 
+                 logger
                  alchemySettings.ApiKeys 
                  url
                  httpClientFactory 

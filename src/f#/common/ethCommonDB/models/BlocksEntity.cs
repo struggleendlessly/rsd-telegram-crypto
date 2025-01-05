@@ -1,5 +1,8 @@
-﻿namespace ethCommonDB.models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace ethCommonDB.models
 {
+    [Index(nameof(numberInt), IsUnique = true)]
     public class BlocksEntity
     {
         public int Id { get; set; }

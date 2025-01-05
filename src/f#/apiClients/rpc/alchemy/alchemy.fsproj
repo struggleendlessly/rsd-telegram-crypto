@@ -6,15 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="common\responseError.fs" />
     <Compile Include="common\apiCaller.fs" />
-    <Compile Include="evm\DTO\EVM\response\responseError.fs" />
-    <Compile Include="evm\DTO\EVM\response\responseGetTransactionReceipt.fs" />
-    <Compile Include="evm\DTO\EVM\response\responseEthCall.fs" />
-    <Compile Include="evm\DTO\EVM\response\responseSwap.fs" />
-    <Compile Include="evm\DTO\EVM\response\responseGetLastBlock.fs" />
-    <Compile Include="evm\DTO\EVM\response\responseGetBlock.fs" />
-    <Compile Include="evm\DTO\EVM\request\requestSingleDTO.fs" />
-    <Compile Include="evm\DTO\EVM\request\requestBatchDTO.fs" />
+    <Compile Include="evm\DTO\response\responseGetTransactionReceipt.fs" />
+    <Compile Include="evm\DTO\response\responseEthCall.fs" />
+    <Compile Include="evm\DTO\response\responseSwap.fs" />
+    <Compile Include="evm\DTO\response\responseGetLastBlock.fs" />
+    <Compile Include="evm\DTO\response\responseGetBlock.fs" />
+    <Compile Include="evm\DTO\request\requestSingleDTO.fs" />
+    <Compile Include="evm\DTO\request\requestBatchDTO.fs" />
+    <Compile Include="sol\DTO\response\responseGetSlots.fs" />
     <Compile Include="sol\UlrBuilderSOL.fs" />
     <Compile Include="sol\ApiCallerSOL.fs" />
     <Compile Include="evm\UlrBuilderEVM.fs" />
@@ -31,9 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="sol\DTO\Solana\request\" />
-    <Folder Include="sol\DTO\Solana\response\" />
-    <Folder Include="sol\DTO\" />
+    <Folder Include="sol\DTO\request\" />
   </ItemGroup>
   
 

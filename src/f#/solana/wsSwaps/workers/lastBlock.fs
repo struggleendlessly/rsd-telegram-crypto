@@ -11,8 +11,8 @@ open Microsoft.Extensions.DependencyInjection
 open IScopedProcessingService
 open scopedNames
 
-type lastBlock(
-        logger: ILogger<lastBlock>, 
+type lastSlot(
+        logger: ILogger<lastSlot>, 
         serviceScopeFactory: IServiceScopeFactory) =
     inherit BackgroundService()
 
@@ -21,7 +21,7 @@ type lastBlock(
             while not stoppingToken.IsCancellationRequested do
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
-                let scopedProcessingService = serviceFactory.[scopedLastBlock]
+                let scopedProcessingService = serviceFactory.[scopedLastSlot]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
                 do! Task.Delay(1000, stoppingToken)
         }

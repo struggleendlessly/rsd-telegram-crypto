@@ -56,11 +56,12 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
         .SetHandlerLifetime(TimeSpan.FromMinutes 5.0)
         .AddPolicyHandler(getRetryPolicy())
         .AddPolicyHandler(HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(3, fun retryAttempt -> exponentially retryAttempt)) |> ignore
+
     services.AddScoped<scopedTokenInfo>() |> ignore
     services.AddScoped<scopedSwapsETH>() |> ignore
     services.AddScoped<scopedSwapsTokens>() |> ignore
     services.AddScoped<scopedLastBlock>() |> ignore
-    //let a = seq { 10..6..44 }
+
     services.AddScoped<IDictionary<string, IScopedProcessingService>>(
         fun sp -> 
             let dict = new Dictionary<string, IScopedProcessingService>() 

@@ -1,27 +1,24 @@
 ﻿namespace alchemy
 
-open System
 open System.Net.Http
-open System.Text
 open System.Text.Json
 
 open Microsoft.Extensions.Options
 open Microsoft.Extensions.Logging
 
-open UlrBuilder
+open UlrBuilderEVM
 open AlchemyOptionModule
 open responseGetBlock
 open requestSingleDTO
 open responseGetLastBlock
 open responseSwap
-open Extensions
-open responseSwap
 open responseEthCall
 open responseGetTransactionReceipt
 open ChainSettingsOptionModule
+open apiCaller
 
-type alchemy(
-    logger: ILogger<alchemy>, 
+type alchemyEVM(
+    logger: ILogger<alchemyEVM>, 
     alchemyOptions: IOptions<AlchemyOption>, 
     chainSettingsOption: IOptions<ChainSettingsOption>, 
     httpClientFactory: IHttpClientFactory
@@ -30,34 +27,9 @@ type alchemy(
     let alchemySettings = alchemyOptions.Value;
     let chainSettingsOption = chainSettingsOption.Value;
 
-    //do this.ShuffleApiKeys()
+    let url() = alchemySettings.UrlBase.Replace("{{{chainName}}}", this.chainName);
 
-    let getApiKey index = 
-        $"/v2/{alchemySettings.ApiKeys.[index % alchemySettings.ApiKeys.Length]}"
-
-    let request index json : Async<string>= 
-         task {
-            this.ShuffleApiKeys()
-            let url = alchemySettings.UrlBase.Replace("{{{chainName}}}", this.chainName);
-
-            use client = httpClientFactory.CreateClient "Api"
-            client.BaseAddress <- Uri url
-
-            let httpContent = new StringContent( json, Encoding.UTF8, "application/json")
-
-            //logger.LogInformation( "Request: {s}", json)
-
-            let! response = client.PostAsync (getApiKey index, httpContent )
-            let! content = response.Content.ReadAsStringAsync() 
-
-            //logger.LogInformation( "response: {s}", content)
-
-            return content
-         } 
-         |> Async.AwaitTask
     member val chainName = "" with get, set
-    member this.ShuffleApiKeys()  = 
-         Random().Shuffle alchemySettings.ApiKeys
 
     member private this.chunksRequest<'T, 'B> uriBuilder : 'B[] -> Async<'T[]>  = 
         Array.map uriBuilder 
@@ -67,13 +39,21 @@ type alchemy(
 
     member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
         JsonSerializer.Serialize 
-        >> request index 
+        >> request 
+                alchemySettings.ApiKeys 
+                url  
+                httpClientFactory 
+                index 
         >> Async.map JsonSerializer.Deserialize<'T>
 
     member private this.singleRequest<'T> uriBuilder : unit -> Async<'T> =
         uriBuilder 
         >> JsonSerializer.Serialize 
-        >> request 0 
+        >> request 
+                 alchemySettings.ApiKeys 
+                 url
+                 httpClientFactory 
+                 0 
         >> Async.map JsonSerializer.Deserialize<'T>
 
     member this.getLastBlockNumber  = 

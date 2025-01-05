@@ -25,7 +25,7 @@ type BlockDetectionResult =
 
 type scopedLastBlock(
         logger: ILogger<scopedLastBlock>,
-        alchemy: alchemy,
+        alchemy: alchemyEVM,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
         ethDB: IEthDB) =
 

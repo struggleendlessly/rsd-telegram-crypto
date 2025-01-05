@@ -64,17 +64,17 @@ module Program =
             let optionsAlchemy = builder.Configuration.GetSection($"{AlchemyOption.SectionName}:ChainNames").Get<ChainNames>()
 
             let configureAlchemy(
-                logger: ILogger<alchemy>, 
+                logger: ILogger<alchemyEVM>, 
                 alchemyOptions: IOptions<AlchemyOption>, 
                 chainSettingsOption: IOptions<ChainSettingsOption>,
                 httpClientFactory: IHttpClientFactory
                 ) =
-                    let instance = alchemy(logger, alchemyOptions,chainSettingsOption, httpClientFactory)
+                    let instance = alchemyEVM(logger, alchemyOptions,chainSettingsOption, httpClientFactory)
                     instance.chainName <- optionsAlchemy.Etherium
                     instance
 
-            builder.Services.AddScoped<alchemy>(fun sp ->
-                let logger = sp.GetRequiredService<ILogger<alchemy>>()
+            builder.Services.AddScoped<alchemyEVM>(fun sp ->
+                let logger = sp.GetRequiredService<ILogger<alchemyEVM>>()
                 let alchemyOptions = sp.GetRequiredService<IOptions<AlchemyOption>>()
                 let chainSettingsOption = sp.GetRequiredService<IOptions<ChainSettingsOption>>()
                 let httpClientFactory = sp.GetRequiredService<IHttpClientFactory>()

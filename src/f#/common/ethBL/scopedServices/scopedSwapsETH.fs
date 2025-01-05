@@ -20,7 +20,7 @@ open ChainSettingsOptionModule
 
 type scopedSwapsETH(
         logger: ILogger<scopedSwapsETH>,
-        alchemy: alchemy,
+        alchemy: alchemyEVM,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
         ethDB: IEthDB) =
 

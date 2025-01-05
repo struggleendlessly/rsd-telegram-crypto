@@ -22,7 +22,7 @@ open Microsoft.Extensions.Options
 
 type scopedSwapsTokens(
         logger: ILogger<scopedSwapsTokens>,
-        alchemy: alchemy,
+        alchemy: alchemyEVM,
         scopedTokenInfo: scopedTokenInfo,
         scopedSwapsETH: scopedSwapsETH,
         chainSettingsOption:  IOptions<ChainSettingsOption>,

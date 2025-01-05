@@ -19,7 +19,7 @@ open ethCommonDB
 
 type scopedTokenInfo(
         logger: ILogger<scopedTokenInfo>,
-        alchemy: alchemy,
+        alchemy: alchemyEVM,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
         ethDB: IEthDB) =
 

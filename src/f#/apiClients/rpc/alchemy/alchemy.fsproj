@@ -6,16 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="DTO\response\responseError.fs" />
-    <Compile Include="DTO\response\responseGetTransactionReceipt.fs" />
-    <Compile Include="DTO\response\responseEthCall.fs" />
-    <Compile Include="DTO\response\responseSwap.fs" />
-    <Compile Include="DTO\response\responseGetLastBlock.fs" />
-    <Compile Include="DTO\response\responseGetBlock.fs" />
-    <Compile Include="DTO\request\requestSingleDTO.fs" />
-    <Compile Include="DTO\request\requestBatchDTO.fs" />
-    <Compile Include="UlrBuilder.fs" />
-    <Compile Include="ApiCaller.fs" />
+    <Compile Include="common\apiCaller.fs" />
+    <Compile Include="evm\DTO\EVM\response\responseError.fs" />
+    <Compile Include="evm\DTO\EVM\response\responseGetTransactionReceipt.fs" />
+    <Compile Include="evm\DTO\EVM\response\responseEthCall.fs" />
+    <Compile Include="evm\DTO\EVM\response\responseSwap.fs" />
+    <Compile Include="evm\DTO\EVM\response\responseGetLastBlock.fs" />
+    <Compile Include="evm\DTO\EVM\response\responseGetBlock.fs" />
+    <Compile Include="evm\DTO\EVM\request\requestSingleDTO.fs" />
+    <Compile Include="evm\DTO\EVM\request\requestBatchDTO.fs" />
+    <Compile Include="sol\UlrBuilderSOL.fs" />
+    <Compile Include="sol\ApiCallerSOL.fs" />
+    <Compile Include="evm\UlrBuilderEVM.fs" />
+    <Compile Include="evm\ApiCallerEVM.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\shared\shared.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="sol\DTO\Solana\request\" />
+    <Folder Include="sol\DTO\Solana\response\" />
+    <Folder Include="sol\DTO\" />
   </ItemGroup>
   
 

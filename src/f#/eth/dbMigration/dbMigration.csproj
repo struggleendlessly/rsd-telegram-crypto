@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="migrations\" />
+    <ProjectReference Include="..\..\common\ethCommonDB\ethCommonDB.csproj" />
   </ItemGroup>
 
 </Project>

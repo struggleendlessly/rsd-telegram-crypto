@@ -12,7 +12,7 @@ namespace dbMigration.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "EthBlocksEntities",
+                name: "blocksEntities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -28,11 +28,11 @@ namespace dbMigration.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EthBlocksEntities", x => x.Id);
+                    table.PrimaryKey("PK_blocksEntities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EthSwapsETH_TokenEntities",
+                name: "swapsETH_TokenEntities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -54,11 +54,11 @@ namespace dbMigration.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EthSwapsETH_TokenEntities", x => x.Id);
+                    table.PrimaryKey("PK_swapsETH_TokenEntities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EthSwapsETH_USDEntities",
+                name: "swapsETH_USDEntities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -78,11 +78,11 @@ namespace dbMigration.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EthSwapsETH_USDEntities", x => x.Id);
+                    table.PrimaryKey("PK_swapsETH_USDEntities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EthTokenInfoEntities",
+                name: "tokenInfoEntities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -97,32 +97,32 @@ namespace dbMigration.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EthTokenInfoEntities", x => x.Id);
+                    table.PrimaryKey("PK_tokenInfoEntities", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_EthSwapsETH_TokenEntities_blockNumberEndInt",
-                table: "EthSwapsETH_TokenEntities",
+                name: "IX_swapsETH_TokenEntities_blockNumberEndInt",
+                table: "swapsETH_TokenEntities",
                 column: "blockNumberEndInt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EthSwapsETH_TokenEntities_blockNumberStartInt",
-                table: "EthSwapsETH_TokenEntities",
+                name: "IX_swapsETH_TokenEntities_blockNumberStartInt",
+                table: "swapsETH_TokenEntities",
                 column: "blockNumberStartInt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EthSwapsETH_USDEntities_blockNumberInt",
-                table: "EthSwapsETH_USDEntities",
+                name: "IX_swapsETH_USDEntities_blockNumberInt",
+                table: "swapsETH_USDEntities",
                 column: "blockNumberInt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EthTokenInfoEntities_AddressPair",
-                table: "EthTokenInfoEntities",
+                name: "IX_tokenInfoEntities_AddressPair",
+                table: "tokenInfoEntities",
                 column: "AddressPair");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EthTokenInfoEntities_AddressToken",
-                table: "EthTokenInfoEntities",
+                name: "IX_tokenInfoEntities_AddressToken",
+                table: "tokenInfoEntities",
                 column: "AddressToken");
         }
 
@@ -130,16 +130,16 @@ namespace dbMigration.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "EthBlocksEntities");
+                name: "blocksEntities");
 
             migrationBuilder.DropTable(
-                name: "EthSwapsETH_TokenEntities");
+                name: "swapsETH_TokenEntities");
 
             migrationBuilder.DropTable(
-                name: "EthSwapsETH_USDEntities");
+                name: "swapsETH_USDEntities");
 
             migrationBuilder.DropTable(
-                name: "EthTokenInfoEntities");
+                name: "tokenInfoEntities");
         }
     }
 }

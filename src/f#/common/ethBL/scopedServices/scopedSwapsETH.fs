@@ -30,7 +30,7 @@ type scopedSwapsETH(
         let noBlock = SwapsETH_USD.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: SwapsETH_USD) = x.blockNumberInt
 
-        ethDB.EthSwapsETH_USDEntities
+        ethDB.swapsETH_USDEntities
              .OrderByDescending(fun x -> x.blockNumberInt)
              .FirstOrDefaultAsync()
              |> Async.AwaitTask
@@ -42,7 +42,7 @@ type scopedSwapsETH(
         let noBlock = BlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: BlocksEntity) = x.numberInt
 
-        ethDB.EthBlocksEntities
+        ethDB.blocksEntities
                 .OrderByDescending(fun x -> x.numberInt)
                 .FirstOrDefaultAsync()
                 |> Async.AwaitTask
@@ -55,7 +55,7 @@ type scopedSwapsETH(
             if Array.isEmpty blocks then
                 return 0
             else
-                do! ethDB.EthSwapsETH_USDEntities.AddRangeAsync(blocks) |> Async.AwaitTask
+                do! ethDB.swapsETH_USDEntities.AddRangeAsync(blocks) |> Async.AwaitTask
                 let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
                 return result
         }  
@@ -65,11 +65,15 @@ type scopedSwapsETH(
         >> validateBlocks
         >> Array.Parallel.map(fun block -> 
             block 
-            |> mapResponseSwap.mapETH_USD chainSettingsOption.AddressChainCoinDecimals chainSettingsOption.AddressChainCoin chainSettingsOption.AddressStableCoin
+            |> mapResponseSwap.mapETH_USD 
+                    chainSettingsOption.AddressChainCoin 
+                    chainSettingsOption.AddressChainCoinDecimals 
+                    chainSettingsOption.AddressChainCoin 
+                    chainSettingsOption.AddressStableCoin
         )
         
     let getDefaultPrice() =
-        ethDB.EthSwapsETH_USDEntities
+        ethDB.swapsETH_USDEntities
             .OrderByDescending(fun x -> x.blockNumberInt)
             .FirstOrDefaultAsync()                   
             |> Async.AwaitTask
@@ -77,7 +81,7 @@ type scopedSwapsETH(
     member this.getPriceForBlock min max blockInt =
         async {
             let! a =
-                ethDB.EthSwapsETH_USDEntities
+                ethDB.swapsETH_USDEntities
                     .Where(fun block -> block.blockNumberInt >= min && block.blockNumberInt <= max)
                     .Take(10)
                     .ToListAsync()

@@ -9,11 +9,11 @@ using dbMigration;
 
 #nullable disable
 
-namespace dbMigration.migrations
+namespace dbMigration.Migrations
 {
     [DbContext(typeof(ethDB))]
-    [Migration("20250101185002_In11")]
-    partial class In11
+    [Migration("20250105111627_In1")]
+    partial class In1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace dbMigration.migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("dbMigration.models.EthBlocksEntity", b =>
+            modelBuilder.Entity("ethCommonDB.models.BlocksEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,10 +65,10 @@ namespace dbMigration.migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EthBlocksEntities");
+                    b.ToTable("blocksEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_Token", b =>
+            modelBuilder.Entity("ethCommonDB.models.SwapsETH_Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,10 +132,10 @@ namespace dbMigration.migrations
 
                     b.HasIndex("blockNumberStartInt");
 
-                    b.ToTable("EthSwapsETH_TokenEntities");
+                    b.ToTable("swapsETH_TokenEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_USD", b =>
+            modelBuilder.Entity("ethCommonDB.models.SwapsETH_USD", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,10 +191,10 @@ namespace dbMigration.migrations
 
                     b.HasIndex("blockNumberInt");
 
-                    b.ToTable("EthSwapsETH_USDEntities");
+                    b.ToTable("swapsETH_USDEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthTokenInfo", b =>
+            modelBuilder.Entity("ethCommonDB.models.TokenInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -209,6 +209,14 @@ namespace dbMigration.migrations
                     b.Property<string>("AddressToken")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AddressToken0")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AddressToken1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Decimals")
                         .HasColumnType("int");
@@ -225,7 +233,7 @@ namespace dbMigration.migrations
 
                     b.HasIndex("AddressToken");
 
-                    b.ToTable("EthTokenInfoEntities");
+                    b.ToTable("tokenInfoEntities");
                 });
 #pragma warning restore 612, 618
         }

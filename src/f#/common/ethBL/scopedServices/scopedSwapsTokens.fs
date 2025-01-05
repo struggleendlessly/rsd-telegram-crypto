@@ -34,7 +34,7 @@ type scopedSwapsTokens(
         let noBlock = SwapsETH_Token.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: SwapsETH_Token) = x.blockNumberEndInt
 
-        ethDB.EthSwapsETH_TokenEntities
+        ethDB.swapsETH_TokenEntities
              .OrderByDescending(fun x -> x.blockNumberEndInt)
              .FirstOrDefaultAsync()
              |> Async.AwaitTask
@@ -46,7 +46,7 @@ type scopedSwapsTokens(
         let noBlock = BlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: BlocksEntity) = x.numberInt
 
-        ethDB.EthBlocksEntities
+        ethDB.blocksEntities
                 .OrderByDescending(fun x -> x.numberInt)
                 .FirstOrDefaultAsync()
                 |> Async.AwaitTask
@@ -55,7 +55,7 @@ type scopedSwapsTokens(
                                 >> getNumberInt)
 
     let saveToDB blocks = 
-                ethDB.EthSwapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask |> ignore
+                ethDB.swapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask |> ignore
                 let result = ethDB.SaveChangesAsync() |> Async.AwaitTask
                 result
         

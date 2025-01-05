@@ -2,15 +2,20 @@
 
 open System
 open System.Linq
-open responseSwap
-open Extensions
-open data
-open Nethereum.Util
-open ExtendedNumerics
 open System.Text.RegularExpressions
+
 open ethCommonDB.models
 
-let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)= 
+open data
+open responseSwap
+
+let mapETH_USD 
+        addressChainCoin 
+        addressChainCoinDecimals 
+        t0 
+        t1 
+        (responseSwapDTO: responseSwap) = 
+
     let res = new SwapsETH_USD()
 
     if Array.isEmpty responseSwapDTO.result
@@ -23,7 +28,7 @@ let mapETH_USD addressChainCoinDecimals t0 t1 (responseSwapDTO: responseSwap)=
         let firstInOrder = [|t0; t1|] 
                             |> Array.sortWith comparer
 
-        let (EthIn, EthOut, TokenIn, TokenOut) = inOut firstInOrder[0] addressChainCoinDecimals firstInOrder data
+        let (EthIn, EthOut, TokenIn, TokenOut) = inOut addressChainCoin addressChainCoinDecimals firstInOrder data
         res.blockNumberInt <- responseSwapDTO.id
         res.pairAddress <- va.address
 

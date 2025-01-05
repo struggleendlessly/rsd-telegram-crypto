@@ -26,7 +26,7 @@ type scopedTokenInfo(
     let chainSettingsOption = chainSettingsOption.Value;
 
     let getTokens0and1 (addressPair: string[]) =
-        ethDB.EthTokenInfoEntities
+        ethDB.tokenInfoEntities
             .Where(fun x -> addressPair.Contains(x.AddressPair))
             .ToListAsync()
             |> Async.AwaitTask
@@ -57,7 +57,7 @@ type scopedTokenInfo(
     member this.getToken0and1(addressPair: string[]) =
         async {
             let! newT0T1 =  addToken0and1 addressPair 
-            ethDB.EthTokenInfoEntities.AddRangeAsync newT0T1 
+            ethDB.tokenInfoEntities.AddRangeAsync newT0T1 
                     |> Async.AwaitTask 
                     |> ignore 
 
@@ -67,50 +67,8 @@ type scopedTokenInfo(
             return! getTokens0and1 addressPair
         }
 
-    //member this.getToken0and1(addressPair: string[]) =
-    //     let diff = ethDB.EthTokenInfoEntities
-    //                    .Where(fun x -> addressPair.Contains(x.AddressPair))
-    //                    .ToListAsync()
-    //                    |> Async.AwaitTask
-    //                    |> Async.map (fun x -> x |> Seq.map (fun x -> x.AddressPair))
-    //                    |> Async.map (fun address -> Seq.except address addressPair)
-    //                    |> Async.RunSynchronously
-
-    //     let par = diff |> Seq.toArray
-    //     let t0 = alchemy.getEthCall_token0 par 
-    //                |> Async.RunSynchronously
-    //                |> Array.collect id
-    //                |> Array.map mapResponseEthCall.mapToken0
-
-    //     let t1 = alchemy.getEthCall_token1 par  
-    //                |> Async.RunSynchronously
-    //                |> Array.collect id
-    //                |> Array.map (mapResponseEthCall.mapToken1 t0)
-    //                |> Array.map mapResponseEthCall.mapToken01toAddress
-
-    //     let elementsToExcluude = 
-    //                t1
-    //                |> Array.filter (fun x ->not (Array.contains x.AddressToken0 ethExcludeTokens.tokensExclude ) ||
-    //                                         not (Array.contains x.AddressToken1 ethExcludeTokens.tokensExclude ))
-
-    //     let a = elementsToExcluude 
-    //           // |> Array.distinctBy (fun x -> x.AddressToken)
-    //            |> ethDB.EthTokenInfoEntities.AddRangeAsync                  
-         
-    //     ethDB.SaveChangesAsync() 
-    //        |> Async.AwaitTask
-    //        |> Async.RunSynchronously
-    //        |> ignore
-
-    //     let tokens0and1 = ethDB.EthTokenInfoEntities
-    //                        .Where(fun x -> addressPair.Contains(x.AddressPair))
-    //                        .ToListAsync()
-    //                         |> Async.AwaitTask
-    //                         |> Async.RunSynchronously
-    //     tokens0and1
-
     member this.getDecimals (addressPair: string[]) =
-        let enteties = ethDB.EthTokenInfoEntities
+        let enteties = ethDB.tokenInfoEntities
                         .Where(fun x ->  x.Decimals = 0 && not (x.AddressToken = ""))
                         .ToListAsync()
                         |> Async.AwaitTask
@@ -130,7 +88,7 @@ type scopedTokenInfo(
         |> Async.RunSynchronously
         |> ignore
 
-        ethDB.EthTokenInfoEntities
+        ethDB.tokenInfoEntities
                     .Where(fun x -> addressPair.Contains(x.AddressPair) && x.Decimals > 0)
                     .ToListAsync()
                     |> Async.AwaitTask

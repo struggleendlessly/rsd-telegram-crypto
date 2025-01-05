@@ -5,18 +5,19 @@ open System.Linq
 open System.Threading
 
 open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Options
 open Microsoft.EntityFrameworkCore
-
-open IScopedProcessingService
 
 open alchemy
 open ethCommonDB
 open ethCommonDB.models
 
+open IScopedProcessingService
 open createSeq
 open Extensions
 open responseGetBlock
 open mapResponseGetBlock
+open ChainSettingsOptionModule
 
 type BlockDetectionResult = 
     | NewBlocks of responseGetBlocks[] 
@@ -25,13 +26,16 @@ type BlockDetectionResult =
 type scopedLastBlock(
         logger: ILogger<scopedLastBlock>,
         alchemy: alchemy,
-        ethDB: IEthDB) as this =
+        chainSettingsOption:  IOptions<ChainSettingsOption>,
+        ethDB: IEthDB) =
+
+    let chainSettingsOption = chainSettingsOption.Value;
 
     let getLastKnownBlockInDB  =
-        let noBlock = BlocksEntity.Default(24567082)
+        let noBlock = BlocksEntity.Default(chainSettingsOption.DefaultBlockNumber)
         let getNumberInt (x: BlocksEntity) = x.numberInt
 
-        ethDB.EthBlocksEntities
+        ethDB.blocksEntities
                 .OrderByDescending(fun x -> x.numberInt)
                 .FirstOrDefaultAsync()
                 |> Async.AwaitTask
@@ -50,7 +54,7 @@ type scopedLastBlock(
             if Array.isEmpty blocks then
                 return 0
             else
-                do! ethDB.EthBlocksEntities.AddRangeAsync(blocks) |> Async.AwaitTask
+                do! ethDB.blocksEntities.AddRangeAsync(blocks) |> Async.AwaitTask
                 let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
                 return result
         }
@@ -67,7 +71,6 @@ type scopedLastBlock(
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
-                let lastKnownBlock = getLastKnownBlockInDB
                 let res = getBlocks 1000
                                 getLastKnownBlockInDB
                                 getLastEthBlock

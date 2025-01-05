@@ -8,7 +8,7 @@ using dbMigration;
 
 #nullable disable
 
-namespace dbMigration.migrations
+namespace dbMigration.Migrations
 {
     [DbContext(typeof(ethDB))]
     partial class ethDBModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace dbMigration.migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("dbMigration.models.EthBlocksEntity", b =>
+            modelBuilder.Entity("ethCommonDB.models.BlocksEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,10 +62,10 @@ namespace dbMigration.migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EthBlocksEntities");
+                    b.ToTable("blocksEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_Token", b =>
+            modelBuilder.Entity("ethCommonDB.models.SwapsETH_Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,10 +129,10 @@ namespace dbMigration.migrations
 
                     b.HasIndex("blockNumberStartInt");
 
-                    b.ToTable("EthSwapsETH_TokenEntities");
+                    b.ToTable("swapsETH_TokenEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthSwapsETH_USD", b =>
+            modelBuilder.Entity("ethCommonDB.models.SwapsETH_USD", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -188,10 +188,10 @@ namespace dbMigration.migrations
 
                     b.HasIndex("blockNumberInt");
 
-                    b.ToTable("EthSwapsETH_USDEntities");
+                    b.ToTable("swapsETH_USDEntities");
                 });
 
-            modelBuilder.Entity("dbMigration.models.EthTokenInfo", b =>
+            modelBuilder.Entity("ethCommonDB.models.TokenInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,7 +230,7 @@ namespace dbMigration.migrations
 
                     b.HasIndex("AddressToken");
 
-                    b.ToTable("EthTokenInfoEntities");
+                    b.ToTable("tokenInfoEntities");
                 });
 #pragma warning restore 612, 618
         }

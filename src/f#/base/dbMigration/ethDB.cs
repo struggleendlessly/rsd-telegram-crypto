@@ -7,10 +7,10 @@ namespace dbMigration
 {
     public class ethDB(DbContextOptions<ethDB> options) : DbContext(options), IEthDB
     {
-        public required DbSet<TokenInfo> EthTokenInfoEntities { get; set; }
-        public required DbSet<BlocksEntity> EthBlocksEntities { get; set; }
-        public required DbSet<SwapsETH_USD> EthSwapsETH_USDEntities { get; set; }
-        public required DbSet<SwapsETH_Token> EthSwapsETH_TokenEntities { get; set; }
+        public required DbSet<TokenInfo> tokenInfoEntities { get; set; }
+        public required DbSet<BlocksEntity> blocksEntities { get; set; }
+        public required DbSet<SwapsETH_USD> swapsETH_USDEntities { get; set; }
+        public required DbSet<SwapsETH_Token> swapsETH_TokenEntities { get; set; }
 
 
     }

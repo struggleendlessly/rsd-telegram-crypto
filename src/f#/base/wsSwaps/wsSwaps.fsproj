@@ -7,10 +7,6 @@
 
 
   <ItemGroup>
-    <Compile Include="workers\lastBlock.fs" />
-    <Compile Include="workers\swapsETH.fs" />
-    <Compile Include="workers\swapsTokens.fs" />
-    <Compile Include="Worker.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   

@@ -22,7 +22,7 @@ namespace dbMigration.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ethCommonDB.models.EthBlocksEntity", b =>
+            modelBuilder.Entity("ethCommonDB.models.BlocksEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,10 +62,10 @@ namespace dbMigration.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EthBlocksEntities");
+                    b.ToTable("blocksEntities");
                 });
 
-            modelBuilder.Entity("ethCommonDB.models.EthSwapsETH_Token", b =>
+            modelBuilder.Entity("ethCommonDB.models.SwapsETH_Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,10 +129,10 @@ namespace dbMigration.Migrations
 
                     b.HasIndex("blockNumberStartInt");
 
-                    b.ToTable("EthSwapsETH_TokenEntities");
+                    b.ToTable("swapsETH_TokenEntities");
                 });
 
-            modelBuilder.Entity("ethCommonDB.models.EthSwapsETH_USD", b =>
+            modelBuilder.Entity("ethCommonDB.models.SwapsETH_USD", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -188,10 +188,10 @@ namespace dbMigration.Migrations
 
                     b.HasIndex("blockNumberInt");
 
-                    b.ToTable("EthSwapsETH_USDEntities");
+                    b.ToTable("swapsETH_USDEntities");
                 });
 
-            modelBuilder.Entity("ethCommonDB.models.EthTokenInfo", b =>
+            modelBuilder.Entity("ethCommonDB.models.TokenInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,7 +230,7 @@ namespace dbMigration.Migrations
 
                     b.HasIndex("AddressToken");
 
-                    b.ToTable("EthTokenInfoEntities");
+                    b.ToTable("tokenInfoEntities");
                 });
 #pragma warning restore 612, 618
         }

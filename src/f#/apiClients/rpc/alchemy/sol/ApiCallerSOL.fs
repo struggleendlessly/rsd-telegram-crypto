@@ -36,7 +36,7 @@ type alchemySOL(
 
     member private this.chunksRequest<'T, 'B> uriBuilder : 'B[] -> Async<'T[]>  = 
         Array.map uriBuilder 
-        >> Array.chunkBySize 50 
+        >> Array.chunkBySize 20 
         >> Array.mapi this.makeRequest<'T>
         >> Async.Parallel
 

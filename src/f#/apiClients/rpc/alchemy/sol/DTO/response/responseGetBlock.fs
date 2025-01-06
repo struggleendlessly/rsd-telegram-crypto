@@ -6,7 +6,7 @@ open responseError
 open System.Text.Json
 open System.Text.Json.Serialization
 
-type VersionConverter() =
+type converterNumberToString() =
     inherit JsonConverter<string>()
 
     override this.Read(reader: byref<Utf8JsonReader>, _, _ ) =
@@ -18,8 +18,32 @@ type VersionConverter() =
     override this.Write(writer: Utf8JsonWriter, value: string, _ ) =
         writer.WriteStringValue(value)
 
+type ConverterStringToUint64() =
+    inherit JsonConverter<uint64>()
+
+    override this.Read(reader: byref<Utf8JsonReader>, _, _) =
+        match reader.TokenType with
+        | JsonTokenType.String ->
+            let str = reader.GetString()
+            match System.UInt64.TryParse(str) with
+            | true, value -> value
+            | false, _ -> raise (JsonException("Invalid uint64 value"))
+        | _ -> raise (JsonException("Unexpected token type"))
+
+    override this.Write(writer: Utf8JsonWriter, value: uint64, _) =
+        writer.WriteStringValue(value.ToString())
+
+// Usage Example
+let options = JsonSerializerOptions()
+options.Converters.Add(ConverterStringToUint64())
+
+let json = """ "12345678901234567890" """
+let value = JsonSerializer.Deserialize<uint64>(json, options)
+printfn "Deserialized value: %A" value
+
 type UiTokenAmount = {
-    amount: string
+    [<JsonConverter(typeof<ConverterStringToUint64>)>]
+    amount: uint64
     decimals: uint64
     uiAmount: float option
     uiAmountString: string
@@ -72,23 +96,41 @@ type ParsedInfo = {
     wallet: string option
     extensionTypes: string[] option
     authority: string option
+    [<JsonConverter(typeof<ConverterStringToUint64>)>]
+    amount: uint64
     destination: string option
     tokenAmount: TokenAmount option
 }
 
 and TokenAmount = {
-    amount: string
-    decimals: uint64
+    [<JsonConverter(typeof<ConverterStringToUint64>)>]
+    amount: uint64
+    decimals: int
     uiAmount: float
     uiAmountString: string
 }
-
 type Parsed = {
-    info: ParsedInfo
+    info: ParsedInfo   
     ``type``: string
 }
 
+type ParsedConverter() =
+    inherit JsonConverter<Parsed option>()
+
+    override this.Read(reader: byref<Utf8JsonReader>, t: Type, options: JsonSerializerOptions) =
+        match reader.TokenType with
+        | JsonTokenType.String ->
+            let str = reader.GetString()
+            None
+        | JsonTokenType.StartObject ->
+            let obj = JsonSerializer.Deserialize<Parsed>(&reader, options)
+            Some obj
+
+    override this.Write(writer: Utf8JsonWriter, value: Parsed option, _) =
+        writer.WriteStringValue(value.ToString())
+
 type Instruction = {
+    [<JsonConverter(typeof<ParsedConverter>)>]
     parsed: Parsed option
     program: string
     programId: string
@@ -138,7 +180,7 @@ type Transaction = {
 type TransactionData = {
     meta: Meta
     transaction: Transaction
-    [<JsonConverter(typeof<VersionConverter>)>]
+    [<JsonConverter(typeof<converterNumberToString>)>]
     version: string
 }
 
@@ -153,7 +195,7 @@ type BlockResult = {
 
 type responseGetBlockSol = {
     jsonrpc: string
-    [<JsonConverter(typeof<VersionConverter>)>]
+    [<JsonConverter(typeof<converterNumberToString>)>]
     id: string
     result: BlockResult 
     error: responseError option

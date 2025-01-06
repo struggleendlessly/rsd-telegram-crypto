@@ -8,7 +8,7 @@ namespace dbMigration.models
         public UInt64 blockNumberStartInt { get; set; }
         public UInt64 blockNumberEndInt { get; set; }
 
-        public string pairAddress { get; set; } = string.Empty;
+        public string addressToken { get; set; } = string.Empty;
         public string txsHash { get; set; } = string.Empty;
 
         public string from { get; set; } = string.Empty;
@@ -29,6 +29,12 @@ namespace dbMigration.models
         {
             var res = new swapsTokens();
             res.blockNumberEndInt = block;
+
+            return res;
+        }
+        public static swapsTokens Default()
+        {
+            var res = new swapsTokens();
 
             return res;
         }

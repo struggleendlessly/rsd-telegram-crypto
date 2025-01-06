@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="logic\createSeq.fs" />
     <Compile Include="staticStrings\scopedNames.fs" />
     <Compile Include="Options\ChainSettingsOption.fs" />
     <Compile Include="blockchain\data.fs" />
@@ -15,7 +16,6 @@
     <Compile Include="Options\AlchemyOption.fs" />
     <Compile Include="Options\OpenTelemetryOption.fs" />
     <Compile Include="Options\AppSettingsOption.fs" />
-    <Compile Include="Library.fs" />
   </ItemGroup>
 
   <ItemGroup>

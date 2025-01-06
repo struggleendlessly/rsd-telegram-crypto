@@ -30,7 +30,7 @@ open System.Collections.Generic
 open IScopedProcessingService
 open scopedTokenInfo
 open scopedLastBlock
-open scopedSwapsETH
+open scopedSwapsBlock
 open scopedNames
 
 
@@ -118,22 +118,22 @@ module Program =
             configureAlchemy(logger, alchemyOptions, chainSettingsOption, httpClientFactory)) |> ignore
 
         builder.Services.AddScoped<scopedLastSlot>() |> ignore
+        builder.Services.AddScoped<scopedSwapsBlock>() |> ignore
 
         builder.Services.AddScoped<scopedTokenInfo>() |> ignore
-        builder.Services.AddScoped<scopedSwapsETH>() |> ignore
         builder.Services.AddScoped<scopedSwapsTokens>() |> ignore
 
         builder.Services.AddScoped<IDictionary<string, IScopedProcessingService>>(
             fun sp -> 
                 let dict = new Dictionary<string, IScopedProcessingService>() 
-                dict.Add(scopedLastSlot, sp.GetRequiredService<scopedLastSlot>() :> IScopedProcessingService) 
+                dict.Add(scopedLastSlotName, sp.GetRequiredService<scopedLastSlot>() :> IScopedProcessingService) 
+                dict.Add(scopedSwapsBlockName, sp.GetRequiredService<scopedSwapsBlock>() :> IScopedProcessingService)
 
-                dict.Add(scopedSwapsETH, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
-                dict.Add(scopedSwapsTokens, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
+                dict.Add(scopedSwapsTokensName, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
                 dict :> IDictionary<string, IScopedProcessingService> ) |> ignore
 
-        builder.Services.AddHostedService<lastSlot>() |> ignore
-        //builder.Services.AddHostedService<swapsETH>() |> ignore
+        //builder.Services.AddHostedService<lastSlot>() |> ignore // configure to run every 1 minute
+        builder.Services.AddHostedService<swapsBlock>() |> ignore
         //builder.Services.AddHostedService<swapsTokens>() |> ignore
 
         builder.Services.AddWindowsService(fun options -> options.ServiceName <- openTelemetryOptions.ServiceName ) |> ignore

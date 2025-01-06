@@ -9,11 +9,11 @@
   <ItemGroup>
     <Compile Include="mappers\mapGetSlot.fs" />
     <Compile Include="scopedServices\scopedLastSlot.fs" />
-    <Compile Include="scopedServices\scopedSwapsETH.fs" />
+    <Compile Include="scopedServices\scopedSwapsBlock.fs" />
     <Compile Include="scopedServices\scopedSwapsTokens.fs" />
     <Compile Include="scopedServices\scopedTokenInfo.fs" />
     <Compile Include="workers\lastBlock.fs" />
-    <Compile Include="workers\swapsETH.fs" />
+    <Compile Include="workers\swapsBlock.fs" />
     <Compile Include="workers\swapsTokens.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

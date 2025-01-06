@@ -26,3 +26,18 @@ let getSeqToProcess n step start end1 =
         else
             return [||]
     }
+
+let getSeqToProcessUint64 n step (start: unit -> Async<uint64>) (end1:unit -> Async<uint64>) =
+    async{
+        let! startAsync  = start()
+        let! endAsync = end1()
+        let diff = endAsync - startAsync
+        if endAsync - startAsync > n
+        then
+            return seq { startAsync + 1UL  .. startAsync + n } |> Seq.toArray
+        elif endAsync - startAsync > step
+        then
+            return seq { startAsync + 1UL  .. endAsync } |> Seq.toArray
+        else
+            return [||]
+    }

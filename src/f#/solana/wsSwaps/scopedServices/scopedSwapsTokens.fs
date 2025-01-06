@@ -11,8 +11,8 @@ open IScopedProcessingService
 open ChainSettingsOptionModule
 open Extensions
 open responseSwap
+open createSeq
 
-open scopedSwapsETH
 
 
 open alchemy
@@ -37,7 +37,6 @@ type scopedSwapsTokens(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-
                 return ()
 
             }

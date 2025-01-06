@@ -30,7 +30,7 @@ let request
             let! response = client.PostAsync (getApiKey apiKeys index, httpContent )
             let! content = response.Content.ReadAsStringAsync() 
 
-            logger.LogInformation( "response: {s}", content)
+            //logger.LogInformation( "response: {s}", content)
 
             return content
         } 

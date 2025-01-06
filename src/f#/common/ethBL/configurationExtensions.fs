@@ -65,7 +65,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
     services.AddScoped<IDictionary<string, IScopedProcessingService>>(
         fun sp -> 
             let dict = new Dictionary<string, IScopedProcessingService>() 
-            dict.Add(scopedSwapsETH, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
-            dict.Add(scopedSwapsTokens, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
-            dict.Add(scopedLastBlock, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
+            dict.Add(scopedSwapsETHName, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
+            dict.Add(scopedSwapsTokensName, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
+            dict.Add(scopedLastBlockName, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
             dict :> IDictionary<string, IScopedProcessingService> ) |> ignore

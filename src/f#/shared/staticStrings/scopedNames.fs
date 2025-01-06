@@ -1,8 +1,9 @@
 ﻿module scopedNames
 
-let scopedLastBlock = "scopedLastBlock"
-let scopedSwapsETH = "scopedSwapsETH"
-let scopedSwapsTokens = "scopedSwapsTokens"
+let scopedLastBlockName = "scopedLastBlock"
+let scopedSwapsETHName = "scopedSwapsETH"
+let scopedSwapsTokensName = "scopedSwapsTokens"
 
-let scopedLastSlot = "scopedLastSlot"
+let scopedLastSlotName = "scopedLastSlot"
+let scopedSwapsBlockName = "scopedSwapsBlock"
 

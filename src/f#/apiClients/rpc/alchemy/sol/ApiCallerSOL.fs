@@ -14,6 +14,11 @@ open ChainSettingsOptionModule
 open requestSingleDTO
 
 open responseGetSlots
+open responseGetBlockSol
+
+open System.Text.Json
+open System.Text.Json.Serialization
+
 
 type alchemySOL(
     logger: ILogger<alchemySOL>, 
@@ -58,3 +63,7 @@ type alchemySOL(
 
     member this.getLastSlot  = 
         this.singleRequest<responseGetSlots> getSlotLeader
+
+    member this.getBlock  = 
+        this.chunksRequest<responseGetBlockSol[], uint64> (getBlock)
+

@@ -28,7 +28,6 @@ type scopedLastSlot(
             return result
         }
 
-
     interface IScopedProcessingService with
 
         member _.DoWorkAsync(ct: CancellationToken) =

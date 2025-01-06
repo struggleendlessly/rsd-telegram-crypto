@@ -7,7 +7,7 @@
             return value
         with
         | ex ->
-            printfn "Error: %s" ex.Message
+
             return raise ex
     }
 

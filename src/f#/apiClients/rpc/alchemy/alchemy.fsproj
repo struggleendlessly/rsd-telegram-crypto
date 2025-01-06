@@ -15,6 +15,7 @@
     <Compile Include="evm\DTO\response\responseGetBlock.fs" />
     <Compile Include="evm\DTO\request\requestSingleDTO.fs" />
     <Compile Include="evm\DTO\request\requestBatchDTO.fs" />
+    <Compile Include="sol\DTO\response\responseGetBlock.fs" />
     <Compile Include="sol\DTO\response\responseGetSlots.fs" />
     <Compile Include="sol\UlrBuilderSOL.fs" />
     <Compile Include="sol\ApiCallerSOL.fs" />

@@ -35,3 +35,10 @@ type requestEthCallDto_decimals = {
     ``to``: string
     data: string
 }
+
+type requestSol_GetBlock = {
+    encoding: string
+    maxSupportedTransactionVersion: int
+    transactionDetails: string
+    rewards: bool
+}

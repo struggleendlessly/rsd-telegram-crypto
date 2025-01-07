@@ -97,6 +97,12 @@ type scopedSwapsBlock(
             let last = List.last tail
             [head; last]
 
+    let splitList list = 
+        let half = List.length list / 2 
+        let firstHalf = list |> List.take half 
+        let secondHalf = list |> List.skip half 
+        (firstHalf, secondHalf)
+
     let filterSwaps (responses: responseGetBlockSol[]) =
         let mutable resMap = Map.empty<string,(Instruction list * TokenBalance list * TokenBalance list)>
 
@@ -119,20 +125,47 @@ type scopedSwapsBlock(
                                                 else
                                                      filteredInnInstTransfer <- instruction :: filteredInnInstTransfer
                                 | _ -> ()
-
-                    let rev = filteredInnInstTransferChecked 
-                                |> List.rev 
-                                |> list1andLast 
-                                |> List.append filteredInnInstTransfer
-                                                |> List.rev 
-                                                |> list1andLast
-
-                    if transaction.meta.err = None && not (List.isEmpty rev)
+                    if List.length filteredInnInstTransfer = 1 
                     then
+                        logger.LogInformation("skip")  // scam
+                    
+                    if List.length filteredInnInstTransferChecked = 3 
+                    then
+                        filteredInnInstTransferChecked <-
+                            filteredInnInstTransferChecked
+                            |> list1andLast 
+
+                    let filteredInnInstTransferCheckedChunked = 
+                        match filteredInnInstTransferChecked with
+                        | a when List.length filteredInnInstTransferChecked % 2 = 0 -> 
+                            filteredInnInstTransferChecked 
+                            |> List.toSeq |> Seq.chunkBySize 2 |> Seq.map List.ofSeq |> Seq.toList
+                        | _ -> [ ]
+
+                    //let revTC = filteredInnInstTransferChecked 
+                    //            |> List.rev 
+                    //            |> list1andLast 
+
+                    //let revT =  filteredInnInstTransfer
+                    //            |> List.rev 
+                    //            |> list1andLast
+
+                    if transaction.meta.err = None && not (List.isEmpty filteredInnInstTransferChecked)
+                    then
+                        filteredInnInstTransferCheckedChunked
+                        |> List.iter (fun instr ->
                             resMap <- Map.add 
                                             transaction.transaction.signatures[0] 
-                                            (rev, transaction.meta.preTokenBalances, transaction.meta.postTokenBalances) 
-                                            resMap  
+                                            (instr |> List.rev, transaction.meta.preTokenBalances, transaction.meta.postTokenBalances) 
+                                            resMap    
+                                            )
+                                            
+                    //if transaction.meta.err = None && not (List.isEmpty revT)
+                    //then
+                    //        resMap <- Map.add 
+                    //                        transaction.transaction.signatures[0] 
+                    //                        (revT, transaction.meta.preTokenBalances, transaction.meta.postTokenBalances) 
+                    //                        resMap  
 
         resMap 
         |> Map.toArray 
@@ -158,16 +191,14 @@ type scopedSwapsBlock(
 
         swapToken
 
+    let absDiff a b = if a > b then a - b else b - a
     let compareArrays (pre: TokenBalance list) (post: TokenBalance list) diff =
         let results = 
-            List.map2 (fun obj1 obj2 ->
-                if obj1.uiTokenAmount.amount - diff = obj2.uiTokenAmount.amount then Some obj1
-                else None
-            ) pre post
-            |> List.choose id
-            |> List.tryHead
-    
-        results
+            post 
+            |> List.filter (fun itemPost -> 
+                pre |> List.exists (fun itemPre -> absDiff itemPost.uiTokenAmount.amount itemPre.uiTokenAmount.amount = diff))
+
+        results |> List.tryHead
 
     let parceInstructionsTransfer(instructions: Instruction list) (pre: TokenBalance list) (post: TokenBalance list)  =
         let swapToken = { emptySwapTokens with to_ = "" }
@@ -242,12 +273,14 @@ type scopedSwapsBlock(
         then
             swapToken.priceTokenInSol <- swapToken.t1amountFloat / swapToken.t0amountFloat
             swapToken.isBuySol <- true
+
+        swapToken
     
 
     let processSwaps (d:(string * (Instruction list * TokenBalance list * TokenBalance list))[]) =
          d 
          |> Array.map (fun (signature, (instructions, preTokenBalances, postTokenBalances)) -> parceInstructions instructions preTokenBalances postTokenBalances )
-         |> Array.iter additionalCalculationsSwaps   
+         |> Array.map additionalCalculationsSwaps   
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
@@ -256,7 +289,7 @@ type scopedSwapsBlock(
                 let a = File.ReadAllText("C:\Users\strug\Downloads\Untitled.json")
                 let b = a |> JsonSerializer.Deserialize<responseGetBlockSol[]>
                 let t =     
-                        (getSeqToProcessUint64 1UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot)
+                        (getSeqToProcessUint64 10UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot)
                         |> Async.Bind alchemy.getBlock 
                         |> Async.map (Array.collect id) 
                         |> Async.map filterSwaps   

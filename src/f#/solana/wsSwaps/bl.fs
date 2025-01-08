@@ -7,6 +7,7 @@ type SwapToken =
     mutable t1addr: string 
     mutable from: string 
     mutable to_: string 
+    mutable txn: string 
     mutable t0amountFloat: float 
     mutable t1amountFloat: float 
     mutable t0amountInt: uint64 
@@ -21,7 +22,8 @@ type SwapToken =
     }
 
 type tokensTypes = 
-    | Token of SwapToken
+    | TokenSol of SwapToken
+    | TokenUSD of SwapToken
     | StableCoin of SwapToken
          
 let emptySwapTokens = { 
@@ -30,6 +32,7 @@ let emptySwapTokens = {
     t1addr = ""
     from = ""
     to_ = ""
+    txn = ""
     t0amountFloat = 0.0
     t1amountFloat = 0.0
     t0amountInt = 0UL

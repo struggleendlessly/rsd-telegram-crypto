@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dbMigration;
 
@@ -10,9 +11,11 @@ using dbMigration;
 namespace dbMigration.Migrations
 {
     [DbContext(typeof(solDB))]
-    partial class solDBModelSnapshot : ModelSnapshot
+    [Migration("20250108223637_In6")]
+    partial class In6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,55 +98,6 @@ namespace dbMigration.Migrations
                     b.HasIndex("slotNumberStartInt");
 
                     b.ToTable("swapsTokensEntities");
-                });
-
-            modelBuilder.Entity("dbMigration.models.swapsTokensUSD", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("addressToken")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("from")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isBuyDai")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isBuySol")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("priceSolInUsd")
-                        .HasColumnType("float");
-
-                    b.Property<decimal>("slotNumberInt")
-                        .HasColumnType("decimal(20,0)");
-
-                    b.Property<double>("t0amount")
-                        .HasColumnType("float");
-
-                    b.Property<double>("t1amount")
-                        .HasColumnType("float");
-
-                    b.Property<string>("to")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("txsHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("slotNumberInt");
-
-                    b.ToTable("swapsTokensUSDEntities");
                 });
 #pragma warning restore 612, 618
         }

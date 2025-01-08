@@ -15,14 +15,20 @@ namespace dbMigration.models
         public string from { get; set; } = string.Empty;
         public string to { get; set; } = string.Empty;
 
-        public string solIn { get; set; } = string.Empty;
-        public string solOut { get; set; } = string.Empty;
-        public string tokenIn { get; set; } = string.Empty;
-        public string tokenOut { get; set; } = string.Empty;
+        public double t0amount { get; set; }
+        public double t1amount { get; set; }
 
         public double priceSolInUsd { get; set; }
 
         public bool isBuyDai { get; set; }
         public bool isBuySol { get; set; }
+
+        public static swapsTokensUSD Default()
+        {
+            var res = new swapsTokensUSD();
+            res.priceSolInUsd = 0.0;
+
+            return res;
+        }
     }
 }

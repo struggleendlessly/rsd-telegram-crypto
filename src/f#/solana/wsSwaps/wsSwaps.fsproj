@@ -7,6 +7,8 @@
 
 
   <ItemGroup>
+    <Compile Include="bl.fs" />
+    <Compile Include="mappers\mapGetSwaps.fs" />
     <Compile Include="mappers\mapGetSlot.fs" />
     <Compile Include="scopedServices\scopedLastSlot.fs" />
     <Compile Include="scopedServices\scopedSwapsBlock.fs" />

@@ -13,67 +13,31 @@ open Microsoft.EntityFrameworkCore
 open dbMigration
 open dbMigration.models
 
-open createSeq
+open bl
+open bl_others
+open bl_createSeq
+
+open mapGetSwaps
 open Extensions
 open ApiCallerSOL
 open responseGetBlockSol
 open IScopedProcessingService
 open ChainSettingsOptionModule
 
-type SwapToken = 
-    { 
-    mutable tokenAddress: string
-    mutable t0addr: string 
-    mutable t1addr: string 
-    mutable from: string 
-    mutable to_: string 
-    mutable t0amountFloat: float 
-    mutable t1amountFloat: float 
-    mutable t0amountInt: uint64 
-    mutable t1amountInt: uint64 
-    mutable t0decimals: uint64 
-    mutable t1decimals: uint64 
-    mutable priceTokenInSol: float 
-    mutable priceSolInUsd: float 
-    mutable isBuyToken: bool
-    mutable isBuySol: bool
-    }
-
-type tokensTypes = 
-    | Token of SwapToken
-    | StableCoin of SwapToken
-         
-let emptySwapTokens = { 
-    tokenAddress = ""
-    t0addr = ""
-    t1addr = ""
-    from = ""
-    to_ = ""
-    t0amountFloat = 0.0
-    t1amountFloat = 0.0
-    t0amountInt = 0UL
-    t1amountInt = 0UL
-    t0decimals = 0UL
-    t1decimals = 0UL
-    priceTokenInSol = 0.0 
-    priceSolInUsd = 0.0
-    isBuyToken = false
-    isBuySol = false
-    }
 type scopedSwapsBlock(
         logger: ILogger<scopedSwapsBlock>,
         alchemy: alchemySOL,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
-        ethDB: solDB) =
+        solDB: solDB) =
 
     let chainSettingsOption = chainSettingsOption.Value;
 
     let getLastKnownProcessedBlock () =
         let noBlock = swapsTokens.Default(chainSettingsOption.DefaultBlockNumber)
-        let getNumberInt (x: swapsTokens) = x.blockNumberEndInt
+        let getNumberInt (x: swapsTokens) = x.slotNumberEndInt
 
-        ethDB.swapsTokensEntities
-             .OrderByDescending(fun x -> x.blockNumberEndInt)
+        solDB.swapsTokensEntities
+             .OrderByDescending(fun x -> x.slotNumberEndInt)
              .FirstOrDefaultAsync()
              |> Async.AwaitTask
              |> Async.map (Option.ofObj 
@@ -81,35 +45,14 @@ type scopedSwapsBlock(
                                 >> getNumberInt)
 
     let getLastSolSlot () =
-        ethDB.slotsEntities
+        solDB.slotsEntities
                 .OrderByDescending(fun x -> x.numberInt)
                 .FirstOrDefaultAsync()
                 |> Async.AwaitTask
                 |> Async.map (fun x -> x.numberInt)
-
-    //let md5 (input : string) : string =
-    //    let data = Encoding.UTF8.GetBytes(input)
-    //    use md5 = MD5.Create()
-    //    (StringBuilder(), md5.ComputeHash(data))
-    //    ||> Array.fold (fun sb b -> sb.Append(b.ToString("x2")))
-    //    |> string   
         
-    let list1andLast (lst: 'a list) =
-        match lst with
-        | [] -> []
-        | [x] -> []
-        | head :: tail -> 
-            let last = List.last tail
-            [head; last]
-
-    let splitList list = 
-        let half = List.length list / 2 
-        let firstHalf = list |> List.take half 
-        let secondHalf = list |> List.skip half 
-        (firstHalf, secondHalf)
-
     let filterSwaps (responses: responseGetBlockSol[]) =
-        let mutable resMap = Map.empty<string,(Instruction list * TokenBalance list * TokenBalance list)>
+        let mutable resMap = Map.empty<string,(uint64 * Instruction list * TokenBalance list * TokenBalance list)>
 
         for response in responses do
             for transaction in response.result.transactions do
@@ -162,7 +105,7 @@ type scopedSwapsBlock(
                         |> List.iter (fun instr ->
                             resMap <- Map.add 
                                             transaction.transaction.signatures[0] 
-                                            (instr |> List.rev, transaction.meta.preTokenBalances, transaction.meta.postTokenBalances) 
+                                            (response.result.parentSlot, instr |> List.rev, transaction.meta.preTokenBalances, transaction.meta.postTokenBalances) 
                                             resMap    
                                             )
                                             
@@ -177,7 +120,7 @@ type scopedSwapsBlock(
         |> Map.toArray 
 
 
-    let parceInstructionsTransferChecked (instructions: Instruction list) =
+    let parceInstructionsTransferChecked slotNuber (instructions: Instruction list) =
         let swapToken = { emptySwapTokens with to_ = "" }
 
         if List.length instructions = 2 then
@@ -194,6 +137,8 @@ type scopedSwapsBlock(
 
                 swapToken.from <- instr1.parsed |> Option.bind (fun parsed -> parsed.info.authority) |> Option.defaultValue ""
                 swapToken.to_ <- instr2.parsed |> Option.bind (fun parsed -> parsed.info.authority) |> Option.defaultValue ""
+
+                swapToken.slotNuber <- slotNuber
 
         swapToken
 
@@ -252,41 +197,41 @@ type scopedSwapsBlock(
 
     //    swapToken
 
-    let parceInstructions (instructions:Instruction list ) (pre: TokenBalance list) (post: TokenBalance list) = 
+    let parceInstructions slotNuber (instructions:Instruction list ) (pre: TokenBalance list) (post: TokenBalance list) = 
         let res = 
             match instructions 
                   |> List.forall (fun instr -> instr.parsed 
                                                |> Option.exists (fun parsed -> parsed.info.tokenAmount.IsSome)) with
-            | true -> parceInstructionsTransferChecked instructions
+            | true -> parceInstructionsTransferChecked slotNuber instructions
            // | false -> parceInstructionsTransfer instructions pre post
             | false -> { emptySwapTokens with to_ = "" }
         res
 
-    let additionalCalculationsSwaps (swapToken: SwapToken) = 
-        if String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin)
-        then
-            swapToken.priceTokenInSol <- swapToken.t0amountFloat / swapToken.t1amountFloat
-            swapToken.isBuyToken <- true
-        elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin)
-        then
-            swapToken.priceTokenInSol <- swapToken.t1amountFloat / swapToken.t0amountFloat
-            swapToken.isBuySol <- true
+    //let additionalCalculationsSwaps (swapToken: SwapToken) = 
+    //    if String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase)
+    //    then
+    //        swapToken.priceTokenInSol <- swapToken.t0amountFloat / swapToken.t1amountFloat
+    //        swapToken.isBuyToken <- true
+    //    elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase)
+    //    then
+    //        swapToken.priceTokenInSol <- swapToken.t1amountFloat / swapToken.t0amountFloat
+    //        swapToken.isBuySol <- true
 
-        if String.Equals(swapToken.t0addr, chainSettingsOption.AddressStableCoin)
-        then
-            swapToken.priceTokenInSol <- swapToken.t0amountFloat / swapToken.t1amountFloat
-            swapToken.isBuyToken <- true
-        elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressStableCoin)
-        then
-            swapToken.priceTokenInSol <- swapToken.t1amountFloat / swapToken.t0amountFloat
-            swapToken.isBuySol <- true
+    //    if String.Equals(swapToken.t0addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase)       
+    //    then
+    //        swapToken.priceSolInUsd <- swapToken.t0amountFloat / swapToken.t1amountFloat
+    //        swapToken.isBuyToken <- true
+    //    elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase)
+    //    then
+    //        swapToken.priceSolInUsd <- swapToken.t1amountFloat / swapToken.t0amountFloat
+    //        swapToken.isBuySol <- true
 
-        swapToken
+    //    swapToken
 
-    let processSwaps (d:(string * (Instruction list * TokenBalance list * TokenBalance list))[]) =
+    let processSwaps (d:(string * (uint64 * Instruction list * TokenBalance list * TokenBalance list))[]) =
          d 
-         |> Array.map (fun (signature, (instructions, preTokenBalances, postTokenBalances)) -> parceInstructions instructions preTokenBalances postTokenBalances )
-         |> Array.map additionalCalculationsSwaps  
+         |> Array.map (fun (signature, (slotNumber ,instructions, preTokenBalances, postTokenBalances)) -> parceInstructions slotNumber instructions preTokenBalances postTokenBalances )
+         //|> Array.map additionalCalculationsSwaps  
 
     let filterStableCoins (swapToken: SwapToken) =
 
@@ -296,31 +241,64 @@ type scopedSwapsBlock(
            (String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
             String.Equals(swapToken.t1addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase))
         then
+            if String.Equals(swapToken.t0addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase)       
+            then
+                swapToken.priceSolInUsd <- swapToken.t0amountFloat / swapToken.t1amountFloat
+                swapToken.isBuyToken <- true
+            elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase)
+            then
+                swapToken.priceSolInUsd <- swapToken.t1amountFloat / swapToken.t0amountFloat
+                swapToken.isBuySol <- true
+
             Some (StableCoin swapToken)
-        elif (String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
-              chainSettingsOption.ExcludedAddresses |> Array.exists (fun item -> String.Equals(item, swapToken.t1addr, StringComparison.InvariantCultureIgnoreCase)))
+        elif //(String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
+              chainSettingsOption.ExcludedAddresses |> Array.exists (fun item -> String.Equals(item, swapToken.t1addr, StringComparison.InvariantCultureIgnoreCase))
               ||
-             (String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
-              chainSettingsOption.ExcludedAddresses |> Array.exists (fun item -> String.Equals(item, swapToken.t0addr, StringComparison.InvariantCultureIgnoreCase)))
+             //(String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
+              chainSettingsOption.ExcludedAddresses |> Array.exists (fun item -> String.Equals(item, swapToken.t0addr, StringComparison.InvariantCultureIgnoreCase))
         then
             None
         else
+            if String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase)
+            then
+                swapToken.priceTokenInSol <- swapToken.t0amountFloat / swapToken.t1amountFloat
+                swapToken.isBuyToken <- true
+            elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase)
+            then
+                swapToken.priceTokenInSol <- swapToken.t1amountFloat / swapToken.t0amountFloat
+                swapToken.isBuySol <- true
+
             Some (Token swapToken)
+    
+    let saveToDB blocks = 
+        async {
+            if Array.isEmpty blocks then
+                return 0
+            else
+                do! solDB.swapsTokensEntities.AddRangeAsync(blocks) |> Async.AwaitTask
+                let! result = solDB.SaveChangesAsync() |> Async.AwaitTask
+                return result
+        }      
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let a = File.ReadAllText("C:\Users\strug\Downloads\Untitled.json")
-                let b = a |> JsonSerializer.Deserialize<responseGetBlockSol[]>
+                //let a = File.ReadAllText("C:\Users\strug\Downloads\Untitled.json")
+                //let b = a |> JsonSerializer.Deserialize<responseGetBlockSol[]>
+                let seq = getSeqToProcessUint64 10UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot
+                let! seqX = seq
+                let startBlock = Seq.head seqX
+                let endBlock = Seq.last seqX
+
                 let t =     
-                        (getSeqToProcessUint64 10UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot)
+                        seq
                         |> Async.Bind alchemy.getBlock 
                         |> Async.map (Array.collect id) 
                         |> Async.map filterSwaps   
                         |> Async.map processSwaps
                         |> Async.map (Array.map filterStableCoins)
-                        //|> Async.Bind processBlocks
+                        |> Async.map (mapSwapTokens startBlock endBlock)
                         //|> Async.map saveToDB
                         |> Async.RunSynchronously 
                 return ()

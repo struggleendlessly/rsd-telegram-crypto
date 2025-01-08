@@ -13,7 +13,7 @@ open ethCommonDB
 open ethCommonDB.models
 
 open IScopedProcessingService
-open createSeq
+open bl_createSeq
 open Extensions
 open responseGetBlock
 open mapResponseGetBlock

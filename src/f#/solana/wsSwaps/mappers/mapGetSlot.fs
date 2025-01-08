@@ -1,7 +1,6 @@
 ﻿module mapGetSlot
 
 open dbMigration.models
-
 open responseGetSlots
 
 let mapToEntity (responseGetSlotsDTO: responseGetSlots) = 

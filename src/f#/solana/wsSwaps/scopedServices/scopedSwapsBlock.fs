@@ -38,6 +38,11 @@ type SwapToken =
     mutable isBuyToken: bool
     mutable isBuySol: bool
     }
+
+type tokensTypes = 
+    | Token of SwapToken
+    | StableCoin of SwapToken
+         
 let emptySwapTokens = { 
     tokenAddress = ""
     t0addr = ""
@@ -125,6 +130,7 @@ type scopedSwapsBlock(
                                                 else
                                                      filteredInnInstTransfer <- instruction :: filteredInnInstTransfer
                                 | _ -> ()
+
                     if List.length filteredInnInstTransfer = 1 
                     then
                         logger.LogInformation("skip")  // scam
@@ -191,60 +197,60 @@ type scopedSwapsBlock(
 
         swapToken
 
-    let absDiff a b = if a > b then a - b else b - a
-    let compareArrays (pre: TokenBalance list) (post: TokenBalance list) diff =
-        let results = 
-            post 
-            |> List.filter (fun itemPost -> 
-                pre |> List.exists (fun itemPre -> absDiff itemPost.uiTokenAmount.amount itemPre.uiTokenAmount.amount = diff))
+    //let absDiff a b = if a > b then a - b else b - a
+    //let compareArrays (pre: TokenBalance list) (post: TokenBalance list) diff =
+    //    let results = 
+    //        post 
+    //        |> List.filter (fun itemPost -> 
+    //            pre |> List.exists (fun itemPre -> absDiff itemPost.uiTokenAmount.amount itemPre.uiTokenAmount.amount = diff))
 
-        results |> List.tryHead
+    //    results |> List.tryHead
 
-    let parceInstructionsTransfer(instructions: Instruction list) (pre: TokenBalance list) (post: TokenBalance list)  =
-        let swapToken = { emptySwapTokens with to_ = "" }
+    //let parceInstructionsTransfer(instructions: Instruction list) (pre: TokenBalance list) (post: TokenBalance list)  =
+    //    let swapToken = { emptySwapTokens with to_ = "" }
 
-        if List.length instructions = 2 then
-            match List.item 0 instructions, List.item 1 instructions with
-            | instr1, instr2 -> 
-                swapToken.t0amountInt <- 
-                            match instr1.parsed with
-                            | Some parsed -> parsed.info.amount
-                            | None -> 0UL
-                swapToken.t1amountInt <- 
-                            match instr2.parsed with
-                            | Some parsed -> parsed.info.amount
-                            | None -> 0UL
+    //    if List.length instructions = 2 then
+    //        match List.item 0 instructions, List.item 1 instructions with
+    //        | instr1, instr2 -> 
+    //            swapToken.t0amountInt <- 
+    //                        match instr1.parsed with
+    //                        | Some parsed -> parsed.info.amount
+    //                        | None -> 0UL
+    //            swapToken.t1amountInt <- 
+    //                        match instr2.parsed with
+    //                        | Some parsed -> parsed.info.amount
+    //                        | None -> 0UL
 
-                swapToken.from <- instr1.parsed |> Option.bind (fun parsed -> parsed.info.authority) |> Option.defaultValue ""
-                swapToken.to_ <- instr2.parsed |> Option.bind (fun parsed -> parsed.info.authority) |> Option.defaultValue ""
+    //            swapToken.from <- instr1.parsed |> Option.bind (fun parsed -> parsed.info.authority) |> Option.defaultValue ""
+    //            swapToken.to_ <- instr2.parsed |> Option.bind (fun parsed -> parsed.info.authority) |> Option.defaultValue ""
         
-                let t0 = compareArrays pre post swapToken.t0amountInt
-                let t1 = compareArrays pre post swapToken.t1amountInt
+    //            let t0 = compareArrays pre post swapToken.t0amountInt
+    //            let t1 = compareArrays pre post swapToken.t1amountInt
 
-                swapToken.t0decimals <- 
-                            match t0 with
-                            | Some parsed -> parsed.uiTokenAmount.decimals
-                            | None -> 0UL
+    //            swapToken.t0decimals <- 
+    //                        match t0 with
+    //                        | Some parsed -> parsed.uiTokenAmount.decimals
+    //                        | None -> 0UL
 
-                swapToken.t1decimals <- 
-                            match t1 with
-                            | Some parsed -> parsed.uiTokenAmount.decimals
-                            | None -> 0UL
+    //            swapToken.t1decimals <- 
+    //                        match t1 with
+    //                        | Some parsed -> parsed.uiTokenAmount.decimals
+    //                        | None -> 0UL
 
-                swapToken.t0addr <- 
-                            match t0 with
-                            | Some parsed -> parsed.mint
-                            | None -> ""
+    //            swapToken.t0addr <- 
+    //                        match t0 with
+    //                        | Some parsed -> parsed.mint
+    //                        | None -> ""
 
-                swapToken.t1addr <- 
-                            match t1 with
-                            | Some parsed -> parsed.mint
-                            | None -> ""
+    //            swapToken.t1addr <- 
+    //                        match t1 with
+    //                        | Some parsed -> parsed.mint
+    //                        | None -> ""
 
-                swapToken.t0amountFloat <- float swapToken.t0amountInt / (10.0 ** float swapToken.t0decimals)
-                swapToken.t1amountFloat <- float swapToken.t1amountInt / (10.0 ** float swapToken.t1decimals)
+    //            swapToken.t0amountFloat <- float swapToken.t0amountInt / (10.0 ** float swapToken.t0decimals)
+    //            swapToken.t1amountFloat <- float swapToken.t1amountInt / (10.0 ** float swapToken.t1decimals)
 
-        swapToken
+    //    swapToken
 
     let parceInstructions (instructions:Instruction list ) (pre: TokenBalance list) (post: TokenBalance list) = 
         let res = 
@@ -252,7 +258,8 @@ type scopedSwapsBlock(
                   |> List.forall (fun instr -> instr.parsed 
                                                |> Option.exists (fun parsed -> parsed.info.tokenAmount.IsSome)) with
             | true -> parceInstructionsTransferChecked instructions
-            | false -> parceInstructionsTransfer instructions pre post
+           // | false -> parceInstructionsTransfer instructions pre post
+            | false -> { emptySwapTokens with to_ = "" }
         res
 
     let additionalCalculationsSwaps (swapToken: SwapToken) = 
@@ -275,12 +282,30 @@ type scopedSwapsBlock(
             swapToken.isBuySol <- true
 
         swapToken
-    
 
     let processSwaps (d:(string * (Instruction list * TokenBalance list * TokenBalance list))[]) =
          d 
          |> Array.map (fun (signature, (instructions, preTokenBalances, postTokenBalances)) -> parceInstructions instructions preTokenBalances postTokenBalances )
-         |> Array.map additionalCalculationsSwaps   
+         |> Array.map additionalCalculationsSwaps  
+
+    let filterStableCoins (swapToken: SwapToken) =
+
+        if (String.Equals(swapToken.t0addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase) &&
+            String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase))
+            ||
+           (String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
+            String.Equals(swapToken.t1addr, chainSettingsOption.AddressStableCoin, StringComparison.InvariantCultureIgnoreCase))
+        then
+            Some (StableCoin swapToken)
+        elif (String.Equals(swapToken.t0addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
+              chainSettingsOption.ExcludedAddresses |> Array.exists (fun item -> String.Equals(item, swapToken.t1addr, StringComparison.InvariantCultureIgnoreCase)))
+              ||
+             (String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase) &&
+              chainSettingsOption.ExcludedAddresses |> Array.exists (fun item -> String.Equals(item, swapToken.t0addr, StringComparison.InvariantCultureIgnoreCase)))
+        then
+            None
+        else
+            Some (Token swapToken)
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
@@ -294,9 +319,10 @@ type scopedSwapsBlock(
                         |> Async.map (Array.collect id) 
                         |> Async.map filterSwaps   
                         |> Async.map processSwaps
-                        //|> Async.map processArrayAsync
+                        |> Async.map (Array.map filterStableCoins)
                         //|> Async.Bind processBlocks
                         //|> Async.map saveToDB
                         |> Async.RunSynchronously 
                 return ()
             }
+           

@@ -88,7 +88,14 @@ async (
 
     if (entity.Address.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
     {
-        entity.isETH = true;
+        if (message.Network.Equals("base", StringComparison.InvariantCultureIgnoreCase))
+        {
+             entity.isBase = true;
+        }
+        else
+        {
+            entity.isETH = true;
+        }
     }
     else
     {
@@ -114,6 +121,7 @@ public class TelegramMessage
     public string Name { get; set; } = string.Empty;
     public double MK { get; set; }
     public string Address { get; set; } = string.Empty;
+    public string Network { get; set; } = string.Empty;
 }
 
 public class TelegramApi

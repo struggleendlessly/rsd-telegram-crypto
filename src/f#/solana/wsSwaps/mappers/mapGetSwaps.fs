@@ -19,8 +19,10 @@ let mapToSwapTokensEntity startSlot endSlot priceSolInUsd (v: SwapToken) =
     res.isBuyToken <- v.isBuyToken
     res.priceSol_USD <- priceSolInUsd
   
-    res.t0amount <- v.t0amountFloat
-    res.t1amount <- v.t1amountFloat
+    res.solIn <- v.solIn
+    res.solOut <- v.solOut
+    res.tokenIn <- v.tokenIn
+    res.tokenOut <- v.tokenOut
 
     res  
 
@@ -37,10 +39,8 @@ let mapToSwapTokensUSDEntity (v: SwapToken) =
     res.isBuyDai <- v.isBuyToken
     res.priceSolInUsd <- v.priceSolInUsd
   
-    res.t0amount <- v.t0amountFloat
-    res.t1amount <- v.t1amountFloat
-
     res   
+
 let average (a: float) (b: float) = (a + b) / 2.0
 let swapsUsdToSol priceSolInUsd (stableCoins) (v: SwapToken) = 
     if stableCoins |> Array.exists (fun item -> String.Equals(item, v.t0addr, StringComparison.InvariantCultureIgnoreCase))
@@ -66,6 +66,8 @@ let swapsAveragePrice (v: string * SwapToken[]) =
                     solOut = 0
                     tokenIn = 0
                     tokenOut = 0
+                    t0amountFloat = 0
+                    t1amountFloat = 0
                     }
     let a = v 
             |> snd 
@@ -126,6 +128,8 @@ let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes op
         | [||] -> defaultSolUsd
         | _ -> stableCoinsT0.[0].priceSolInUsd
 
+    let stableCoinsT1 = Array.tryHead stableCoinsT0 
+                             |> Option.map (fun x -> mapToSwapTokensUSDEntity x)
 
     let tokensUsdT2 = tokensUsdT1
                              |> Array.map (swapsUsdToSol priceSolInUsd stableCoins)
@@ -135,6 +139,6 @@ let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes op
                    |> Array.filter (fun x -> x.priceTokenInSol > 0 )
                    |> Array.groupBy (fun t -> if t.t0addr <> "So11111111111111111111111111111111111111112" then t.t0addr else t.t1addr)
                    |> Array.map swapsAveragePrice
-                   //|> Array.map (mapToSwapTokensEntity startSlot endSlot priceSolInUsd)
+                   |> Array.map (mapToSwapTokensEntity startSlot endSlot priceSolInUsd)
         
     tokensT0

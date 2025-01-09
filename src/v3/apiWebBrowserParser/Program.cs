@@ -211,9 +211,15 @@ public class TelegramApi
             text +=
                 $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/solana/pair-explorer/{telegramMessage.Address}) ";
         }
+        else if (telegramMessage.isETH)
+        {
+            text +=
+                $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{telegramMessage.Address}) ";
+        }
         else
         {
-            //text += $"{telegramMessage.Address}\n";
+            text +=
+                $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/base/pair-explorer/{telegramMessage.Address}) ";
         }
 
         string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +

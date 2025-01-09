@@ -15,9 +15,6 @@ namespace dbMigration.models
         public string from { get; set; } = string.Empty;
         public string to { get; set; } = string.Empty;
 
-        public double t0amount { get; set; }
-        public double t1amount { get; set; }
-
         public double priceSolInUsd { get; set; }
 
         public bool isBuyDai { get; set; }

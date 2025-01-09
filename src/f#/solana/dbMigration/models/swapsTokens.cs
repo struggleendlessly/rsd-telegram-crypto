@@ -17,8 +17,10 @@ namespace dbMigration.models
         public string from { get; set; } = string.Empty;
         public string to { get; set; } = string.Empty;
 
-        public double t0amount { get; set; }
-        public double t1amount { get; set; } 
+        public double solIn { get; set; }
+        public double solOut { get; set; } 
+        public double tokenIn { get; set; }
+        public double tokenOut { get; set; } 
 
         public double priceTokenInSol { get; set; }
         public double priceSol_USD { get; set; }

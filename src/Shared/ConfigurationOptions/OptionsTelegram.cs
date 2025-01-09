@@ -13,14 +13,23 @@
         
         public string message_thread_id_eth_more1m_less10m { get; set; } = "";
         public string message_thread_id_solana_more1m_less10m { get; set; } = "";
+        public string message_thread_id_base_more1m_less10m { get; set; } = "";
+
         public string message_thread_id_eth_more300k_less1m { get; set; } = "";
         public string message_thread_id_solana_more300k_less1m { get; set; } = "";
+        public string message_thread_id_base_more300k_less1m { get; set; } = "";
+
         public string message_thread_id_eth_more100k_less300k { get; set; } = "";
         public string message_thread_id_solana_more100k_less300k { get; set; } = "";
+        public string message_thread_id_base_more100k_less300k { get; set; } = "";
+
         public string message_thread_id_eth_less100k { get; set; } = "";
         public string message_thread_id_solana_less100k { get; set; } = "";
+        public string message_thread_id_base_less100k { get; set; } = "";
+
         public string message_thread_id_eth_more10m { get; set; } = "";
         public string message_thread_id_solana_more10m { get; set; } = "";
+        public string message_thread_id_base_more10m { get; set; } = "";
 
         public string message_thread_id_mainfilters { get; set; } = "";
         public string message_thread_id_healthCheck { get; set; } = "";

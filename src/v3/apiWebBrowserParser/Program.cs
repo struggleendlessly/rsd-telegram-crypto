@@ -177,18 +177,23 @@ public class TelegramApi
         {
             { MK: <= 100_000, isSolana: true } => optionsTelegram.message_thread_id_solana_less100k,
             { MK: <= 100_000, isETH: true } => optionsTelegram.message_thread_id_eth_less100k,
+            { MK: <= 100_000, isBase: true } => optionsTelegram.message_thread_id_base_less100k,
 
             { MK: (> 100_000) and (<= 300_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more100k_less300k,
             { MK: (> 100_000) and (<= 300_000), isETH: true } => optionsTelegram.message_thread_id_eth_more100k_less300k,
+            { MK: (> 100_000) and (<= 300_000), isBase: true } => optionsTelegram.message_thread_id_base_more100k_less300k,
 
             { MK: (> 300_000) and (<= 1_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more300k_less1m,
             { MK: (> 300_000) and (<= 1_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more300k_less1m,
+            { MK: (> 300_000) and (<= 1_000_000), isBase: true } => optionsTelegram.message_thread_id_base_more300k_less1m,
 
             { MK: (> 1_000_000) and (<= 10_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more1m_less10m,
             { MK: (> 1_000_000) and (<= 10_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more1m_less10m,
+            { MK: (> 1_000_000) and (<= 10_000_000), isBase: true } => optionsTelegram.message_thread_id_base_more1m_less10m,
 
             { MK: (> 10_000_000), isSolana: true } => optionsTelegram.message_thread_id_solana_more10m,
             { MK: (> 10_000_000), isETH: true } => optionsTelegram.message_thread_id_eth_more10m,
+            { MK: (> 10_000_000), isBase: true } => optionsTelegram.message_thread_id_base_more10m,
 
             _ => 0.ToString(),
         };

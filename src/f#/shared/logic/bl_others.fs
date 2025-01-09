@@ -4,6 +4,9 @@ let list1andLast (lst: 'a list) =
     match lst with
     | [] -> []
     | [x] -> []
+    | h1 :: h2 :: h3 :: h4 :: tail -> 
+        let last = List.last tail
+        [h3; last]
     | head :: tail -> 
         let last = List.last tail
         [head; last]

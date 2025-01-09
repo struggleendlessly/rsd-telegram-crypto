@@ -41,23 +41,54 @@ let mapToSwapTokensUSDEntity (v: SwapToken) =
     res.t1amount <- v.t1amountFloat
 
     res   
-
-
+let average (a: float) (b: float) = (a + b) / 2.0
 let swapsUsdToSol priceSolInUsd (stableCoins) (v: SwapToken) = 
     if stableCoins |> Array.exists (fun item -> String.Equals(item, v.t0addr, StringComparison.InvariantCultureIgnoreCase))
     then
-        v.t0addr <- "So11111111111111111111111111111111111111112"
-        v.t0amountFloat <- v.t0amountFloat / priceSolInUsd
-        v.priceTokenInSol <- v.t0amountFloat / v.t1amountFloat
+        { v with 
+            t0addr = "So11111111111111111111111111111111111111112"
+            t0amountFloat = v.t0amountFloat / priceSolInUsd
+            priceTokenInSol = v.t0amountFloat / priceSolInUsd / v.t1amountFloat
+            isBuyToken = true
+            }
     else
-        v.t1addr <- "So11111111111111111111111111111111111111112"
-        v.t1amountFloat <- v.t1amountFloat / priceSolInUsd
-        v.priceTokenInSol <- v.t1amountFloat / v.t0amountFloat
-    v
+        { v with 
+            t1addr = "So11111111111111111111111111111111111111112"
+            t1amountFloat = v.t1amountFloat / priceSolInUsd
+            priceTokenInSol = v.t1amountFloat / priceSolInUsd / v.t0amountFloat
+            isBuySol = true
+            }    
 
-let swapsAveragePrice (v: SwapToken) = 
+let swapsAveragePrice (v: string * SwapToken[]) = 
+    let f = v |> snd |> Array.head
+    let acc = { f with 
+                    solIn = 0 
+                    solOut = 0
+                    tokenIn = 0
+                    tokenOut = 0
+                    }
+    let a = v 
+            |> snd 
+            |> Array.fold (fun acc x -> 
 
-    1
+                            if x.isBuyToken 
+                            then                               
+                                acc.isBuyToken <- x.isBuyToken
+                                acc.slotNuber <- x.slotNuber
+
+                                acc.solIn <- average x.t0amountFloat acc.solIn
+                                acc.tokenOut <- average x.t1amountFloat acc.tokenOut
+                            else
+                                acc.isBuySol <- x.isBuySol
+                                acc.slotNuber <- x.slotNuber
+
+                                acc.solOut <- average x.t1amountFloat acc.solOut
+                                acc.tokenIn <- average x.t0amountFloat acc.tokenIn
+                            acc
+
+                            ) acc
+    a
+    
 
 let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes option[])= 
 
@@ -98,7 +129,12 @@ let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes op
 
     let tokensUsdT2 = tokensUsdT1
                              |> Array.map (swapsUsdToSol priceSolInUsd stableCoins)
-    //let tokensT2 = tokensT1
-    //                         |> Array.map (mapToSwapTokensEntity startSlot endSlot priceSolInUsd)
+                             |> Array.filter (fun x -> x.priceTokenInSol < 1 )
+
+    let tokensT2 = Array.append tokensUsdT2 tokensT1 
+                   |> Array.filter (fun x -> x.priceTokenInSol > 0 )
+                   |> Array.groupBy (fun t -> if t.t0addr <> "So11111111111111111111111111111111111111112" then t.t0addr else t.t1addr)
+                   |> Array.map swapsAveragePrice
+                   //|> Array.map (mapToSwapTokensEntity startSlot endSlot priceSolInUsd)
         
     tokensT0

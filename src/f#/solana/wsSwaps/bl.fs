@@ -19,6 +19,11 @@ type SwapToken =
     mutable isBuyToken: bool
     mutable isBuySol: bool
     mutable slotNuber: uint64
+    mutable solIn: float
+    mutable solOut: float
+    mutable tokenIn: float
+    mutable tokenOut: float
+
     }
 
 type tokensTypes = 
@@ -44,4 +49,8 @@ let emptySwapTokens = {
     isBuyToken = false
     isBuySol = false
     slotNuber = 0UL
+    solIn = 0.0
+    solOut = 0.0
+    tokenIn = 0.0
+    tokenOut = 0.0
     }

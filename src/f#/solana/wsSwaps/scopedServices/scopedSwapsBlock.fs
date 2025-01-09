@@ -296,14 +296,20 @@ type scopedSwapsBlock(
 
             Some (TokenSol swapToken)
     
-    let saveToDB blocks = 
+    let saveToDB (v: swapsTokens[] * swapsTokensUSD option) = 
         async {
-            if Array.isEmpty blocks then
-                return 0
-            else
-                do! solDB.swapsTokensEntities.AddRangeAsync(blocks) |> Async.AwaitTask
-                let! result = solDB.SaveChangesAsync() |> Async.AwaitTask
-                return result
+            let swapsTokens, swapsTokensUSD = v
+
+            do! solDB.swapsTokensEntities.AddRangeAsync(swapsTokens) |> Async.AwaitTask
+
+            match swapsTokensUSD with
+            | Some swapsTokensUSD -> 
+                    let! _ = solDB.swapsTokensUSDEntities.AddAsync(swapsTokensUSD).AsTask() |> Async.AwaitTask
+                    ()
+            | None -> ()
+
+            let! result = solDB.SaveChangesAsync() |> Async.AwaitTask
+            return result
         }      
 
     interface IScopedProcessingService with
@@ -312,7 +318,7 @@ type scopedSwapsBlock(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 //let a = File.ReadAllText("C:\Users\strug\Downloads\Untitled.json")
                 //let b = a |> JsonSerializer.Deserialize<responseGetBlockSol[]>
-                let seq = getSeqToProcessUint64 10UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot
+                let seq = getSeqToProcessUint64 1UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot
                 let! seqX = seq
                 let startBlock = Seq.head seqX
                 let endBlock = Seq.last seqX
@@ -325,8 +331,9 @@ type scopedSwapsBlock(
                         |> Async.map processSwaps
                         |> Async.map (Array.map filterStableCoins)
                         |> Async.map (mapSwapTokens chainSettingsOption.ExcludedAddresses solUsdDefault startBlock endBlock)
-                        //|> Async.map saveToDB
+                        |> Async.Bind saveToDB
                         |> Async.RunSynchronously 
+
                 return ()
             }
            

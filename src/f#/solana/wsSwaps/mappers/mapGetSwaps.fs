@@ -10,7 +10,7 @@ let mapToSwapTokensEntity startSlot endSlot priceSolInUsd (v: SwapToken) =
 
     res.addressToken <- v.tokenAddress
     res.slotNumberStartInt <- startSlot
-    res.slotNumberStartInt <- endSlot
+    res.slotNumberEndInt <- endSlot
 
     res.from <- v.from
     res.``to`` <- v.to_
@@ -18,6 +18,7 @@ let mapToSwapTokensEntity startSlot endSlot priceSolInUsd (v: SwapToken) =
     res.isBuySol <- v.isBuySol
     res.isBuyToken <- v.isBuyToken
     res.priceSol_USD <- priceSolInUsd
+    res.priceTokenInSol <- v.priceTokenInSol
   
     res.solIn <- v.solIn
     res.solOut <- v.solOut
@@ -128,17 +129,17 @@ let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes op
         | [||] -> defaultSolUsd
         | _ -> stableCoinsT0.[0].priceSolInUsd
 
-    let stableCoinsT1 = Array.tryHead stableCoinsT0 
+    let stableCoinsRes = Array.tryHead stableCoinsT0 
                              |> Option.map (fun x -> mapToSwapTokensUSDEntity x)
 
     let tokensUsdT2 = tokensUsdT1
                              |> Array.map (swapsUsdToSol priceSolInUsd stableCoins)
                              |> Array.filter (fun x -> x.priceTokenInSol < 1 )
 
-    let tokensT2 = Array.append tokensUsdT2 tokensT1 
-                   |> Array.filter (fun x -> x.priceTokenInSol > 0 )
+    let tokensRes = Array.append tokensUsdT2 tokensT1 
+                   |> Array.filter (fun x -> x.priceTokenInSol > 0  && not (x.priceTokenInSol = infinity))
                    |> Array.groupBy (fun t -> if t.t0addr <> "So11111111111111111111111111111111111111112" then t.t0addr else t.t1addr)
                    |> Array.map swapsAveragePrice
                    |> Array.map (mapToSwapTokensEntity startSlot endSlot priceSolInUsd)
         
-    tokensT0
+    (tokensRes, stableCoinsRes)

@@ -2,28 +2,37 @@
 
 type SwapToken = 
     { 
-    mutable tokenAddress: string
-    mutable t0addr: string 
-    mutable t1addr: string 
-    mutable from: string 
-    mutable to_: string 
-    mutable txn: string 
-    mutable t0amountFloat: float 
-    mutable t1amountFloat: float 
-    mutable t0amountInt: uint64 
-    mutable t1amountInt: uint64 
-    mutable t0decimals: uint64 
-    mutable t1decimals: uint64 
-    mutable priceTokenInSol: float 
-    mutable priceSolInUsd: float 
-    mutable isBuyToken: bool
-    mutable isBuySol: bool
-    mutable slotNuber: uint64
-    mutable solIn: float
-    mutable solOut: float
-    mutable tokenIn: float
-    mutable tokenOut: float
+        tokenAddress: string
+        t0addr: string 
+        t1addr: string 
+        from: string 
+        to_: string 
+        txn: string 
+        t0amountFloat: float 
+        t1amountFloat: float 
+        t0amountInt: uint64 
+        t1amountInt: uint64 
+        t0decimals: uint64 
+        t1decimals: uint64 
+        priceTokenInSol: float 
+        priceSolInUsd: float 
+        isBuyToken: bool
+        isBuySol: bool
+        solIn: float
+        solOut: float
+        tokenIn: float
+        tokenOut: float
+    }
 
+type instructionToken = 
+    { 
+     address: string 
+     from: string 
+     to_: string 
+     txn: string 
+     amountFloat: float 
+     amountInt: uint64 
+     decimals: uint64 
     }
 
 type tokensTypes = 
@@ -48,7 +57,6 @@ let emptySwapTokens = {
     priceSolInUsd = 0.0
     isBuyToken = false
     isBuySol = false
-    slotNuber = 0UL
     solIn = 0.0
     solOut = 0.0
     tokenIn = 0.0

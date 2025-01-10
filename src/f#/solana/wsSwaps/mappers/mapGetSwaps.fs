@@ -24,14 +24,15 @@ let mapToSwapTokensEntity startSlot endSlot priceSolInUsd (v: SwapToken) =
     res.solOut <- v.solOut
     res.tokenIn <- v.tokenIn
     res.tokenOut <- v.tokenOut
+    res.txsHash <- v.txn
 
     res  
 
-let mapToSwapTokensUSDEntity (v: SwapToken) = 
+let mapToSwapTokensUSDEntity endSlot (v: SwapToken) = 
     let res = new swapsTokensUSD()
 
     res.addressToken <- v.tokenAddress
-    res.slotNumberInt <- v.slotNuber
+    res.slotNumberInt <- endSlot
 
     res.from <- v.from
     res.``to`` <- v.to_
@@ -39,6 +40,7 @@ let mapToSwapTokensUSDEntity (v: SwapToken) =
     res.isBuySol <- v.isBuySol
     res.isBuyDai <- v.isBuyToken
     res.priceSolInUsd <- v.priceSolInUsd
+    res.txsHash <- v.txn
   
     res   
 
@@ -47,6 +49,7 @@ let swapsUsdToSol priceSolInUsd (stableCoins) (v: SwapToken) =
     if stableCoins |> Array.exists (fun item -> String.Equals(item, v.t0addr, StringComparison.InvariantCultureIgnoreCase))
     then
         { v with 
+            tokenAddress = v.t1addr
             t0addr = "So11111111111111111111111111111111111111112"
             t0amountFloat = v.t0amountFloat / priceSolInUsd
             priceTokenInSol = v.t0amountFloat / priceSolInUsd / v.t1amountFloat
@@ -54,6 +57,7 @@ let swapsUsdToSol priceSolInUsd (stableCoins) (v: SwapToken) =
             }
     else
         { v with 
+            tokenAddress = v.t0addr
             t1addr = "So11111111111111111111111111111111111111112"
             t1amountFloat = v.t1amountFloat / priceSolInUsd
             priceTokenInSol = v.t1amountFloat / priceSolInUsd / v.t0amountFloat
@@ -75,25 +79,23 @@ let swapsAveragePrice (v: string * SwapToken[]) =
             |> Array.fold (fun acc x -> 
 
                             if x.isBuyToken 
-                            then                               
-                                acc.isBuyToken <- x.isBuyToken
-                                acc.slotNuber <- x.slotNuber
-
-                                acc.solIn <- average x.t0amountFloat acc.solIn
-                                acc.tokenOut <- average x.t1amountFloat acc.tokenOut
+                            then 
+                                { acc with 
+                                    isBuyToken = x.isBuyToken
+                                    solIn = average x.t0amountFloat acc.solIn
+                                    tokenOut = average x.t1amountFloat acc.tokenOut                                  
+                                 }
                             else
-                                acc.isBuySol <- x.isBuySol
-                                acc.slotNuber <- x.slotNuber
-
-                                acc.solOut <- average x.t1amountFloat acc.solOut
-                                acc.tokenIn <- average x.t0amountFloat acc.tokenIn
-                            acc
-
+                                { acc with 
+                                    isBuySol = x.isBuySol
+                                    solOut = average x.t1amountFloat acc.solOut
+                                    tokenIn = average x.t0amountFloat acc.tokenIn                               
+                                 }                            
                             ) acc
     a
     
 
-let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes option[])= 
+let mapToEnteties stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes option[])= 
 
     let tokensT0, others0 = 
         v 
@@ -118,6 +120,7 @@ let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes op
                             |  Some ( TokenSol x) -> Some x 
                             | _ -> None)
 
+
     let tokensUsdT1 = 
         tokensUsdT0 
         |> Array.choose (function 
@@ -130,7 +133,7 @@ let mapSwapTokens stableCoins defaultSolUsd startSlot endSlot (v: tokensTypes op
         | _ -> stableCoinsT0.[0].priceSolInUsd
 
     let stableCoinsRes = Array.tryHead stableCoinsT0 
-                             |> Option.map (fun x -> mapToSwapTokensUSDEntity x)
+                             |> Option.map (fun x -> mapToSwapTokensUSDEntity endSlot x)
 
     let tokensUsdT2 = tokensUsdT1
                              |> Array.map (swapsUsdToSol priceSolInUsd stableCoins)

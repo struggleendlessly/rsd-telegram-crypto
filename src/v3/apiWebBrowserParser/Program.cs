@@ -88,7 +88,7 @@ async (
 
     if (entity.Address.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
     {
-        if (message.Network.Equals("base", StringComparison.InvariantCultureIgnoreCase))
+        if (message.Network.Trim().Contains("base", StringComparison.InvariantCultureIgnoreCase))
         {
              entity.isBase = true;
         }

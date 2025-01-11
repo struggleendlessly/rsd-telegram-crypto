@@ -122,56 +122,98 @@ type scopedSwapsBlock(
         match transferType with
         | Transf v -> mapTransfToSwapToken txn pre post v
         | TransfChecked v -> mapTransCheckedfToSwapToken txn v
+    let emptyParsedInfo = {
+        lamports = None
+        newAccount = None
+        owner = None
+        source = None
+        space = None
+        account = None
+        mint = None
+        systemProgram = None
+        tokenProgram = None
+        wallet = None
+        extensionTypes = None
+        authority = None
+        amount = 0UL
+        destination = None
+        tokenAmount = None
+        }
+    let getParsed (trans: transferType) = 
+        match trans with 
+            | Transf instr -> instr.parsed |> Option.bind (fun parsed -> Some parsed.info) |> Option.defaultValue emptyParsedInfo 
+            | TransfChecked instr -> instr.parsed |> Option.bind (fun parsed -> Some parsed.info) |> Option.defaultValue emptyParsedInfo
+
+    let filterSplitMoney ( lst: transferType list )=  
+        if List.length lst > 5
+        then
+            let infos = List.map getParsed lst
+            let a = 
+                match infos with
+                    | [] -> []
+                    | h1 :: h2 :: (hn::tail) -> 
+                        if h1.destination = h2.source
+                        then
+                            lst |> List.skip 1 |> List.take (List.length lst - 2)
+                        else
+                            lst
+                    | _ -> lst
+            a
+        else
+            lst
 
     let processTransactions (responses: responseGetBlockSol[]) =
         let mutable resMap = List.empty<instructionToken list>
 
         for response in responses do
-            for transaction in response.result.transactions do
-                if transaction.meta.err = None
-                then
-                    let txn = transaction.transaction.signatures[0]
-                    for innerInstruction in transaction.meta.innerInstructions do
+            if response.error = None
+            then
+                for transaction in response.result.transactions do
+                    if transaction.meta.err = None
+                    then
+                        let txn = transaction.transaction.signatures[0]
+                        for innerInstruction in transaction.meta.innerInstructions do
 
-                        let mutable filteredInnInstTransfer = List.empty<transferType>
-                        for instruction in innerInstruction.instructions do
-                            if String.Equals(instruction.program, "spl-token", StringComparison.OrdinalIgnoreCase)                    
-                            then                             
-                                    match instruction.parsed with
-                                    |Some t when String.Equals(t.``type``, "transferChecked", StringComparison.OrdinalIgnoreCase) || 
-                                                 String.Equals(t.``type``, "transfer", StringComparison.OrdinalIgnoreCase) 
-                                                 ->                                                
-                                                    if String.Equals(t.``type``, "transferChecked", StringComparison.OrdinalIgnoreCase)
-                                                    then
-                                                        filteredInnInstTransfer <- TransfChecked (instruction) :: filteredInnInstTransfer
-                                                    else
-                                                         let prev = filteredInnInstTransfer |> List.tryHead
-                                                         let r = match prev with
-                                                                    | Some (Transf prevInstr) when 
-                                                                            prevInstr.parsed.Value.info.source.Value.Equals(instruction.parsed.Value.info.source.Value, StringComparison.InvariantCultureIgnoreCase) -> 
-                                                                            filteredInnInstTransfer <- Transf (instruction) :: List.tail filteredInnInstTransfer
-                                                                    | _ ->  filteredInnInstTransfer <- Transf (instruction) :: filteredInnInstTransfer
-                                                         ()
+                            let mutable filteredInnInstTransfer = List.empty<transferType>
+                            for instruction in innerInstruction.instructions do
+                                if String.Equals(instruction.program, "spl-token", StringComparison.OrdinalIgnoreCase)                    
+                                then                             
+                                        match instruction.parsed with
+                                        |Some t when String.Equals(t.``type``, "transferChecked", StringComparison.OrdinalIgnoreCase) || 
+                                                     String.Equals(t.``type``, "transfer", StringComparison.OrdinalIgnoreCase) 
+                                                     ->                                                
+                                                        if String.Equals(t.``type``, "transferChecked", StringComparison.OrdinalIgnoreCase)
+                                                        then
+                                                            filteredInnInstTransfer <- TransfChecked (instruction) :: filteredInnInstTransfer
+                                                        else
+                                                             let prev = filteredInnInstTransfer |> List.tryHead
+                                                             let r = match prev with
+                                                                        | Some (Transf prevInstr) when 
+                                                                                prevInstr.parsed.Value.info.source.Value.Equals(instruction.parsed.Value.info.source.Value, StringComparison.InvariantCultureIgnoreCase) -> 
+                                                                                filteredInnInstTransfer <- Transf (instruction) :: List.tail filteredInnInstTransfer
+                                                                        | _ ->  filteredInnInstTransfer <- Transf (instruction) :: filteredInnInstTransfer
+                                                             ()
                                                       
-                                    | _ -> ()
+                                        | _ -> ()
                                 
-                        let filteredInnInstTransferChunked = 
-                            match filteredInnInstTransfer with
-                            | a when List.length filteredInnInstTransfer % 2 = 0 -> 
-                                filteredInnInstTransfer 
-                                |> List.rev 
-                                |> List.map (mapToInstructionToken txn transaction.meta.preTokenBalances transaction.meta.postTokenBalances)
-                                |> List.toSeq 
-                                |> Seq.chunkBySize 2 
-                                |> Seq.map List.ofSeq 
-                                |> Seq.toList
-                            | _ -> [ ]
+                            let filteredInnInstTransferChunked = 
+                                match filteredInnInstTransfer with
+                                | a when List.length filteredInnInstTransfer % 2 = 0 -> 
+                                    filteredInnInstTransfer 
+                                    |> List.rev 
+                                    |> filterSplitMoney
+                                    |> List.map (mapToInstructionToken txn transaction.meta.preTokenBalances transaction.meta.postTokenBalances)
+                                    |> List.toSeq 
+                                    |> Seq.chunkBySize 2 
+                                    |> Seq.map List.ofSeq 
+                                    |> Seq.toList
+                                | _ -> [ ]
                         
-                        if not (List.isEmpty filteredInnInstTransferChunked)
-                        then
-                            filteredInnInstTransferChunked
-                            |> List.iter (fun swapTokens ->
-                                  resMap <- swapTokens :: resMap )
+                            if not (List.isEmpty filteredInnInstTransferChunked)
+                            then
+                                filteredInnInstTransferChunked
+                                |> List.iter (fun swapTokens ->
+                                      resMap <- swapTokens :: resMap )
                                             
         resMap 
         |> List.toArray 
@@ -247,8 +289,8 @@ type scopedSwapsBlock(
                 let x = 
                     { swapToken with 
                         tokenAddress = swapToken.t1addr
-                        priceTokenInSol = swapToken.t1amountFloat / swapToken.t0amountFloat
-                        isBuySol = true }
+                        priceTokenInSol = swapToken.t0amountFloat / swapToken.t1amountFloat
+                        isBuyToken = true }
                 Some (TokenSol x)
             elif String.Equals(swapToken.t1addr, chainSettingsOption.AddressChainCoin, StringComparison.InvariantCultureIgnoreCase)
             then
@@ -284,7 +326,7 @@ type scopedSwapsBlock(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 //let a = File.ReadAllText("C:\Users\strug\Downloads\Untitled.json")
                 //let b = a |> JsonSerializer.Deserialize<responseGetBlockSol[]>
-                let seq = getSeqToProcessUint64 3UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot
+                let seq = getSeqToProcessUint64 50UL (uint64 chainSettingsOption.BlocksIn5Minutes) getLastKnownProcessedBlock getLastSolSlot
                 let! seqX = seq
                 let startBlock = Seq.head seqX
                 let endBlock = Seq.last seqX

@@ -15,7 +15,20 @@ open responseSwap
 open alchemy
 open Microsoft.Extensions.Options
 open ethCommonDB
+open ethCommonDB.models
+open Nethereum.Util
 
+type swapT =
+    {
+        ethInUsd: BigDecimal
+        pairAddress: string
+    }
+    
+let empty_swapT =
+    {
+        ethInUsd = BigDecimal.Parse("0")
+        pairAddress = ""
+    }
 
 type scoped_trigger_5mins(
         logger: ILogger<scoped_trigger_5mins>,
@@ -25,18 +38,57 @@ type scoped_trigger_5mins(
 
     let chainSettingsOption = chainSettingsOption.Value;
 
-    let getTokens0and1 (addressPair: string[]) =
-        ethDB.tokenInfoEntities
-            .Where(fun x -> addressPair.Contains(x.AddressPair))
+    let getLastProcessedBlock () =
+        ethDB.swapsETH_TokenEntities
+            .OrderByDescending(fun x -> x.blockNumberEndInt)
+            .Take(1)
+            .Select(fun x -> x.blockNumberEndInt)
+            .FirstOrDefaultAsync()
+            |> Async.AwaitTask
+
+    let getTxnsForPeriod (firstBlockInPeriod) =
+        ethDB.swapsETH_TokenEntities
+            .Where(fun x -> x.blockNumberEndInt >= firstBlockInPeriod)
             .ToListAsync()
             |> Async.AwaitTask
 
+    let avarage (swaps: string * SwapsETH_Token []) = 
+        let (pairAddress, swap) = swaps
+
+        let a = swap 
+                |> Array.fold (fun acc x -> 
+                                acc + BigDecimal.Parse(x.EthIn) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
+
+        { ethInUsd = a / BigDecimal.Parse(string swap.Length)
+          pairAddress = pairAddress }      
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
+                let countInPeriods = 5
+
+                let! a = getLastProcessedBlock()
                     
+                let! e = getTxnsForPeriod( a - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
+                let ae = e |> List.ofSeq |> List.toArray
+                let grouped = ae |> Array.groupBy (fun entity-> entity.blockNumberEndInt = a) 
+                
+                let firstInPeriod, lastInPeriod =
+                    match grouped with
+                    | [| true, firstGroup; false, secondGroup |] -> secondGroup, firstGroup
+                    | [| false, secondGroup; true, firstGroup |] -> secondGroup, firstGroup
+                    | _ -> [||], [||]
+
+                let averageF = firstInPeriod 
+                                |> Array.filter (fun x -> not (x.EthIn = ""))
+                                |> Array.groupBy (fun entity-> entity.pairAddress) 
+                                |> Array.map avarage
+
+                let averageL = lastInPeriod 
+                                |> Array.filter (fun x -> not (x.EthIn = ""))
+                                |> Array.groupBy (fun entity-> entity.pairAddress) 
+                                |> Array.map avarage
 
                 return ()
             }

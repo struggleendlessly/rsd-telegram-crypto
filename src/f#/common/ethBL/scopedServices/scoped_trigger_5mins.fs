@@ -29,6 +29,11 @@ let empty_swapT =
         ethInUsd = BigDecimal.Parse("0")
         pairAddress = ""
     }
+type Comparison = { 
+    pairAddress: string
+    priceDifference: BigDecimal 
+    volumeInUsd: BigDecimal
+    }
 
 type scoped_trigger_5mins(
         logger: ILogger<scoped_trigger_5mins>,
@@ -59,8 +64,26 @@ type scoped_trigger_5mins(
                 |> Array.fold (fun acc x -> 
                                 acc + BigDecimal.Parse(x.EthIn) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
 
-        { ethInUsd = a / BigDecimal.Parse(string swap.Length)
-          pairAddress = pairAddress }      
+        let res = { ethInUsd = a / BigDecimal.Parse(string swap.Length)
+                    pairAddress = pairAddress }
+        res
+
+
+    let comparePrices (firstArray: swapT[]) (secondArray: swapT[]) =
+        firstArray
+        |> Array.choose (fun firstElem ->
+            match secondArray 
+                    |> Array.tryFind (fun secondElem -> secondElem.pairAddress = firstElem.pairAddress) 
+            with
+            | Some secondElem ->
+                let priceDifference = firstElem.ethInUsd / secondElem.ethInUsd
+                Some { 
+                    pairAddress = firstElem.pairAddress
+                    priceDifference = priceDifference 
+                    volumeInUsd = firstElem.ethInUsd
+                    }
+            | None -> None
+        )
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
@@ -84,11 +107,14 @@ type scoped_trigger_5mins(
                                 |> Array.filter (fun x -> not (x.EthIn = ""))
                                 |> Array.groupBy (fun entity-> entity.pairAddress) 
                                 |> Array.map avarage
+                                |> Array.filter (fun x -> x.ethInUsd > 0)
 
                 let averageL = lastInPeriod 
                                 |> Array.filter (fun x -> not (x.EthIn = ""))
                                 |> Array.groupBy (fun entity-> entity.pairAddress) 
                                 |> Array.map avarage
+
+                let comparisons = comparePrices averageL averageF
 
                 return ()
             }

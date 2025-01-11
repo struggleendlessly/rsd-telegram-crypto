@@ -11,8 +11,8 @@ open Microsoft.Extensions.DependencyInjection
 open IScopedProcessingService
 open scopedNames
 
-type swapsTokens(
-        logger: ILogger<swapsTokens>, 
+type trigger_5mins(
+        logger: ILogger<trigger_5mins>, 
         serviceScopeFactory: IServiceScopeFactory) =
     inherit BackgroundService()
 
@@ -21,7 +21,7 @@ type swapsTokens(
             while not stoppingToken.IsCancellationRequested do
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
-                let scopedProcessingService = serviceFactory.[scopedSwapsTokensName]
+                let scopedProcessingService = serviceFactory.[scoped_trigger_5mins_Name]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
                 do! Task.Delay(1000, stoppingToken)
         }

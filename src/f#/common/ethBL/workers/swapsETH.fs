@@ -1,4 +1,4 @@
-namespace wsSwaps
+namespace workers
 
 open System.Threading
 open System.Threading.Tasks

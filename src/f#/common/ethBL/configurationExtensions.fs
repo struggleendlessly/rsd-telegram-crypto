@@ -23,6 +23,7 @@ open scopedSwapsETH
 open scopedLastBlock
 open scopedSwapsTokens
 open scopedNames
+open scoped_trigger_5mins
 
 let getRetryPolicy() : IAsyncPolicy<HttpResponseMessage> =
     HttpPolicyExtensions
@@ -62,10 +63,15 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
     services.AddScoped<scopedSwapsTokens>() |> ignore
     services.AddScoped<scopedLastBlock>() |> ignore
 
+    services.AddScoped<scoped_trigger_5mins>() |> ignore
+
     services.AddScoped<IDictionary<string, IScopedProcessingService>>(
         fun sp -> 
             let dict = new Dictionary<string, IScopedProcessingService>() 
             dict.Add(scopedSwapsETHName, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
             dict.Add(scopedSwapsTokensName, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
             dict.Add(scopedLastBlockName, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
+
+            dict.Add(scoped_trigger_5mins_Name, sp.GetRequiredService<scoped_trigger_5mins>() :> IScopedProcessingService) 
+
             dict :> IDictionary<string, IScopedProcessingService> ) |> ignore

@@ -1,26 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <UserSecretsId>dotnet-wsTrigger-c6396e80-2741-41ad-9cd2-9a16304572f8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="scopedServices\scoped_trigger_5mins.fs" />
-    <Compile Include="workers\trigger_5mins.fs" />
-    <Compile Include="workers\lastBlock.fs" />
-    <Compile Include="workers\swapsETH.fs" />
-    <Compile Include="workers\swapsTokens.fs" />
-    <Compile Include="mappers\mapResponseEthCall_decimals.fs" />
-    <Compile Include="mappers\mapResponseGetBlock.fs" />
-    <Compile Include="mappers\mapResponseSwap.fs" />
-    <Compile Include="scopedServices\scopedTokenInfo.fs" />
-    <Compile Include="scopedServices\scopedSwapsETH.fs" />
-    <Compile Include="scopedServices\scopedSwapsTokens.fs" />
-    <Compile Include="scopedServices\scopedLastBlock.fs" />
-    <Compile Include="configurationExtensions.fs" />
+    <Content Include="..\wsSwaps\appsettings.Development.json" Link="appsettings.Development.json" />
+    <Content Include="..\wsSwaps\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Program.fs" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.2.358" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
@@ -38,8 +30,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\apiClients\rpc\alchemy\alchemy.fsproj" />
+    <ProjectReference Include="..\..\common\ethBL\ethBL.fsproj" />
     <ProjectReference Include="..\..\shared\shared.fsproj" />
-    <ProjectReference Include="..\ethCommonDB\ethCommonDB.csproj" />
-
+    <ProjectReference Include="..\dbMigration\dbMigration.csproj" />
   </ItemGroup>
 </Project>

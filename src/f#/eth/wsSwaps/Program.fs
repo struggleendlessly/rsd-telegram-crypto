@@ -22,6 +22,7 @@ open configurationExtensions
 open alchemy
 open dbMigration
 open ethCommonDB
+open workers
 
 module Program =
 

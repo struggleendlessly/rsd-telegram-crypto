@@ -58,21 +58,21 @@ type scoped_trigger_5mins(
 
 
     let comparePrices (v: swapT[] * swapT[])  =
-        let firstArray, secondArray = v
+        let firstInPeriod, lastInPeriod = v
 
-        firstArray
-        |> Array.choose (fun firstElem ->
-            match secondArray 
-                    |> Array.tryFind (fun secondElem -> secondElem.pairAddress = firstElem.pairAddress) 
+        lastInPeriod
+        |> Array.choose (fun lastInPeriodElem ->
+            match firstInPeriod 
+                    |> Array.tryFind (fun firstInPeriodElem -> firstInPeriodElem.pairAddress = lastInPeriodElem.pairAddress) 
             with
             | Some secondElem ->
-                let priceDifference = firstElem.ethInUsd / secondElem.ethInUsd
+                let priceDifference = lastInPeriodElem.ethInUsd / secondElem.ethInUsd
                 if priceDifference > 4.0
                 then
                     Some { 
-                            pairAddress = firstElem.pairAddress
+                            pairAddress = lastInPeriodElem.pairAddress
                             priceDifference = priceDifference 
-                            volumeInUsd = firstElem.ethInUsd
+                            volumeInUsd = lastInPeriodElem.ethInUsd
                          }
                 else
                     None
@@ -81,8 +81,8 @@ type scoped_trigger_5mins(
 
     let splitList grouped = 
         match grouped with
-        | [| true, firstGroup; false, secondGroup |] -> secondGroup, firstGroup
-        | [| false, secondGroup; true, firstGroup |] -> secondGroup, firstGroup
+        | [| true, lastInPeriod; false, firstInPeriod |] -> firstInPeriod, lastInPeriod
+        | [| false, firstInPeriod; true, lastInPeriod |] -> firstInPeriod, lastInPeriod
         | _ -> [||], [||]
 
     let transformPeriod  : SwapsETH_Token [] -> swapT []  =
@@ -91,7 +91,7 @@ type scoped_trigger_5mins(
         >> Array.map avarage
         >> Array.filter (fun x -> x.ethInUsd > 0) 
             
-    let transformPeriods (lst:(SwapsETH_Token [] * SwapsETH_Token []) ) : (swapT [] * swapT [])  =
+    let transformPeriods (lst:(SwapsETH_Token [] * SwapsETH_Token []) ) =
         let firstInPeriod, lastInPeriod = lst
         (firstInPeriod |> transformPeriod, lastInPeriod |> transformPeriod)
 

@@ -57,7 +57,9 @@ type scoped_trigger_5mins(
         res
 
 
-    let comparePrices (firstArray: swapT[]) (secondArray: swapT[]) =
+    let comparePrices (v: swapT[] * swapT[])  =
+        let firstArray, secondArray = v
+
         firstArray
         |> Array.choose (fun firstElem ->
             match secondArray 
@@ -77,38 +79,39 @@ type scoped_trigger_5mins(
             | None -> None
         )
 
+    let splitList grouped = 
+        match grouped with
+        | [| true, firstGroup; false, secondGroup |] -> secondGroup, firstGroup
+        | [| false, secondGroup; true, firstGroup |] -> secondGroup, firstGroup
+        | _ -> [||], [||]
+
+    let transformPeriod  : SwapsETH_Token [] -> swapT []  =
+        Array.filter (fun x -> not (x.EthIn = ""))
+        >> Array.groupBy (fun entity-> entity.pairAddress) 
+        >> Array.map avarage
+        >> Array.filter (fun x -> x.ethInUsd > 0) 
+            
+    let transformPeriods (lst:(SwapsETH_Token [] * SwapsETH_Token []) ) : (swapT [] * swapT [])  =
+        let firstInPeriod, lastInPeriod = lst
+        (firstInPeriod |> transformPeriod, lastInPeriod |> transformPeriod)
+
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 let countInPeriods = 5
 
-                let! a = getLastProcessedBlock()
+                let! lastBlock = getLastProcessedBlock()
                     
-                let! e = getTxnsForPeriod( a - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
-                let ae = e |> List.ofSeq |> List.toArray
-                let grouped = ae |> Array.groupBy (fun entity-> entity.blockNumberEndInt = a) 
-                
-                let firstInPeriod, lastInPeriod =
-                    match grouped with
-                    | [| true, firstGroup; false, secondGroup |] -> secondGroup, firstGroup
-                    | [| false, secondGroup; true, firstGroup |] -> secondGroup, firstGroup
-                    | _ -> [||], [||]
-
-                let averageF = firstInPeriod 
-                                |> Array.filter (fun x -> not (x.EthIn = ""))
-                                |> Array.groupBy (fun entity-> entity.pairAddress) 
-                                |> Array.map avarage
-                                |> Array.filter (fun x -> x.ethInUsd > 0)
-
-                let averageL = lastInPeriod 
-                                |> Array.filter (fun x -> not (x.EthIn = ""))
-                                |> Array.groupBy (fun entity-> entity.pairAddress) 
-                                |> Array.map avarage
-
-                let comparisons = comparePrices averageL averageF
-
-                let ttt = scoped_telegram.mapTriggersToMessage comparisons
+                let grouped = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
+                            |> Async.map ( List.ofSeq
+                                           >> List.toArray 
+                                           >> Array.groupBy (fun entity-> entity.blockNumberEndInt = lastBlock)
+                                           >> splitList
+                                           >> transformPeriods
+                                           >> comparePrices)
+                             |> Async.Bind scoped_telegram.sendMessages
+                             |> Async.RunSynchronously
 
                 return ()
             }

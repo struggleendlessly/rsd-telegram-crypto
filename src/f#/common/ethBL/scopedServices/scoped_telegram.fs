@@ -24,6 +24,7 @@ open bl_others
 open System.Net.Http
 open System.Numerics
 open System.Globalization
+open System.Text
 
 type scoped_telegram(
         logger: ILogger<scoped_telegram>,
@@ -35,37 +36,31 @@ type scoped_telegram(
     let chainSettingsOption = chainSettingsOption.Value;
     let telemetryOption = telegramOption.Value;
 
-                        //case "public":
-                        //item.messageText =
-                        //    item.line_tokenName + " \n" +
-                        //    item.line_tokenAddress + " \n" +
-
-                        //    $"{icons["clockSend"]} {average.periodInMins} mins   \n" +
-                        //    $"{buyToSell} Now buy:  {(decimal)average.last.volumePositiveEth:0.##} {item.currency}  Sell:  {(decimal)average.last.volumeNegativeEth:0.##} {item.currency}  \n" +
-                        //    $"{icons["antenna"]} Market Cap: {marketCapStr} \n" +
-                        //    $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/ether/pair-explorer/{item.pairAddress}) " +
-                        //    $"{icons["chart"]} [dexscreener]({optionsTelegram.dexscreenerUrl}ethereum/{item.pairAddress})";
-
     let mapTriggerToMessage (x:triggerResults)= 
-        let aa = x.priceDifference.RoundAwayFromZero 1
-        let res =  sprintf "%s\n%s\n%s"
-                            x.pairAddress
-                            (x.priceDifference.RoundAwayFromZero(1)|> string)
-                            (string x.volumeInUsd)
 
+        let sb = StringBuilder()
+        sb.Append($"`{x.pairAddress}`") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"{x.priceDifferenceStr}") |> ignore
+        sb.Append(" X") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append(x.volumeInUsdStr ) |> ignore
+        sb.Append(" USD") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"""{apiCallerTLGRM.icons["chart"]} [dextools]({telemetryOption.dextoolsUrl}app/en/{telemetryOption.chainName}/pair-explorer/{x.pairAddress}""")  |> ignore
+
+        let res =  sb.ToString()
 
         res
 
-    member this.mapTriggersToMessage (x:triggerResults [] )= 
-        let a = 
-            x |> Array.map mapTriggerToMessage
-            |> Array.map (apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins|> string) (telemetryOption.chat_id_coins|> string) )
-            |> Array.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
-            |> Async.Parallel
-            |> Async.RunSynchronously
-
-        a
-
+    member this.sendMessages = 
+        Array.map mapTriggerToMessage
+        >> Array.map (apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins|> string) (telemetryOption.chat_id_coins|> string) )
+        >> Array.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
+        >> Async.Parallel
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =

@@ -60,7 +60,7 @@ let request
         } 
         |> Async.AwaitTask
 
-let icons = [|
+let icons = dict [
     ("greenBook", "%F0%9F%93%97")
     ("redBook", "%F0%9F%93%95")
     ("lightning", "%E2%9A%A1")
@@ -86,5 +86,5 @@ let icons = [|
     ("calendar", "%F0%9F%97%93")
     ("antenna", "%F0%9F%93%B6")
     ("SCROLL", "%F0%9F%93%9C")
-|]
+]
 

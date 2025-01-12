@@ -41,4 +41,7 @@ type triggerResults = {
     pairAddress: string
     priceDifference: BigDecimal 
     volumeInUsd: BigDecimal
-    }
+    } with
+    member this.priceDifferenceStr = this.priceDifference.RoundAwayFromZero(1) |> string
+    member this.volumeInUsdStr = this.volumeInUsd.RoundAwayFromZero(1) |> string
+    

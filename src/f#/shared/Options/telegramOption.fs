@@ -11,3 +11,4 @@ type telegramOption() =
     member val etherscanUrl = "" with get, set
     member val dextoolsUrl = "" with get, set
     member val dexscreenerUrl = "" with get, set
+    member val chainName = "" with get, set

@@ -1,6 +1,7 @@
 ﻿module bl_others
 
 open Nethereum.Util
+open System.Text.RegularExpressions
 
 let list1andLast (lst: 'a list) =
     match lst with
@@ -25,6 +26,9 @@ let splitList list =
 //    (StringBuilder(), md5.ComputeHash(data))
 //    ||> Array.fold (fun sb b -> sb.Append(b.ToString("x2")))
 //    |> string   
+let addDots (input: string) = 
+    let regex = Regex(@"\B(?=(\d{3})+(?!\d))")
+    regex.Replace(input, ".")
 
 type swapT =
     {
@@ -42,6 +46,6 @@ type triggerResults = {
     priceDifference: BigDecimal 
     volumeInUsd: BigDecimal
     } with
-    member this.priceDifferenceStr = this.priceDifference.RoundAwayFromZero(1) |> string
-    member this.volumeInUsdStr = this.volumeInUsd.RoundAwayFromZero(1) |> string
+    member this.priceDifferenceStr = this.priceDifference.RoundAwayFromZero(0) |> string
+    member this.volumeInUsdStr = this.volumeInUsd.RoundAwayFromZero(0) |> string |> addDots 
     

@@ -111,7 +111,8 @@ type scoped_trigger_5mins(
                                            >> transformPeriods
                                            >> comparePrices)
                              |> Async.Bind scoped_telegram.sendMessages
+                             //|> Async.StartAsTask
                              |> Async.RunSynchronously
 
-                return ()
+                return grouped
             }

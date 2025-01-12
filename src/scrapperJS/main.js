@@ -231,11 +231,9 @@ const callback = function(mutationsList, observer) {
 };
 
 function scrollChatToBottom() {
-    const chatContainer = document.querySelector('.messages-container');
-    if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    } else {
-        console.error("Chat container not found.");
+    const element = document.querySelector('.MessageList');
+    if (element) {
+        element.scrollTop = element.scrollHeight;
     }
 }
  

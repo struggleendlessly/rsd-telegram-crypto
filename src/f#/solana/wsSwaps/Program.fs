@@ -20,7 +20,7 @@ open Polly.Timeout
 open Polly.Extensions.Http
 
 open AppSettingsOptionModule
-open OpenTelemetryOptionModule
+open telemetryOption
 open AlchemyOptionModule
 open ChainSettingsOptionModule
 open dbMigration
@@ -69,7 +69,7 @@ module Program =
             |> ignore
 
 
-        let openTelemetryOptions = builder.Configuration.GetSection($"{OpenTelemetryOption.SectionName}").Get<OpenTelemetryOption>()
+        let openTelemetryOptions = builder.Configuration.GetSection($"{telemetryOption.SectionName}").Get<telemetryOption>()
 
         Log.Logger <- LoggerConfiguration()
                             .Enrich.FromLogContext()
@@ -85,7 +85,7 @@ module Program =
         let optionsAlchemy = builder.Configuration.GetSection($"{AlchemyOption.SectionName}:ChainNames").Get<ChainNames>()
 
         builder.Services.Configure<AppSettingsOption>(builder.Configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
-        builder.Services.Configure<OpenTelemetryOption>(builder.Configuration.GetSection(OpenTelemetryOption.SectionName)) |> ignore
+        builder.Services.Configure<telemetryOption>(builder.Configuration.GetSection(telemetryOption.SectionName)) |> ignore
         builder.Services.Configure<AlchemyOption>(builder.Configuration.GetSection(AlchemyOption.SectionName)) |> ignore
         builder.Services.Configure<ChainSettingsOption>(builder.Configuration.GetSection(ChainSettingsOption.SectionName)) |> ignore
 

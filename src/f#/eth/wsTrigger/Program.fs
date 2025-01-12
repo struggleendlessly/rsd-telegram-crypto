@@ -14,12 +14,12 @@ open Serilog
 open Serilog.Sinks.OpenTelemetry
 open Serilog.Formatting.Compact
 
-open OpenTelemetryOptionModule
+open telemetryOption
 open AlchemyOptionModule
 open ChainSettingsOptionModule
 open configurationExtensions
 open workers
-
+open telegramOption
 open alchemy
 open dbMigration
 open ethCommonDB
@@ -50,7 +50,7 @@ module Program =
             ServiceLifetime.Transient) 
             |> ignore
 
-        let openTelemetryOptions = builder.Configuration.GetSection($"{OpenTelemetryOption.SectionName}").Get<OpenTelemetryOption>()
+        let openTelemetryOptions = builder.Configuration.GetSection($"{telemetryOption.SectionName}").Get<telemetryOption>()
 
         Log.Logger <- LoggerConfiguration()
                             .Enrich.FromLogContext()
@@ -83,7 +83,7 @@ module Program =
             configureAlchemy(logger, alchemyOptions, chainSettingsOption, httpClientFactory)) |> ignore
 
         configureServices builder.Services builder.Configuration
-
+        let telegramOption = builder.Configuration.GetSection($"{telegramOption.SectionName}").Get<telegramOption>()
         builder.Services.AddHostedService<trigger_5mins>() |> ignore
 
         builder.Services.AddWindowsService(fun options -> options.ServiceName <- openTelemetryOptions.ServiceName ) |> ignore

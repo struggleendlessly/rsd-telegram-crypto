@@ -6,39 +6,27 @@ open System.Linq
 
 open Microsoft.Extensions.Logging
 open Microsoft.EntityFrameworkCore
+open Microsoft.Extensions.Options
 
 open ChainSettingsOptionModule
 open IScopedProcessingService
 open Extensions
 open responseSwap
+open scoped_telegram
+open bl_others
 
 open alchemy
-open Microsoft.Extensions.Options
 open ethCommonDB
 open ethCommonDB.models
 open Nethereum.Util
-
-type swapT =
-    {
-        ethInUsd: BigDecimal
-        pairAddress: string
-    }
-    
-let empty_swapT =
-    {
-        ethInUsd = BigDecimal.Parse("0")
-        pairAddress = ""
-    }
-type Comparison = { 
-    pairAddress: string
-    priceDifference: BigDecimal 
-    volumeInUsd: BigDecimal
-    }
+open System.Net.Http
 
 type scoped_trigger_5mins(
         logger: ILogger<scoped_trigger_5mins>,
         alchemy: alchemyEVM,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
+        scoped_telegram: scoped_telegram,
+
         ethDB: IEthDB) =
 
     let chainSettingsOption = chainSettingsOption.Value;
@@ -77,11 +65,15 @@ type scoped_trigger_5mins(
             with
             | Some secondElem ->
                 let priceDifference = firstElem.ethInUsd / secondElem.ethInUsd
-                Some { 
-                    pairAddress = firstElem.pairAddress
-                    priceDifference = priceDifference 
-                    volumeInUsd = firstElem.ethInUsd
-                    }
+                if priceDifference > 4.0
+                then
+                    Some { 
+                            pairAddress = firstElem.pairAddress
+                            priceDifference = priceDifference 
+                            volumeInUsd = firstElem.ethInUsd
+                         }
+                else
+                    None
             | None -> None
         )
 
@@ -115,6 +107,8 @@ type scoped_trigger_5mins(
                                 |> Array.map avarage
 
                 let comparisons = comparePrices averageL averageF
+
+                let ttt = scoped_telegram.mapTriggersToMessage comparisons
 
                 return ()
             }

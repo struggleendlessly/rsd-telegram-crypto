@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="scopedServices\scoped_telegram.fs" />
     <Compile Include="scopedServices\scoped_trigger_5mins.fs" />
     <Compile Include="workers\trigger_5mins.fs" />
     <Compile Include="workers\lastBlock.fs" />
@@ -37,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\apiClients\messengers\telegram\telegram.fsproj" />
     <ProjectReference Include="..\..\apiClients\rpc\alchemy\alchemy.fsproj" />
     <ProjectReference Include="..\..\shared\shared.fsproj" />
     <ProjectReference Include="..\ethCommonDB\ethCommonDB.csproj" />

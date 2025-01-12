@@ -29,8 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\apiClients\messengers\telegram\telegram.fsproj" />
     <ProjectReference Include="..\..\apiClients\rpc\alchemy\alchemy.fsproj" />
     <ProjectReference Include="..\..\common\ethBL\ethBL.fsproj" />
+    <ProjectReference Include="..\..\common\ethCommonDB\ethCommonDB.csproj" />
     <ProjectReference Include="..\..\shared\shared.fsproj" />
     <ProjectReference Include="..\dbMigration\dbMigration.csproj" />
   </ItemGroup>

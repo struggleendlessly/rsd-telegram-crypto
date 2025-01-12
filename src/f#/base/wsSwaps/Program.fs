@@ -14,7 +14,7 @@ open Serilog
 open Serilog.Sinks.OpenTelemetry
 open Serilog.Formatting.Compact
 
-open OpenTelemetryOptionModule
+open telemetryOption
 open AlchemyOptionModule
 open ChainSettingsOptionModule
 open configurationExtensions
@@ -49,7 +49,7 @@ module Program =
                 |> ignore
 
 
-            let openTelemetryOptions = builder.Configuration.GetSection($"{OpenTelemetryOption.SectionName}").Get<OpenTelemetryOption>()
+            let openTelemetryOptions = builder.Configuration.GetSection($"{telemetryOption.SectionName}").Get<telemetryOption>()
 
             Log.Logger <- LoggerConfiguration()
                                 .Enrich.FromLogContext()

@@ -13,9 +13,10 @@ open Polly.Timeout
 open Polly.Extensions.Http
 
 open AppSettingsOptionModule
-open OpenTelemetryOptionModule
+open telemetryOption
 open AlchemyOptionModule
 open ChainSettingsOptionModule
+open telegramOption
 
 open IScopedProcessingService
 open scopedTokenInfo
@@ -24,6 +25,7 @@ open scopedLastBlock
 open scopedSwapsTokens
 open scopedNames
 open scoped_trigger_5mins
+open scoped_telegram
 
 let getRetryPolicy() : IAsyncPolicy<HttpResponseMessage> =
     HttpPolicyExtensions
@@ -45,7 +47,8 @@ let exponentially = float >> (uncurry2 Math.Pow 2) >> TimeSpan.FromSeconds
 let configureServices (services: IServiceCollection) (configuration: IConfiguration) =
     
     services.Configure<AppSettingsOption>(configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
-    services.Configure<OpenTelemetryOption>(configuration.GetSection(OpenTelemetryOption.SectionName)) |> ignore
+    services.Configure<telegramOption>(configuration.GetSection(telegramOption.SectionName)) |> ignore
+    services.Configure<telemetryOption>(configuration.GetSection(telemetryOption.SectionName)) |> ignore
     services.Configure<AlchemyOption>(configuration.GetSection(AlchemyOption.SectionName)) |> ignore
     services.Configure<ChainSettingsOption>(configuration.GetSection(ChainSettingsOption.SectionName)) |> ignore
 
@@ -62,6 +65,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
     services.AddScoped<scopedSwapsETH>() |> ignore
     services.AddScoped<scopedSwapsTokens>() |> ignore
     services.AddScoped<scopedLastBlock>() |> ignore
+    services.AddScoped<scoped_telegram>() |> ignore
 
     services.AddScoped<scoped_trigger_5mins>() |> ignore
 

@@ -1,5 +1,7 @@
 ﻿module bl_others
 
+open Nethereum.Util
+
 let list1andLast (lst: 'a list) =
     match lst with
     | [] -> []
@@ -23,3 +25,20 @@ let splitList list =
 //    (StringBuilder(), md5.ComputeHash(data))
 //    ||> Array.fold (fun sb b -> sb.Append(b.ToString("x2")))
 //    |> string   
+
+type swapT =
+    {
+        ethInUsd: BigDecimal
+        pairAddress: string
+    }
+    
+let empty_swapT =
+    {|
+        ethInUsd = BigDecimal.Parse("0")
+        pairAddress = ""
+    |}
+type triggerResults = { 
+    pairAddress: string
+    priceDifference: BigDecimal 
+    volumeInUsd: BigDecimal
+    }

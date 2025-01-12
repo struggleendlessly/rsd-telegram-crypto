@@ -1,11 +1,7 @@
-﻿module telemetryOption
+﻿module telegramOption
 
-type telemetryOption() =
-    static member val SectionName = "OpenTelemetry" with get
-
-    member val Url =  "" with get, set
-    member val ApiKey =  "" with get, set
-    member val ServiceName =  "" with get, set
+type telegramOption() =
+    static member val SectionName = "Telegram" with get
 
     member val UrlBase = "" with get, set
     member val bot_hash: string[] = [||] with get, set

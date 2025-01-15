@@ -34,6 +34,6 @@
     <ProjectReference Include="..\..\common\ethBL\ethBL.fsproj" />
     <ProjectReference Include="..\..\common\ethCommonDB\ethCommonDB.csproj" />
     <ProjectReference Include="..\..\shared\shared.fsproj" />
-    <ProjectReference Include="..\dbMigration\dbMigration.csproj" />
+    <ProjectReference Include="..\db\db.csproj" />
   </ItemGroup>
 </Project>

@@ -87,7 +87,7 @@ module Program =
             builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
 
-            builder.Services.AddWindowsService(fun options -> options.ServiceName <- openTelemetryOptions.ServiceName ) |> ignore
+            builder.Services.AddWindowsService(fun options -> options.ServiceName <- "wsSwaps_eth" ) |> ignore
 
             builder.Build().Run()
 

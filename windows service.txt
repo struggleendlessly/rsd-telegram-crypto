@@ -2,10 +2,10 @@
 
 $params = @{
   Name = "wsTrigger_eth"
-  BinaryPathName = 'D:\windowsServices\eth\wsTrigger.exe'
-  DisplayName = "eth_wsTrigger"
+  BinaryPathName = 'D:\windowsServices\eth\wsTrigger\wsTrigger.exe'
+  DisplayName = "wsTrigger_eth"
   StartupType = "Manual"
-  Description = "eth_wsTrigger"
+  Description = "wsTrigger_eth"
 }
 New-Service @params
 

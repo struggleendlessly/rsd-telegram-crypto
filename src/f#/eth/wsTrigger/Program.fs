@@ -86,7 +86,7 @@ module Program =
         let telegramOption = builder.Configuration.GetSection($"{telegramOption.SectionName}").Get<telegramOption>()
         builder.Services.AddHostedService<trigger_5mins>() |> ignore
 
-        builder.Services.AddWindowsService(fun options -> options.ServiceName <- openTelemetryOptions.ServiceName ) |> ignore
+        builder.Services.AddWindowsService(fun options -> options.ServiceName <- "wsTrigger_eth" ) |> ignore
 
         builder.Build().Run()
 

@@ -32,4 +32,10 @@
     <ProjectReference Include="..\..\shared\shared.fsproj" />
     <ProjectReference Include="..\db\db.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

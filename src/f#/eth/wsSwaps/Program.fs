@@ -36,10 +36,12 @@ module Program =
             Log.Information("Starting up")
 
             let builder = Host.CreateApplicationBuilder(args)
-            
+            let env = builder.Environment.EnvironmentName
+
             builder.Configuration
                 .SetBasePath(System.IO.Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)
+                .AddJsonFile($"appsettings.{env}.json", optional = true, reloadOnChange = true)
                 .AddEnvironmentVariables() |> ignore
 
             let connectionString = builder.Configuration.GetConnectionString("DefaultConnection")

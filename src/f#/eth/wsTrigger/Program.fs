@@ -29,19 +29,14 @@ module Program =
     [<EntryPoint>]
     let main args =
         let builder = Host.CreateApplicationBuilder(args)
-        //string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        //string strWorkPath = Path.GetDirectoryName(strExeFilePath);
-
-        //builder.
-        //    Configuration.
-        //    SetBasePath(strWorkPath).
-        //    AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         let strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
         let strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+        let env = builder.Environment.EnvironmentName
 
         builder.Configuration
             .SetBasePath(strWorkPath)
             .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)
+            .AddJsonFile($"appsettings.{env}.json", optional = true, reloadOnChange = true)
             .AddEnvironmentVariables() |> ignore
 
         let connectionString = builder.Configuration.GetConnectionString("DefaultConnection")

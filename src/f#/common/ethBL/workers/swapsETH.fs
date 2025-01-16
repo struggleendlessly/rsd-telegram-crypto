@@ -19,9 +19,10 @@ type swapsETH(
     override this.ExecuteAsync(stoppingToken: CancellationToken) =
         task {
             while not stoppingToken.IsCancellationRequested do
+                logger.LogInformation("Worker swapsETH running at")
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scopedSwapsETHName]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
-                do! Task.Delay(1000, stoppingToken)
+                do! Task.Delay(12000, stoppingToken)
         }

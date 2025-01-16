@@ -4,7 +4,8 @@ let getSeqToProcess1 n start end1 =
     async{
         let! startAsync  = start
         let! endAsync = end1
-            
+        let diff = endAsync - startAsync
+
         if endAsync - startAsync > n
         then
             return seq { startAsync + 1 .. startAsync + 1000 } |> Seq.toArray
@@ -16,7 +17,8 @@ let getSeqToProcess n step start end1 =
     async{
         let! startAsync  = start()
         let! endAsync = end1()
-            
+        let diff = endAsync - startAsync 
+
         if endAsync - startAsync > n
         then
             return seq { startAsync + 1 .. step .. startAsync + n } |> Seq.toArray
@@ -32,6 +34,7 @@ let getSeqToProcessUint64 n step (start: unit -> Async<uint64>) (end1:unit -> As
         let! startAsync  = start()
         let! endAsync = end1()
         let diff = endAsync - startAsync
+
         if endAsync - startAsync > n
         then
             return seq { startAsync + 1UL  .. startAsync + n } |> Seq.toArray

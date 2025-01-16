@@ -1,12 +1,19 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "wsSwaps": {
+    "wsSwaps_local": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
+         }
+      },
+      "wsSwaps_prod": {
+        "commandName": "Project",
+        "dotnetRunMessages": true,
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Production"
+        }
       }
     }
-  }
 }

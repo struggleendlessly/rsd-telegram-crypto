@@ -22,7 +22,7 @@ let request
 
             use client = httpClientFactory.CreateClient "Api"
             client.BaseAddress <- url() |> Uri
-
+            //logger.LogInformation( "URL : {s}", getApiKey apiKeys index)
             let httpContent = new StringContent( json, Encoding.UTF8, "application/json")
 
             logger.LogInformation( "Request: {s}", json)

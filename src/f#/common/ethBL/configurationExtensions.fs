@@ -34,6 +34,10 @@ let getRetryPolicy() : IAsyncPolicy<HttpResponseMessage> =
         .OrResult(fun msg -> msg.StatusCode = HttpStatusCode.NotFound || msg.StatusCode = HttpStatusCode.TooManyRequests)
         .OrResult(fun msg -> 
             let json = msg.Content.ReadAsStringAsync().Result.Contains(":429,")
+            //let json1 = msg.Content.ReadAsStringAsync().Result.Contains("-32600")
+            //if json1 
+            //then true 
+            //else false
             json
         )
         .WaitAndRetryAsync(

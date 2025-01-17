@@ -32,7 +32,7 @@ module Program =
         let strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
         let strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
         let env = builder.Environment.EnvironmentName
-
+        Console.WriteLine(strWorkPath)
         builder.Configuration
             .SetBasePath(strWorkPath)
             .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)

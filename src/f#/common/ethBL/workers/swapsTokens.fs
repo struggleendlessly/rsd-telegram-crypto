@@ -24,5 +24,5 @@ type swapsTokens(
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scopedSwapsTokensName]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
-                do! Task.Delay(12000, stoppingToken)
+                do! Task.Delay(60_000, stoppingToken)
         }

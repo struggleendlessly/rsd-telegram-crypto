@@ -24,5 +24,5 @@ type swapsETH(
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scopedSwapsETHName]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)
-                do! Task.Delay(12000, stoppingToken)
+                do! Task.Delay(12_000, stoppingToken)
         }

@@ -30,6 +30,7 @@ module Program =
     let main args =
         let builder = Host.CreateApplicationBuilder(args)
         let strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        Console.WriteLine(strExeFilePath)
         let strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
         let env = builder.Environment.EnvironmentName
         Console.WriteLine(strWorkPath)

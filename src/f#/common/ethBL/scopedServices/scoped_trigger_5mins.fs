@@ -39,6 +39,20 @@ type scoped_trigger_5mins(
             .FirstOrDefaultAsync()
             |> Async.AwaitTask
 
+    let getLatestTrigger () =
+        let noBlock = TriggerHistory.Default()
+        let getNumberInt (x: TriggerHistory) = x.blockNumberEndInt
+
+        ethDB.triggerHistoriesEntities
+            .Where(fun x -> x.title = scopedNames.trigger_5mins_Name)
+            .OrderByDescending(fun x -> x.blockNumberEndInt)
+            .Take(1)
+            .FirstOrDefaultAsync()
+            |> Async.AwaitTask
+            |> Async.map (Option.ofObj 
+                >> Option.defaultValue noBlock
+                >> getNumberInt)
+
     let getTxnsForPeriod (firstBlockInPeriod) =
         ethDB.swapsETH_TokenEntities
             .Where(fun x -> x.blockNumberEndInt >= firstBlockInPeriod)
@@ -94,26 +108,40 @@ type scoped_trigger_5mins(
     let transformPeriods (lst:(SwapsETH_Token [] * SwapsETH_Token []) ) =
         let firstInPeriod, lastInPeriod = lst
         (firstInPeriod |> transformPeriod, lastInPeriod |> transformPeriod)
+    
+    let updateLatestTrigger (lastBlock: int) =
+        let trigger = TriggerHistory()
+        trigger.title <- scopedNames.trigger_5mins_Name
+        trigger.blockNumberEndInt <- lastBlock
+        ethDB.triggerHistoriesEntities.Add(trigger) |> ignore
+        ethDB.SaveChangesAsync() |> Async.AwaitTask
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let countInPeriods = 5
+                let countInPeriods = 12
 
                 let! lastBlock = getLastProcessedBlock()
-                    
-                let grouped = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
-                            |> Async.map ( List.ofSeq
-                                           >> List.toArray 
-                                           >> Array.groupBy (fun entity-> entity.blockNumberEndInt = lastBlock)
-                                           >> splitList
-                                           >> transformPeriods
-                                           >> comparePrices)
-                             |> Async.Bind scoped_telegram.sendMessages
-                            
-                             //|> Async.StartAsTask
-                             |> Async.RunSynchronously
+                let! latestTrigger = getLatestTrigger()
 
-                return ()
+                if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
+                then
+                    return ()
+                else
+                    let grouped = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
+                                |> Async.map ( List.ofSeq
+                                               >> List.toArray 
+                                               >> Array.groupBy (fun entity-> entity.blockNumberEndInt = lastBlock)
+                                               >> splitList
+                                               >> transformPeriods
+                                               >> comparePrices)
+                                 |> Async.Bind scoped_telegram.sendMessages
+                                 //|> Async.Bind (updateLatestTrigger lastBlock)
+                                 |> Async.RunSynchronously
+
+                    updateLatestTrigger lastBlock
+                                 |> Async.RunSynchronously
+                                 |> ignore
+                    return ()
             }

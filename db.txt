@@ -24,6 +24,7 @@ cd H:\rsd-telegram-crypto\src
 
 ////////////////////////////////////////////////////////
 $env:ASPNETCORE_ENVIRONMENT="Development"
+$env:ASPNETCORE_ENVIRONMENT="Production"
 
 dotnet ef migrations add In26 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
 

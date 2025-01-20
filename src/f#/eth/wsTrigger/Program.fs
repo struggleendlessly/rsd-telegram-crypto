@@ -23,19 +23,22 @@ open telegramOption
 open alchemy
 open dbMigration
 open ethCommonDB
+open System.IO
 
 module Program =
 
     [<EntryPoint>]
     let main args =
         let builder = Host.CreateApplicationBuilder(args)
-        let strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        Console.WriteLine(strExeFilePath)
-        let strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+       // let strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+       // let i = AppContext.BaseDirectory
+       //// let d = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)
+       // Console.WriteLine(strExeFilePath)
+       // let strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
         let env = builder.Environment.EnvironmentName
-        Console.WriteLine(strWorkPath)
+       // Console.WriteLine(strWorkPath)
         builder.Configuration
-            .SetBasePath(strWorkPath)
+            .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional = true, reloadOnChange = true)
             .AddJsonFile($"appsettings.{env}.json", optional = true, reloadOnChange = true)
             .AddEnvironmentVariables() |> ignore

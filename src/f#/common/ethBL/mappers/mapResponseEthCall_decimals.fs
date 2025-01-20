@@ -17,27 +17,57 @@ let mapDecimals (EthTokenInfos: TokenInfo seq) (response: responseEthCall) =
 let mapToken0 (response: responseEthCall) = 
     let res = new TokenInfo()
 
-    res.AddressPair <- response.id.ToLowerInvariant()
-    res.AddressToken0 <- response.result.Replace("0x000000000000000000000000", "0x")
-
-    res
+    match response.error with
+    |None ->
+        res.AddressPair <- response.id.ToLowerInvariant()
+        res.AddressToken0 <- response.result.Replace("0x000000000000000000000000", "0x")
+        Some res
+    |Some error ->
+        None   
     
-let mapToken1 (EthTokenInfos: TokenInfo[]) (response: responseEthCall) = 
-    let res = EthTokenInfos.Where(fun x -> x.AddressPair = response.id.ToLowerInvariant()).FirstOrDefault()
-    res.AddressToken1 <- response.result.Replace("0x000000000000000000000000", "0x")
+let mapToken1 (EthTokenInfos: TokenInfo option []) (response: responseEthCall) = 
+    match response.error with
+    |None ->
+        let res = 
+            EthTokenInfos 
+            |> Array.choose(fun x -> 
+                match x with
+                | Some tokenInfo -> 
+                    if tokenInfo.AddressPair.ToLowerInvariant() = response.id.ToLowerInvariant() 
+                    then Some tokenInfo 
+                    else None
+                | None -> None)
+            |> Array.tryHead
 
-    res 
-    
-let mapToken01toAddress excludedAddresses (response: TokenInfo) = 
-    
-    if not (excludedAddresses |> Array.exists (fun x -> String.Equals(x, response.AddressToken0, StringComparison.InvariantCultureIgnoreCase) ) )
-    then
-        response.AddressToken <- response.AddressToken0
-    elif not (excludedAddresses |> Array.exists (fun x -> String.Equals(x, response.AddressToken1, StringComparison.InvariantCultureIgnoreCase) ) )
-    then 
-        response.AddressToken <- response.AddressToken1
-    else
-        response.AddressToken <- ""
+        match res with
+        |Some res ->
+            res.AddressToken1 <- response.result.Replace("0x000000000000000000000000", "0x")
+            Some res
+        |None -> None
 
-    response
+    |Some error ->
+        None 
+
+let mapToken01toAddress (excludedAddresses:string []) (response: TokenInfo option) : TokenInfo option =
+    match response with
+    | Some tokenInfo ->
+        let addressToken0 = if not (excludedAddresses |> Array.exists (fun x -> x.CompareCI tokenInfo.AddressToken0)) 
+                            then tokenInfo.AddressToken0 
+                            else ""
+
+        let addressToken1 = if not (excludedAddresses |> Array.exists (fun x -> x.CompareCI tokenInfo.AddressToken1))
+                            then tokenInfo.AddressToken1 
+                            else ""
+        
+        if addressToken0 <> "" && addressToken1 = ""
+        then 
+            tokenInfo.AddressToken <- addressToken0
+            Some tokenInfo
+        elif addressToken0 = "" && addressToken1 <> "" 
+        then
+            tokenInfo.AddressToken <- addressToken1
+            Some tokenInfo
+        else
+            None
+    | None -> None
     

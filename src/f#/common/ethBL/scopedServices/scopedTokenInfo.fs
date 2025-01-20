@@ -48,8 +48,9 @@ type scopedTokenInfo(
                         |> Async.map (Array.collect id)
                         |> Async.map (Array.map (mapResponseEthCall.mapToken1 t0))
                         |> Async.map (Array.map (mapResponseEthCall.mapToken01toAddress chainSettingsOption.ExcludedAddresses))
-                        |> Async.map (Array.filter (fun x ->not (Array.contains x.AddressToken0 chainSettingsOption.ExcludedAddresses ) ||
-                                                            not (Array.contains x.AddressToken1 chainSettingsOption.ExcludedAddresses )))
+                        |> Async.map (Array.choose id)
+                        //|> Async.map (Array.filter (fun x ->not (Array.contains x.AddressToken0 chainSettingsOption.ExcludedAddresses ) ||
+                        //                                    not (Array.contains x.AddressToken1 chainSettingsOption.ExcludedAddresses )))
       
             return t1
         }

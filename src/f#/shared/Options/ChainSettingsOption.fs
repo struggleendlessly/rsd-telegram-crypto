@@ -5,6 +5,7 @@ type ChainSettingsOption() =
     let mutable internalAddressChainCoin = ""
     let mutable internalTopicSwap = ""
     let mutable internalEthCallDecimals = ""
+    let mutable internalEthCallTotalSupply = ""
     let mutable internalEthCallToken0 = ""
     let mutable internalEthCallToken1 = ""
     let mutable internalExcludedAddresses = [||]
@@ -24,6 +25,10 @@ type ChainSettingsOption() =
     member this.EthCall_decimals
         with get() = internalEthCallDecimals
         and set(value:string) = internalEthCallDecimals <- value.ToLowerInvariant()
+
+    member this.EthCall_totalSupply
+        with get() = internalEthCallTotalSupply
+        and set(value:string) = internalEthCallTotalSupply <- value.ToLowerInvariant()
 
     member this.EthCall_token0
         with get() = internalEthCallToken0

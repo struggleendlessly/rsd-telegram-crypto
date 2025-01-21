@@ -79,6 +79,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
             dict.Add(scopedSwapsETHName, sp.GetRequiredService<scopedSwapsETH>() :> IScopedProcessingService)
             dict.Add(scopedSwapsTokensName, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
             dict.Add(scopedLastBlockName, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
+            dict.Add(scoped_tokenInfo_Name, sp.GetRequiredService<scopedTokenInfo>() :> IScopedProcessingService) 
 
             dict.Add(scoped_trigger_5mins_Name, sp.GetRequiredService<scoped_trigger_5mins>() :> IScopedProcessingService) 
 

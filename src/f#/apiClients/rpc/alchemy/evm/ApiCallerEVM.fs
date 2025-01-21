@@ -73,6 +73,9 @@ type alchemyEVM(
     member this.getEthCall_decimals  = 
         this.chunksRequest<responseEthCall[], string> (getEthCall_decimals chainSettingsOption.EthCall_decimals)
 
+    member this.getTotalSupply  = 
+        this.chunksRequest<responseEthCall[], string> (getTotalSupply chainSettingsOption.EthCall_totalSupply)
+
     member this.getEthCall_token0  = 
         this.chunksRequest<responseEthCall[], string> (getEthCall_token0 chainSettingsOption.EthCall_token0)
 

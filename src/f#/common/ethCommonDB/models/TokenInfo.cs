@@ -16,5 +16,13 @@ namespace ethCommonDB.models
         public string? NameLong { get; set; } = string.Empty;
         public string? NameShort { get; set; } = string.Empty;
         public int Decimals { get; set; }
+        public ulong TotalSupply { get; set; }
+
+        public static List<TokenInfo> Default()
+        {
+            var res = new List<TokenInfo>();
+
+            return res;
+        }
     }
 }

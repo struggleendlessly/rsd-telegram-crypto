@@ -168,3 +168,26 @@ let eth_getTransactionReceipt
      //let res = JsonSerializer.Serialize request
     
         res
+
+let getTotalSupply
+        addressMethod 
+        addressToken 
+        =
+
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "eth_call"
+                    id = addressToken
+                    _params = [|
+                                { 
+                                    ``to`` = addressToken
+                                    data = addressMethod
+                                }
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res

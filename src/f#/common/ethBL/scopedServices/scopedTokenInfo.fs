@@ -15,7 +15,14 @@ open responseSwap
 open alchemy
 open Microsoft.Extensions.Options
 open ethCommonDB
+open ethCommonDB.models
+open System.Numerics
+open responseEthCall
+open System.Globalization
 
+type tokenInfoTemp = 
+    {   AddressToken: string
+        TotalSupply: uint64}
 
 type scopedTokenInfo(
         logger: ILogger<scopedTokenInfo>,
@@ -53,6 +60,62 @@ type scopedTokenInfo(
                         //                                    not (Array.contains x.AddressToken1 chainSettingsOption.ExcludedAddresses )))
       
             return t1
+        }
+
+    let getTokensWithoutTotalSupply () =
+        let noBlock = TokenInfo.Default()
+        let getAddrToken (x: TokenInfo) = x.AddressToken
+
+        let r = 
+            ethDB.tokenInfoEntities
+                .Where(fun x -> x.TotalSupply = 0UL)
+                .Take(100)
+                .ToListAsync()
+                |> Async.AwaitTask
+                |> Async.map (Option.ofObj   
+                                  >> Option.defaultValue noBlock
+                                  >> Seq.distinctBy (fun elem -> elem.AddressToken)
+                                  >> Seq.toArray
+                                )
+        r
+    let convertToTokenSupply (ti: TokenInfo []) (ts: responseEthCall) = 
+
+        let aa = ts.result
+        match ts.error with
+        | None -> let num = BigInteger.Parse(ts.result.Substring(2), NumberStyles.AllowHexSpecifier)
+                  let token = ti |> Array.find (fun x -> x.AddressToken = ts.id)  
+                  let ulong1 = num / BigInteger.Pow(10I, token.Decimals) |> uint64 // to small !!!!!!!!!!!
+                  let res = { AddressToken= ts.id
+                              TotalSupply= ulong1}
+                  Some (res)
+        | Some e -> None
+
+    let mapToTokenInfo  (ti:TokenInfo seq) (ts: tokenInfoTemp) = 
+                    ti
+                    |> Seq.filter (fun x -> x.AddressToken = ts.AddressToken)
+                    |> Seq.iter (fun x -> x.TotalSupply <- ts.TotalSupply)
+        
+
+    let saveTotalSupply (a: tokenInfoTemp []) = 
+        async{
+                let addrSet = a 
+                               |> Array.map (fun x -> x.AddressToken) 
+                               |> Set.ofArray
+
+                let enteties = ethDB
+                                    .tokenInfoEntities
+                                    .Where(fun x -> addrSet.Contains( x.AddressToken))
+                                    .ToListAsync()
+                                    |> Async.AwaitTask
+                                    |> Async.RunSynchronously
+                a 
+                |> Array.iter (fun x -> mapToTokenInfo enteties x)
+
+                ethDB.tokenInfoEntities.UpdateRange(enteties)
+                ethDB.SaveChangesAsync() 
+                            |> Async.AwaitTask
+                            |> Async.RunSynchronously
+                            |> ignore
         }
 
     member this.getToken0and1(addressPair: string[]) =
@@ -99,7 +162,17 @@ type scopedTokenInfo(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                    
+
+                let! d = getTokensWithoutTotalSupply ()
+
+                let aa = d |> Array.map (fun x -> x.AddressToken)
+                           |> alchemy.getTotalSupply
+                           |> Async.map( Array.collect id )
+                           |> Async.map (Array.map (convertToTokenSupply d))
+                           |> Async.map (Array.choose id)
+                           |> Async.Bind saveTotalSupply
+                           |> Async.RunSynchronously
+
 
                 return ()
             }

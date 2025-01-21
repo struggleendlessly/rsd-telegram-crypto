@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dbMigration;
 
@@ -11,9 +12,11 @@ using dbMigration;
 namespace db.Migrations
 {
     [DbContext(typeof(ethDB))]
-    partial class ethDBModelSnapshot : ModelSnapshot
+    [Migration("20250121153405_In3")]
+    partial class In3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

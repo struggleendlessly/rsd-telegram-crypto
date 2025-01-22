@@ -191,3 +191,22 @@ let getTotalSupply
      //let res = JsonSerializer.Serialize request
     
         res
+
+let getTokenNames
+        addressToken 
+        =
+
+        let res =
+             { 
+                 requestSingleDTO.Default 
+                 with 
+                    method = "alchemy_getTokenMetadata"
+                    id = addressToken
+                    _params = [|                               
+                                    addressToken                                
+                              |]
+             } 
+
+     //let res = JsonSerializer.Serialize request
+    
+        res

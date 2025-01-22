@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="common\responseError.fs" />
     <Compile Include="common\apiCaller.fs" />
+    <Compile Include="evm\DTO\response\responseTokenMetadata.fs" />
     <Compile Include="evm\DTO\response\responseGetTransactionReceipt.fs" />
     <Compile Include="evm\DTO\response\responseEthCall.fs" />
     <Compile Include="evm\DTO\response\responseSwap.fs" />

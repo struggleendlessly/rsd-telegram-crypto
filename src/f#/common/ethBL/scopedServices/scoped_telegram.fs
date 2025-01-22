@@ -39,7 +39,16 @@ type scoped_telegram(
     let mapTriggerToMessage (x:triggerResults)= 
 
         let sb = StringBuilder()
+        sb.Append($"{x.nameLong} / {x.nameShort}") |> ignore
+
+        sb.Append("\n") |> ignore
         sb.Append($"`{x.pairAddress}`") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"MK: {x.mkStr} USD") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"TS: {x.totalSupplyStr}") |> ignore
 
         sb.Append("\n") |> ignore
         sb.Append($"{x.priceDifferenceStr}") |> ignore

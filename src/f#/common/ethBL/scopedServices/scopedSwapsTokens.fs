@@ -125,7 +125,7 @@ type scopedSwapsTokens(
 
                 let t = 
                         (getSeqToProcess 150 chainSettingsOption.BlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
-                        |> Async.Bind alchemy.getBlockSwapsETH_Tokens 
+                        |> Async.Bind (alchemy.getBlockSwapsETH_Tokens)
                         |> Async.Bind processBlocks
                         |> Async.map saveToDB
                         |> Async.RunSynchronously 

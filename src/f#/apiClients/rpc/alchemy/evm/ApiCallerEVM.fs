@@ -16,6 +16,7 @@ open responseEthCall
 open responseGetTransactionReceipt
 open ChainSettingsOptionModule
 open apiCaller
+open responseTokenMetadata
 
 type alchemyEVM(
     logger: ILogger<alchemyEVM>, 
@@ -75,6 +76,9 @@ type alchemyEVM(
 
     member this.getTotalSupply  = 
         this.chunksRequest<responseEthCall[], string> (getTotalSupply chainSettingsOption.EthCall_totalSupply)
+
+    member this.getTokenNames  = 
+        this.chunksRequest<responseTokenMetadata[], string> getTokenNames 
 
     member this.getEthCall_token0  = 
         this.chunksRequest<responseEthCall[], string> (getEthCall_token0 chainSettingsOption.EthCall_token0)

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ethCommonDB.models
 {
     [Index(nameof(AddressToken), IsUnique = false)]
@@ -16,7 +18,7 @@ namespace ethCommonDB.models
         public string? NameLong { get; set; } = string.Empty;
         public string? NameShort { get; set; } = string.Empty;
         public int Decimals { get; set; }
-        public ulong TotalSupply { get; set; }
+        public string? TotalSupply { get; set; } = string.Empty;
 
         public static List<TokenInfo> Default()
         {

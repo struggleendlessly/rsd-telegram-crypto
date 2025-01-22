@@ -30,10 +30,10 @@ type trigger_5mins(
                 let utcNow = DateTime.UtcNow
                 let nextUtc = _cron.GetNextOccurrence(utcNow)
                 let delay = nextUtc.Value - utcNow
-                do! Task.Delay(delay, stoppingToken) 
+                //do! Task.Delay(delay, stoppingToken) 
 
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scoped_trigger_5mins_Name]
-                do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                do! scopedProcessingService.DoWorkAsync(stoppingToken) |> Async.AwaitTask |> Async.StartAsTask
         }

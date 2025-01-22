@@ -86,9 +86,9 @@ module Program =
             configureServices builder.Services builder.Configuration
 
             //builder.Services.AddHostedService<swapsETH>() |> ignore
-            //builder.Services.AddHostedService<swapsTokens>() |> ignore
+            builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
-            builder.Services.AddHostedService<tokenInfo>() |> ignore
+            //builder.Services.AddHostedService<tokenInfo>() |> ignore
 
             builder.Services.AddWindowsService(fun options -> options.ServiceName <- "wsSwaps_eth" ) |> ignore
 

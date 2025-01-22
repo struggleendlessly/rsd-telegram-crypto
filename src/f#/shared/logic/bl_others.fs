@@ -2,6 +2,7 @@
 
 open Nethereum.Util
 open System.Text.RegularExpressions
+open System
 
 let list1andLast (lst: 'a list) =
     match lst with
@@ -34,6 +35,8 @@ type swapT =
     {
         ethInUsd: BigDecimal
         pairAddress: string
+        priceETH_USD: float
+        priceTokenInETH: double
     }
     
 let empty_swapT =
@@ -45,7 +48,22 @@ type triggerResults = {
     pairAddress: string
     priceDifference: BigDecimal 
     volumeInUsd: BigDecimal
+    nameLong: string
+    nameShort: string
+    totalSupply: string
+    priceETH_USD: float
+    priceTokenInETH: float
     } with
     member this.priceDifferenceStr = this.priceDifference.RoundAwayFromZero(0) |> string
     member this.volumeInUsdStr = this.volumeInUsd.RoundAwayFromZero(0) |> string |> addDots 
+    member this.totalSupplyStr = this.totalSupply|> addDots 
+    member this.mkStr = let ts = if String.IsNullOrEmpty(this.totalSupply) 
+                                 then "0" 
+                                 else this.totalSupply
+                        (BigDecimal.Parse(ts) * 
+                        BigDecimal.Parse(this.priceTokenInETH.ToString("F17")) * 
+                        BigDecimal.Parse(this.priceETH_USD.ToString()) )
+                         .RoundAwayFromZero(0)
+                        |> string 
+                        |> addDots
     

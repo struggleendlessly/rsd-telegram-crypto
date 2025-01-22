@@ -104,15 +104,19 @@ type scopedTokenInfo(
 
         let aa = ts.result
         match ts.error with
-        | None -> let num = BigInteger.Parse(ts.result.Substring(2), NumberStyles.AllowHexSpecifier)
-                  let token = ti |> Array.find (fun x -> x.AddressToken = ts.id)  
-                  let ulong1 = num / BigInteger.Pow(10I, token.Decimals) 
-                  let res = { AddressToken= ts.id
-                              TotalSupply= ulong1
-                              NameLong= ""
-                              NameShort= ""
-                             }
-                  Some (res)
+        | None -> if ts.result.CompareCI("0x") 
+                  then
+                      None
+                  else
+                      let num = BigInteger.Parse(ts.result.Substring(2), NumberStyles.AllowHexSpecifier)
+                      let token = ti |> Array.find (fun x -> x.AddressToken = ts.id)  
+                      let ulong1 = num / BigInteger.Pow(10I, token.Decimals) 
+                      let res = { AddressToken= ts.id
+                                  TotalSupply= ulong1
+                                  NameLong= ""
+                                  NameShort= ""
+                                 }
+                      Some (res)
         | Some e -> None
 
     let convertToTokenNames (ti: TokenInfo []) (ts: responseTokenMetadata) = 

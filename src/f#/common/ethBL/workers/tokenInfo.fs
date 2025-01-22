@@ -20,7 +20,7 @@ type tokenInfo(
 
     inherit BackgroundService()
     
-    let schedule = "0/5 * * * *"; // every 5 min
+    let schedule = "0/1 * * * *"; // every 5 min
     let _cron = CronExpression.Parse(schedule);
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =
@@ -30,7 +30,7 @@ type tokenInfo(
                 let utcNow = DateTime.UtcNow
                 let nextUtc = _cron.GetNextOccurrence(utcNow)
                 let delay = nextUtc.Value - utcNow
-                //do! Task.Delay(delay, stoppingToken) 
+                do! Task.Delay(delay, stoppingToken) 
 
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()

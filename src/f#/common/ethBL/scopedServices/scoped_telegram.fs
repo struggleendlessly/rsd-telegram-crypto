@@ -26,6 +26,11 @@ open System.Numerics
 open System.Globalization
 open System.Text
 
+type trigger5min = 
+    | MKless100k of string
+    | MKmore100kLess1m of string
+    | MKmore1m of string
+
 type scoped_telegram(
         logger: ILogger<scoped_telegram>,
         telegramOption:  IOptions<telegramOption>,
@@ -63,11 +68,26 @@ type scoped_telegram(
 
         let res =  sb.ToString()
 
-        res
+        let mk = BigDecimal.Parse(x.mkStr.Replace(".", ""))
 
-    member this.sendMessages = 
+        if mk <= BigDecimal.Parse("100000") 
+        then
+            MKless100k res
+        elif mk > BigDecimal.Parse("100000") && mk <= BigDecimal.Parse("1000000") 
+        then
+            MKmore100kLess1m res
+        else
+            MKmore1m res
+        //res
+
+    member this.sendMessages_trigger_5min = 
         Array.map mapTriggerToMessage
-        >> Array.map (apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins|> string) (telemetryOption.chat_id_coins|> string) )
+        >> Array.map ( fun x ->
+                match x with
+                | MKless100k res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_less100k|> string) (telemetryOption.chat_id_coins|> string) res
+                | MKmore100kLess1m res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_more100kLess1m|> string) (telemetryOption.chat_id_coins|> string) res 
+                | MKmore1m res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_more1m|> string) (telemetryOption.chat_id_coins|> string) res
+                )
         >> Array.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
         >> Async.Parallel
 

@@ -167,7 +167,7 @@ type scoped_trigger_5mins(
                             >> comparePrices
                             )
                 >> Async.Bind getTokenInfos
-                >> Async.Bind scoped_telegram.sendMessages
+                >> Async.Bind scoped_telegram.sendMessages_trigger_5min
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =

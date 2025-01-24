@@ -5,14 +5,16 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-         }
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_TIMERS": "true"
+      }
       },
       "wsSwaps_prod": {
         "commandName": "Project",
         "dotnetRunMessages": true,
         "environmentVariables": {
-          "DOTNET_ENVIRONMENT": "Production"
+          "DOTNET_ENVIRONMENT": "Production",
+          "DOTNET_TIMERS": "true"
         }
       }
     }

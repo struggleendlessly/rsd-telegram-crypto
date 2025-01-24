@@ -31,7 +31,7 @@ let request
             let! content = response.Content.ReadAsStringAsync() 
 
             //logger.LogInformation( "response: {s}", content)
-
+ 
             return content
         } 
         |> Async.AwaitTask

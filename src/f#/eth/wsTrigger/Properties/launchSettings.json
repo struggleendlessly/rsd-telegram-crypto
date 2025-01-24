@@ -1,19 +1,21 @@
-﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
+{
   "profiles": {
     "wsTrigger_local": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-      }
+        "DOTNET_ENVIRONMENT": "Development",
+        "DOTNET_TIMERS": "true"
+      },
+      "dotnetRunMessages": true
     },
     "wsTrigger_prod": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Production"
-      }
+        "DOTNET_ENVIRONMENT": "Production",
+        "DOTNET_TIMERS": "true"
+      },
+      "dotnetRunMessages": true
     }
-  }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
 }

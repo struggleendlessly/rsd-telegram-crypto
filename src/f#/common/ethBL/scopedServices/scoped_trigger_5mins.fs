@@ -62,11 +62,16 @@ type scoped_trigger_5mins(
     let avarage (swaps: string * SwapsETH_Token []) = 
         let (pairAddress, swap) = swaps
 
-        let a = swap 
-                |> Array.fold (fun acc x -> 
-                                acc + BigDecimal.Parse(x.EthIn) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
+        let ethInSum = swap 
+                      |> Array.fold (fun acc x -> 
+                                acc + BigDecimal.Parse(x.EthIn.ToZero()) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
+        let ethOutSum = swap 
+                      |> Array.fold (fun acc x -> 
+                                acc + BigDecimal.Parse(x.EthOut.ToZero()) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
 
-        let res = { ethInUsd = a / BigDecimal.Parse(string swap.Length)
+        let res = { ethInUsdAverage = ethInSum / BigDecimal.Parse(string swap.Length)
+                    ethInUsdSum = ethInSum  
+                    ethOutUsdSum = ethOutSum
                     pairAddress = pairAddress 
                     priceETH_USD = (Array.head swap).priceETH_USD
                     priceTokenInETH = (Array.head swap).priceTokenInETH
@@ -82,15 +87,17 @@ type scoped_trigger_5mins(
             match firstInPeriod 
                     |> Array.tryFind (fun firstInPeriodElem -> firstInPeriodElem.pairAddress = lastInPeriodElem.pairAddress) 
             with
-            | Some secondElem ->
-                let priceDifference = lastInPeriodElem.ethInUsd / secondElem.ethInUsd
-                if priceDifference > 4.0
+            | Some firstInPeriodElem ->
+                let priceDifference = lastInPeriodElem.ethInUsdAverage / firstInPeriodElem.ethInUsdAverage
+                if lastInPeriodElem.ethInUsdSum > firstInPeriodElem.ethOutUsdSum && priceDifference > 4.0
                 then
                     Some { 
                             pairAddress = lastInPeriodElem.pairAddress
                             priceDifference = priceDifference 
-                            volumeInUsd = lastInPeriodElem.ethInUsd
+                            volumeInUsd = lastInPeriodElem.ethInUsdAverage
                             priceETH_USD = lastInPeriodElem.priceETH_USD
+                            ethInUsdSum = lastInPeriodElem.ethInUsdSum
+                            ethOutUsdSum = lastInPeriodElem.ethOutUsdSum
                             nameLong = ""
                             nameShort = ""
                             totalSupply = ""
@@ -111,7 +118,7 @@ type scoped_trigger_5mins(
         Array.filter (fun x -> not (x.EthIn = ""))
         >> Array.groupBy (fun entity-> entity.pairAddress) 
         >> Array.map avarage
-        >> Array.filter (fun x -> x.ethInUsd > 0) 
+        >> Array.filter (fun x -> x.ethInUsdAverage > 0) 
             
     let transformPeriods (lst:(SwapsETH_Token [] * SwapsETH_Token []) ) =
         let firstInPeriod, lastInPeriod = lst
@@ -153,14 +160,14 @@ type scoped_trigger_5mins(
 
     let trigger lastBlock = 
                 Async.map ( List.ofSeq
-                    >> List.toArray 
-                    >> Array.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
-                    >> splitList
-                    >> transformPeriods
-                    >> comparePrices
-                    )
-                    >> Async.Bind getTokenInfos
-                    >> Async.Bind scoped_telegram.sendMessages
+                            >> List.toArray 
+                            >> Array.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
+                            >> splitList
+                            >> transformPeriods
+                            >> comparePrices
+                            )
+                >> Async.Bind getTokenInfos
+                >> Async.Bind scoped_telegram.sendMessages
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
@@ -176,29 +183,7 @@ type scoped_trigger_5mins(
                     return ()
                 else
                     let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
-                    //let! grouped = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
-                    //            |> Async.map ( List.ofSeq
-                    //                           >> List.toArray 
-                    //                           >> Array.groupBy (fun (entity:SwapsETH_Token) -> entity.blockNumberEndInt = lastBlock)
-                    //                           >> splitList
-                    //                           >> transformPeriods
-                    //                           >> comparePrices
-                    //                          // >> getTokenInfos
-                    //                           )
 
-                    //             |> Async.Bind getTokenInfos
-                    //             |> Async.Bind scoped_telegram.sendMessages
-
-                    //let d = 
-                    //             Async.map ( List.ofSeq
-                    //                           >> List.toArray 
-                    //                           >> Array.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
-                    //                           >> splitList
-                    //                           >> transformPeriods
-                    //                           >> comparePrices
-                    //                           )
-                    //             >> Async.Bind getTokenInfos
-                    //             >> Async.Bind scoped_telegram.sendMessages
                     do! trigger lastBlock periods
                         |> Async.Ignore
 

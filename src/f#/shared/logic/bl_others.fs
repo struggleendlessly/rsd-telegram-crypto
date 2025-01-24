@@ -33,7 +33,9 @@ let addDots (input: string) =
 
 type swapT =
     {
-        ethInUsd: BigDecimal
+        ethInUsdAverage: BigDecimal
+        ethInUsdSum: BigDecimal
+        ethOutUsdSum: BigDecimal
         pairAddress: string
         priceETH_USD: float
         priceTokenInETH: double
@@ -48,6 +50,8 @@ type triggerResults = {
     pairAddress: string
     priceDifference: BigDecimal 
     volumeInUsd: BigDecimal
+    ethInUsdSum: BigDecimal
+    ethOutUsdSum: BigDecimal
     nameLong: string
     nameShort: string
     totalSupply: string
@@ -56,6 +60,10 @@ type triggerResults = {
     } with
     member this.priceDifferenceStr = this.priceDifference.RoundAwayFromZero(0) |> string
     member this.volumeInUsdStr = this.volumeInUsd.RoundAwayFromZero(0) |> string |> addDots 
+    member this.ethInUsdSumStr = this.ethInUsdSum.RoundAwayFromZero(0) |> string |> addDots 
+    member this.ethOutUsdSumStr = this.ethOutUsdSum.RoundAwayFromZero(0) |> string |> addDots 
+    member this.ethOutInUsdSumStr = (this.ethOutUsdSum + this.ethInUsdSum).RoundAwayFromZero(0) |> string |> addDots 
+
     member this.totalSupplyStr = this.totalSupply|> addDots 
     member this.mkStr = let ts = if String.IsNullOrEmpty(this.totalSupply) 
                                  then "0" 

@@ -30,7 +30,10 @@ type tokenInfo(
                 let utcNow = DateTime.UtcNow
                 let nextUtc = _cron.GetNextOccurrence(utcNow)
                 let delay = nextUtc.Value - utcNow
-                do! Task.Delay(delay, stoppingToken) 
+
+                let isTimersOff = String.Equals("true", Environment.GetEnvironmentVariable("DOTNET_TIMERS"), StringComparison.InvariantCultureIgnoreCase)
+                if not isTimersOff then
+                    do! Task.Delay(delay, stoppingToken) 
 
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()

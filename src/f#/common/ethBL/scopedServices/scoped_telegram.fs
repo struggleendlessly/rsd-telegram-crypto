@@ -55,7 +55,7 @@ type scoped_telegram(
         sb.Append(" X") |> ignore
 
         sb.Append("\n") |> ignore
-        sb.Append(x.volumeInUsdStr ) |> ignore
+        sb.Append($"Buy:{x.ethInUsdSumStr} / Sell:{x.ethOutUsdSumStr} / Total: {x.ethOutInUsdSumStr}"  ) |> ignore
         sb.Append(" USD") |> ignore
 
         sb.Append("\n") |> ignore

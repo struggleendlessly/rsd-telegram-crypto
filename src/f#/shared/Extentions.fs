@@ -5,6 +5,9 @@ open System
         member this.ToHex() = sprintf "0x%X" this
 
     type System.String with
+        member this.ToZero() = if String.IsNullOrEmpty this then "0" else this
+
+    type System.String with
         member this.ToInt64() = Convert.ToInt64 this
 
     type System.String with

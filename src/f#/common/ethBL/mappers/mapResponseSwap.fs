@@ -72,7 +72,7 @@ let mapResponseSwapResult
     let firstInOrder = [|token0and1.AddressToken0; token0and1.AddressToken1|] 
                         |> Array.sortWith comparer
 
-    let (EthIn, EthOut, TokenIn, TokenOut) = inOutAvarage addressChainCoin decimals firstInOrder datas 
+    let (EthIn, EthOut, TokenIn, TokenOut) = inOutSum addressChainCoin decimals firstInOrder datas 
 
     res.blockNumberStartInt <- blockId - blocksIn5Minutes
     res.blockNumberEndInt <- blockId

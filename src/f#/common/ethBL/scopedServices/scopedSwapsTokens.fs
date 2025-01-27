@@ -88,12 +88,13 @@ type scopedSwapsTokens(
             
                     let min = blocks[0] |> Array.minBy (fun x -> x.id) 
                     let max = blocks[0] |> Array.maxBy (fun x -> x.id)
-                    let! price =
-                          blocks[0]
-                          |> Array.map (fun x -> float x.id) 
-                          |> Array.average
-                          |> int
-                          |> scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
+                    let! priceAverageForBlocks = scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
+
+                    let t1 =
+                            blocks[0]
+                            |> Array.map (fun block -> 
+                                block.result
+                                |> Array.groupBy (fun x -> x.address)  )
 
                     let t =
                             blocks[0]
@@ -109,7 +110,7 @@ type scopedSwapsTokens(
                                                                         block.id 
                                                                         tokenAddresses 
                                                                         decimalValue 
-                                                                        price 
+                                                                        priceAverageForBlocks 
                                                                         (add, res))
                                     | None -> None
                                   ) )
@@ -124,7 +125,11 @@ type scopedSwapsTokens(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
                 let t = 
-                        (getSeqToProcess 150 chainSettingsOption.BlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
+                        (getSeqToProcess 
+                                (chainSettingsOption.BlocksIn5Minutes * 6) 
+                                chainSettingsOption.BlocksIn5Minutes 
+                                getLastKnownProcessedBlock 
+                                getLastEthBlock)
                         |> Async.Bind (alchemy.getBlockSwapsETH_Tokens)
                         |> Async.Bind processBlocks
                         |> Async.map saveToDB

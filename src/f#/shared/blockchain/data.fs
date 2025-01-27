@@ -55,7 +55,7 @@ let inOut addressChainCoin decimals (listT0T1: string[]) (listValues: BigInteger
 
     EthIn, EthOut, TokenIn, TokenOut
 
-let inOutAvarage addressChainCoin decimals (listT0T1: string[]) (listValues: BigInteger list array) =
+let inOutSum addressChainCoin decimals (listT0T1: string[]) (listValues: BigInteger list array) =
     let sumBigDecimals (a: BigDecimal) (b: BigDecimal) = a + b
     let divideBigDecimal (a: BigDecimal) (b: BigDecimal) = a / b
 
@@ -68,10 +68,15 @@ let inOutAvarage addressChainCoin decimals (listT0T1: string[]) (listValues: Big
 
     let count = BigDecimal.Parse(listValues.Length.ToString())
 
-    let ethInAvg = divideBigDecimal ethInSum count
-    let ethOutAvg = divideBigDecimal ethOutSum count
-    let tokenInAvg = divideBigDecimal tokenInSum count
-    let tokenOutAvg = divideBigDecimal tokenOutSum count
+    let ethInAvg =  ethInSum 
+    let ethOutAvg =  ethOutSum 
+    let tokenInAvg =  tokenInSum 
+    let tokenOutAvg =  tokenOutSum 
+
+    //let ethInAvg = divideBigDecimal ethInSum count
+    //let ethOutAvg = divideBigDecimal ethOutSum count
+    //let tokenInAvg = divideBigDecimal tokenInSum count
+    //let tokenOutAvg = divideBigDecimal tokenOutSum count
 
     ethInAvg, ethOutAvg, tokenInAvg, tokenOutAvg
 

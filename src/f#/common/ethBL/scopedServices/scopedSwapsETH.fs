@@ -78,8 +78,9 @@ type scopedSwapsETH(
             .FirstOrDefaultAsync()                   
             |> Async.AwaitTask
 
-    member this.getPriceForBlock min max blockInt =
+    member this.getPriceForBlock min max =
         async {
+            let blockIntMidle = (min + max) / 2
             let! a =
                 ethDB.swapsETH_USDEntities
                     .Where(fun block -> block.blockNumberInt >= min && block.blockNumberInt <= max)
@@ -92,7 +93,7 @@ type scopedSwapsETH(
                 return defaultPrice.priceEthInUsd
             else
                 return  a
-                        |> Seq.minBy (fun x -> Math.Abs(x.blockNumberInt - blockInt))
+                        |> Seq.minBy (fun x -> Math.Abs(x.blockNumberInt - blockIntMidle))
                         |> fun x -> x.priceEthInUsd
         }        
 

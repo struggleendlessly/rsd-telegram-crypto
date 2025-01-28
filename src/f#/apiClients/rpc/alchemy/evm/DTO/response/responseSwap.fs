@@ -25,14 +25,14 @@ type responseSwaps = {
     responseSwaps: responseSwap[]
 }
 
-let validateBlocks (blocks:responseSwap[]) = 
-            let filtered = blocks |> Array.filter (fun x -> not (Array.isEmpty x.result))
+let validateBlocks (blocks:responseSwap seq) = 
+            let filtered = blocks |> Seq.filter (fun x -> not (Array.isEmpty x.result))
              
-            if Array.isEmpty blocks 
+            if Seq.isEmpty blocks 
             then
                     blocks             
-            elif Array.isEmpty filtered
+            elif Seq.isEmpty filtered
             then
-                    [| blocks |> Array.maxBy (fun x -> x.id) |]
+                    [| blocks |> Seq.maxBy (fun x -> x.id) |]
             else
                     filtered

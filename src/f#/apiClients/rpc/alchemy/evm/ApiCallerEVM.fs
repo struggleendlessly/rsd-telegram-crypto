@@ -32,13 +32,13 @@ type alchemyEVM(
 
     member val chainName = "" with get, set
 
-    member private this.chunksRequest<'T, 'B> uriBuilder : 'B[] -> Async<'T[]>  = 
-        Array.map uriBuilder 
-        >> Array.chunkBySize 50 
-        >> Array.mapi this.makeRequest<'T>
+    member private this.chunksRequest<'T, 'B> uriBuilder : 'B seq -> Async<'T[]>  = 
+        Seq.map uriBuilder 
+        >> Seq.chunkBySize 50 
+        >> Seq.mapi this.makeRequest<'T>
         >> Async.Parallel
 
-    member private this.makeRequest<'T>(index): requestSingleDTO[] -> Async<'T> = 
+    member private this.makeRequest<'T>(index): requestSingleDTO [] -> Async<'T> = 
         JsonSerializer.Serialize 
         >> request 
                 logger
@@ -63,28 +63,28 @@ type alchemyEVM(
         this.singleRequest<responseGetLastBlock> getLastBlockNumberUri
 
     member this.getBlockByNumber  = 
-        this.chunksRequest<responseGetBlocks, int> getBlockByNumberUri
+        this.chunksRequest<responseGetBlock seq, int> getBlockByNumberUri
 
     member this.getBlockSwapsETH_USD = 
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_DAI chainSettingsOption.AddressStableCoin chainSettingsOption.TopicSwap chainSettingsOption.BlocksIn5Minutes)
+        this.chunksRequest<responseSwap seq, int> (getSwapLogsUri_DAI chainSettingsOption.AddressStableCoin chainSettingsOption.TopicSwap chainSettingsOption.BlocksIn5Minutes)
 
     member this.getBlockSwapsETH_Tokens = 
-        this.chunksRequest<responseSwap[], int> (getSwapLogsUri_Token chainSettingsOption.TopicSwap chainSettingsOption.BlocksIn5Minutes)
+        this.chunksRequest<responseSwap seq, int> (getSwapLogsUri_Token chainSettingsOption.TopicSwap chainSettingsOption.BlocksIn5Minutes)
 
     member this.getEthCall_decimals  = 
-        this.chunksRequest<responseEthCall[], string> (getEthCall_decimals chainSettingsOption.EthCall_decimals)
+        this.chunksRequest<responseEthCall seq, string> (getEthCall_decimals chainSettingsOption.EthCall_decimals)
 
     member this.getTotalSupply  = 
-        this.chunksRequest<responseEthCall[], string> (getTotalSupply chainSettingsOption.EthCall_totalSupply)
+        this.chunksRequest<responseEthCall seq, string> (getTotalSupply chainSettingsOption.EthCall_totalSupply)
 
     member this.getTokenNames  = 
-        this.chunksRequest<responseTokenMetadata[], string> getTokenNames 
+        this.chunksRequest<responseTokenMetadata seq, string> getTokenNames 
 
     member this.getEthCall_token0  = 
-        this.chunksRequest<responseEthCall[], string> (getEthCall_token0 chainSettingsOption.EthCall_token0)
+        this.chunksRequest<responseEthCall seq, string> (getEthCall_token0 chainSettingsOption.EthCall_token0)
 
     member this.getEthCall_token1  = 
-        this.chunksRequest<responseEthCall[], string> (getEthCall_token1 chainSettingsOption.EthCall_token1)
+        this.chunksRequest<responseEthCall seq, string> (getEthCall_token1 chainSettingsOption.EthCall_token1)
 
     member this.eth_getTransactionReceipt  = 
-        this.chunksRequest<responseGetTransactionReceipt[], string*string> eth_getTransactionReceipt
+        this.chunksRequest<responseGetTransactionReceipt seq, string*string> eth_getTransactionReceipt

@@ -18,4 +18,4 @@ type responseGetLastBlock = {
             | true -> 0 
         | Some _ -> 0
 
-type responseGetLastBlocks = responseGetLastBlock[]
+type responseGetLastBlocks = responseGetLastBlock seq

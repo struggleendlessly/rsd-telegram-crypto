@@ -25,19 +25,19 @@ let mapToken0 (response: responseEthCall) =
     |Some error ->
         None   
     
-let mapToken1 (EthTokenInfos: TokenInfo option []) (response: responseEthCall) = 
+let mapToken1 (EthTokenInfos: TokenInfo option seq) (response: responseEthCall) = 
     match response.error with
     |None ->
         let res = 
             EthTokenInfos 
-            |> Array.choose(fun x -> 
+            |> Seq.choose(fun x -> 
                 match x with
                 | Some tokenInfo -> 
                     if tokenInfo.AddressPair.ToLowerInvariant() = response.id.ToLowerInvariant() 
                     then Some tokenInfo 
                     else None
                 | None -> None)
-            |> Array.tryHead
+            |> Seq.tryHead
 
         match res with
         |Some res ->

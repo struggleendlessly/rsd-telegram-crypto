@@ -52,7 +52,7 @@ type scopedSwapsETH(
 
     let saveToDB blocks = 
         async {
-            if Array.isEmpty blocks then
+            if Seq.isEmpty blocks then
                 return 0
             else
                 do! ethDB.swapsETH_USDEntities.AddRangeAsync(blocks) |> Async.AwaitTask
@@ -61,9 +61,9 @@ type scopedSwapsETH(
         }  
         
     let processBlocks =                    
-        Array.collect id
+        Seq.collect id
         >> validateBlocks
-        >> Array.Parallel.map(fun block -> 
+        >> Seq.map(fun block -> 
             block 
             |> mapResponseSwap.mapETH_USD 
                     chainSettingsOption.AddressChainCoin 
@@ -102,12 +102,11 @@ type scopedSwapsETH(
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
-                let t = 
+                do! 
                         (getSeqToProcess 1000 chainSettingsOption.BlocksIn5Minutes getLastKnownProcessedBlock getLastEthBlock)
                         |> Async.Bind alchemy.getBlockSwapsETH_USD
-                        |> Async.map processBlocks
+                        |> Async.map (processBlocks >> Seq.toArray) 
                         |> Async.Bind saveToDB
-                        |> Async.RunSynchronously                      
+                        |> Async.Ignore                    
 
-                return ()
             }

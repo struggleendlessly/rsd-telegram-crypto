@@ -8,9 +8,9 @@ let getSeqToProcess1 n start end1 =
 
         if endAsync - startAsync > n
         then
-            return seq { startAsync + 1 .. startAsync + 1000 } |> Seq.toArray
+            return seq { startAsync + 1 .. startAsync + 1000 } 
         else 
-            return seq { startAsync + 1 .. endAsync } |> Seq.toArray
+            return seq { startAsync + 1 .. endAsync }
     }
 
 let getSeqToProcess n step start end1 =
@@ -21,10 +21,10 @@ let getSeqToProcess n step start end1 =
 
         if endAsync - startAsync > n
         then
-            return seq { startAsync + 1 .. step .. startAsync + n } |> Seq.toArray
+            return seq { startAsync + 1 .. step .. startAsync + n } 
         elif endAsync - startAsync > step
         then
-            return seq { startAsync + 1 .. step .. endAsync } |> Seq.toArray
+            return seq { startAsync + 1 .. step .. endAsync } 
         else
             return [||]
     }
@@ -37,10 +37,10 @@ let getSeqToProcessUint64 n step (start: unit -> Async<uint64>) (end1:unit -> As
 
         if endAsync - startAsync > n
         then
-            return seq { startAsync + 1UL  .. startAsync + n } |> Seq.toArray
+            return seq { startAsync + 1UL  .. startAsync + n } 
         elif endAsync - startAsync > step
         then
-            return seq { startAsync + 1UL  .. endAsync } |> Seq.toArray
+            return seq { startAsync + 1UL  .. endAsync }
         else
             return [||]
     }

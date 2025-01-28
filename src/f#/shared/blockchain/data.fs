@@ -1,5 +1,6 @@
 ﻿module data
 
+open Extensions
 open System.Numerics
 open Nethereum.Util
 open System
@@ -41,9 +42,9 @@ let toBigDecimalsWithPrecision precision (bigInt: BigInteger) =
     let combinedStr = sprintf "%s.%s" integerPart fractionalPart
     BigDecimal.Parse(combinedStr)
 
-let inOut addressChainCoin decimals (listT0T1: string[]) (listValues: BigInteger list) =
+let inOut (addressChainCoin: string) decimals (listT0T1: string seq) (listValues: BigInteger list) =
     let (ethIndex1, ethIndex2, tokenIndex1, tokenIndex2) = 
-        if String.Equals(listT0T1.[0], addressChainCoin, StringComparison.InvariantCultureIgnoreCase) then
+        if  addressChainCoin.CompareCI(listT0T1 |> Seq.head) then
             (0, 2, 1, 3)
         else
             (1, 3, 0, 2)
@@ -55,18 +56,22 @@ let inOut addressChainCoin decimals (listT0T1: string[]) (listValues: BigInteger
 
     EthIn, EthOut, TokenIn, TokenOut
 
-let inOutSum addressChainCoin decimals (listT0T1: string[]) (listValues: BigInteger list array) =
+let inOutSum addressChainCoin decimals (listT0T1: string seq) (listValues: BigInteger list seq) =
     let sumBigDecimals (a: BigDecimal) (b: BigDecimal) = a + b
     let divideBigDecimal (a: BigDecimal) (b: BigDecimal) = a / b
 
     let ethInSum, ethOutSum, tokenInSum, tokenOutSum =
         listValues
-        |> Array.map (inOut addressChainCoin decimals listT0T1)
-        |> Array.fold (fun (ethInAcc, ethOutAcc, tokenInAcc, tokenOutAcc) (ethIn, ethOut, tokenIn, tokenOut) ->
-            (sumBigDecimals ethInAcc ethIn, sumBigDecimals ethOutAcc ethOut, sumBigDecimals tokenInAcc tokenIn, sumBigDecimals tokenOutAcc tokenOut)
-        ) (BigDecimal(), BigDecimal(), BigDecimal(), BigDecimal())
+        |> Seq.map (inOut addressChainCoin decimals listT0T1)
+        |> Seq.fold (fun (ethInAcc, ethOutAcc, tokenInAcc, tokenOutAcc) 
+                           (ethIn, ethOut, tokenIn, tokenOut) ->
+                                (sumBigDecimals ethInAcc ethIn, 
+                                 sumBigDecimals ethOutAcc ethOut, 
+                                 sumBigDecimals tokenInAcc tokenIn, 
+                                 sumBigDecimals tokenOutAcc tokenOut)
+                       ) (BigDecimal(), BigDecimal(), BigDecimal(), BigDecimal())
 
-    let count = BigDecimal.Parse(listValues.Length.ToString())
+    let count = BigDecimal.Parse(listValues |> Seq.length |> string)
 
     let ethInAvg =  ethInSum 
     let ethOutAvg =  ethOutSum 

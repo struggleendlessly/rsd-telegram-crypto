@@ -74,4 +74,4 @@ type responseGetBlock = {
     error: responseError
 }
 
-type responseGetBlocks = responseGetBlock[]
+type responseGetBlocks = responseGetBlock seq

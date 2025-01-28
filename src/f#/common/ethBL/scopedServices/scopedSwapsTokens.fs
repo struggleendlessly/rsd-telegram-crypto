@@ -60,17 +60,17 @@ type scopedSwapsTokens(
                 result
         
     let getDistinctPairAddresses =
-        Array.collect id 
-        >> Array.collect (fun swap -> swap.result) 
-        >> Array.map (fun res -> res.address) 
-        >> Array.filter (fun address -> not (chainSettingsOption.ExcludedAddresses |> Array.contains address))
-        >> Array.distinct
+        Seq.collect id 
+        >> Seq.collect (fun swap -> swap.result) 
+        >> Seq.map (fun res -> res.address) 
+        >> Seq.filter (fun address -> not (chainSettingsOption.ExcludedAddresses |> Seq.contains address))
+        >> Seq.distinct
     
-    let processBlocks (blocks: responseSwap array array) = 
+    let processBlocks (blocks: responseSwap seq seq) = 
         async {       
-                if Array.isEmpty blocks 
+                if Seq.isEmpty blocks 
                 then
-                    let emptyArray : SwapsETH_Token array = [||]
+                    let emptyArray : SwapsETH_Token seq = Seq.empty
                     return emptyArray
                 else
 
@@ -86,19 +86,14 @@ type scopedSwapsTokens(
                         distinctPairAddresses
                         |> scopedTokenInfo.getDecimals
             
-                    let min = blocks[0] |> Array.minBy (fun x -> x.id) 
-                    let max = blocks[0] |> Array.maxBy (fun x -> x.id)
+                    let min = blocks |> Seq.head |> Seq.minBy (fun x -> x.id) 
+                    let max = blocks |> Seq.head |> Seq.maxBy (fun x -> x.id)
                     let! priceAverageForBlocks = scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
 
-                    let t1 =
-                            blocks[0]
-                            |> Array.map (fun block -> 
-                                block.result
-                                |> Array.groupBy (fun x -> x.address)  )
-
                     let t =
-                            blocks[0]
-                            |> Array.map (fun block -> 
+                            blocks
+                            |> Seq.head
+                            |> Seq.map (fun block -> 
                                 block.result
                                 |> Array.groupBy (fun x -> x.address)    
                                 |> Array.filter (fun  (add, res) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains add))
@@ -114,7 +109,7 @@ type scopedSwapsTokens(
                                                                         (add, res))
                                     | None -> None
                                   ) )
-                            |> Array.collect id
+                            |> Seq.collect id
 
                     return t
         }
@@ -124,7 +119,7 @@ type scopedSwapsTokens(
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
-                let t = 
+                do! 
                         (getSeqToProcess 
                                 (chainSettingsOption.BlocksIn5Minutes * 6) 
                                 chainSettingsOption.BlocksIn5Minutes 
@@ -132,8 +127,7 @@ type scopedSwapsTokens(
                                 getLastEthBlock)
                         |> Async.Bind (alchemy.getBlockSwapsETH_Tokens)
                         |> Async.Bind processBlocks
-                        |> Async.map saveToDB
-                        |> Async.RunSynchronously 
-                return ()
+                        |> Async.map (Seq.toArray >> saveToDB)
+                        |> Async.Ignore 
 
             }

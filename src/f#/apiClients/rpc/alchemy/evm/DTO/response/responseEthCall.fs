@@ -10,6 +10,6 @@ type responseEthCall = {
 }
 
 type responseEthCalls = {
-    responseEthCalls: responseEthCall[]
+    responseEthCalls: responseEthCall seq
 }
 

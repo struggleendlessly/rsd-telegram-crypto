@@ -51,7 +51,7 @@ type scopedLastBlock(
 
     let saveToDB blocks = 
         async {
-            if Array.isEmpty blocks then
+            if Seq.isEmpty blocks then
                 return 0
             else
                 do! ethDB.blocksEntities.AddRangeAsync(blocks) |> Async.AwaitTask
@@ -62,7 +62,7 @@ type scopedLastBlock(
     let getBlocks n startBlock = 
          getSeqToProcess1 n startBlock
          >> Async.Bind alchemy.getBlockByNumber  
-         >> Async.map mapBlocks
+         >> Async.map (mapBlocks() >> Seq.toArray)
          >> Async.Bind saveToDB
 
     interface IScopedProcessingService with
@@ -71,10 +71,8 @@ type scopedLastBlock(
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
-                let res = getBlocks 1000
+                do! getBlocks 1000
                                 getLastKnownBlockInDB
                                 getLastEthBlock
-                          |> Async.RunSynchronously
-
-                return res
+                                |> Async.Ignore
             }

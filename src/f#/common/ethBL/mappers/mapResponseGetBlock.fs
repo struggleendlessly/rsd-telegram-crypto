@@ -24,6 +24,6 @@ let map (responseGetBlocksDTO: responseGetBlock) =
 
     res
 
-let mapBlocks =          
-        Array.collect id
-        >> Array.Parallel.map map             
+let mapBlocks () =          
+        Seq.collect id
+        >> Seq.map map             

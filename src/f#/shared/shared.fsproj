@@ -9,12 +9,12 @@
     <Compile Include="logic\bl_others.fs" />
     <Compile Include="logic\bl_createSeq.fs" />
     <Compile Include="Options\telegramOption.fs" />
+    <Compile Include="Extentions.fs" />
     <Compile Include="staticStrings\scopedNames.fs" />
     <Compile Include="Options\ChainSettingsOption.fs" />
     <Compile Include="blockchain\data.fs" />
     <Compile Include="IScopedProcessingService.fs" />
     <Compile Include="fp\Async.fs" />
-    <Compile Include="Extentions.fs" />
     <Compile Include="Options\AlchemyOption.fs" />
     <Compile Include="Options\openTelemetryOption.fs" />
     <Compile Include="Options\AppSettingsOption.fs" />

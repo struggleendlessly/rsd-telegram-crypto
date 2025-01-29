@@ -76,6 +76,7 @@ type scopedSwapsETH(
         
     let getDefaultPrice() =
         ethDB.swapsETH_USDEntities
+            .Where(fun block -> block.priceEthInUsd > 0.0 )
             .OrderByDescending(fun x -> x.blockNumberInt)
             .FirstOrDefaultAsync()                   
             |> Async.AwaitTask

@@ -153,21 +153,6 @@ let inOutSum
     let sumBigDecimals (a: BigDecimal) (b: BigDecimal) = a + b
     let divideBigDecimal (a: BigDecimal) (b: BigDecimal) = a / b
 
-    let e =
-        listValues
-        |> Seq.map ( fun x -> 
-                          let ethOrStableCoin = TOT1_toEthOrStableCoin 
-                                                             addressChainCoin 
-                                                             addressStableCoinsToInteract 
-                                                             decimals 
-                                                             ethPriceInCloseBlock
-                                                             listT0T1
-                          let inOutOption = inOut ethOrStableCoin x
-                          let aa = None
-                          inOutOption
-                          )
-        |> Seq.choose id
-
     let ethInSum, ethOutSum, tokenInSum, tokenOutSum =
         listValues
         |> Seq.map ( fun x -> 

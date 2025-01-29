@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ethCommonDB.models
 {
     [Index(nameof(blockNumberStartInt), IsUnique = false)]
@@ -22,7 +24,8 @@ namespace ethCommonDB.models
         public string TokenIn { get; set; } = string.Empty;
         public string TokenOut { get; set; } = string.Empty;
 
-        public double priceTokenInETH { get; set; }
+        [Column(TypeName = "decimal(28, 20)")]
+        public decimal priceTokenInETH { get; set; }
         public double priceETH_USD { get; set; }
 
         public bool isBuyToken { get; set; }

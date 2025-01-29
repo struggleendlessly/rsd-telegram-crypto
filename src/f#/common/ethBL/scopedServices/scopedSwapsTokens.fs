@@ -74,7 +74,7 @@ type scopedSwapsTokens(
                     return emptyArray
                 else
 
-                    let distinctPairAddresses =
+                    let distinctPairAddresses = 
                         blocks
                         |> getDistinctPairAddresses
 

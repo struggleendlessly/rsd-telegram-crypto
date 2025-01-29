@@ -38,7 +38,7 @@ type swapT =
         ethOutUsdSum: BigDecimal
         pairAddress: string
         priceETH_USD: float
-        priceTokenInETH: double
+        priceTokenInETH: decimal
     }
     
 let empty_swapT =
@@ -56,7 +56,7 @@ type triggerResults = {
     nameShort: string
     totalSupply: string
     priceETH_USD: float
-    priceTokenInETH: float
+    priceTokenInETH: decimal
     } with
     member this.priceDifferenceStr = this.priceDifference.RoundAwayFromZero(0) |> string
     member this.volumeInUsdStr = this.volumeInUsd.RoundAwayFromZero(0) |> string |> addDots 

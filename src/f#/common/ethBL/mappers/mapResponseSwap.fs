@@ -125,11 +125,11 @@ let mapResponseSwapResult
             res.priceETH_USD <- ethPriceInCloseBlock
 
             if EthIn > 0 && TokenOut > 0 then
-                res.priceTokenInETH <- Math.Round (float (EthIn / TokenOut), 15)
+                res.priceTokenInETH <- Math.Round (decimal (EthIn / TokenOut), 20)
                 res.isBuyToken <- true 
 
             if EthOut > 0 && TokenIn > 0 then
-                res.priceTokenInETH <- Math.Round (float (EthOut / TokenIn ), 15)
+                res.priceTokenInETH <- Math.Round (decimal (EthOut / TokenIn ), 20)
                 res.isBuyEth <- true
 
             Some (res)

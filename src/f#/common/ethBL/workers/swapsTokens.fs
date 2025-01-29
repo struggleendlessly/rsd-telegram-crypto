@@ -18,11 +18,16 @@ type swapsTokens(
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =
         task {
-            while not stoppingToken.IsCancellationRequested do
+            while not stoppingToken.IsCancellationRequested do                
                 logger.LogInformation("Worker swapsTokens running at")
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scopedSwapsTokensName]
-                do! scopedProcessingService.DoWorkAsync(stoppingToken)
+
+                try
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                with 
+                | ex -> logger.LogError(ex, "Error in swapsTokens")
+
                 do! Task.Delay(60_000, stoppingToken)
         }

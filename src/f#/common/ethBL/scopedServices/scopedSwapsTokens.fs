@@ -55,6 +55,7 @@ type scopedSwapsTokens(
                                 >> getNumberInt)
 
     let saveToDB blocks = 
+                let a = blocks |> Array.map (fun (x: SwapsETH_Token) -> x.priceTokenInETH)
                 ethDB.swapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask |> ignore
                 let result = ethDB.SaveChangesAsync() |> Async.AwaitTask
                 result

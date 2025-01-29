@@ -132,7 +132,11 @@ let mapResponseSwapResult
                 res.priceTokenInETH <- Math.Round (decimal (EthOut / TokenIn ), 20)
                 res.isBuyEth <- true
 
-            Some (res)
+            if res.priceTokenInETH > 1M // it could be BITcoin or scam, we dont need them
+            then 
+                None
+            else
+                Some (res)
     | None -> None
 
 

@@ -24,7 +24,7 @@ namespace ethCommonDB.models
         public string TokenIn { get; set; } = string.Empty;
         public string TokenOut { get; set; } = string.Empty;
 
-        [Column(TypeName = "decimal(28, 20)")]
+        [Column(TypeName = "decimal(38, 20)")]
         public decimal priceTokenInETH { get; set; }
         public double priceETH_USD { get; set; }
 

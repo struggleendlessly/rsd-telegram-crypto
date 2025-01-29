@@ -237,6 +237,7 @@ type scopedTokenInfo(
                         |> Async.map (fun x -> x |> Seq.map (fun x -> (x.AddressPair, x.Decimals ))|> Map.ofSeq)
             return r
         }
+
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {

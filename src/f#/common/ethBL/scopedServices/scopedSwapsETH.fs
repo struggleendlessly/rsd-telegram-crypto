@@ -67,10 +67,12 @@ type scopedSwapsETH(
             block 
             |> mapResponseSwap.mapETH_USD 
                     chainSettingsOption.AddressChainCoin 
+                    chainSettingsOption.AddressStableCoinsToInteract
                     chainSettingsOption.AddressChainCoinDecimals 
                     chainSettingsOption.AddressChainCoin 
                     chainSettingsOption.AddressStableCoin
         )
+        >> Seq.choose id
         
     let getDefaultPrice() =
         ethDB.swapsETH_USDEntities
@@ -83,7 +85,10 @@ type scopedSwapsETH(
             let blockIntMidle = (min + max) / 2
             let! a =
                 ethDB.swapsETH_USDEntities
-                    .Where(fun block -> block.blockNumberInt >= min && block.blockNumberInt <= max)
+                    .Where(fun block -> block.blockNumberInt >= min && 
+                                        block.blockNumberInt <= max &&
+                                        block.priceEthInUsd > 0.0
+                                        )
                     .Take(10)
                     .ToListAsync()
                 |> Async.AwaitTask
@@ -92,6 +97,9 @@ type scopedSwapsETH(
                 let! defaultPrice = getDefaultPrice()
                 return defaultPrice.priceEthInUsd
             else
+                let dd = a
+                           |> Seq.minBy (fun x -> Math.Abs(x.blockNumberInt - blockIntMidle))
+
                 return  a
                         |> Seq.minBy (fun x -> Math.Abs(x.blockNumberInt - blockIntMidle))
                         |> fun x -> x.priceEthInUsd

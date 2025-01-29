@@ -97,10 +97,11 @@ type scopedSwapsTokens(
                                 block.result
                                 |> Array.groupBy (fun x -> x.address)    
                                 |> Array.filter (fun  (add, res) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains add))
-                                |> Array.Parallel.choose (fun (add, res) -> 
+                                |> Array.choose (fun (add, res) -> 
                                     match Map.tryFind add decimals with
                                     | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult 
                                                                         chainSettingsOption.AddressChainCoin 
+                                                                        chainSettingsOption.AddressStableCoinsToInteract
                                                                         chainSettingsOption.BlocksIn5Minutes 
                                                                         block.id 
                                                                         tokenAddresses 
@@ -108,7 +109,9 @@ type scopedSwapsTokens(
                                                                         priceAverageForBlocks 
                                                                         (add, res))
                                     | None -> None
-                                  ) )
+                                                   ) 
+                                    |> Seq.choose id
+                                  )                           
                             |> Seq.collect id
 
                     return t

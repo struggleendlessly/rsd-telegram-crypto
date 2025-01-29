@@ -9,6 +9,7 @@ type ChainSettingsOption() =
     let mutable internalEthCallToken0 = ""
     let mutable internalEthCallToken1 = ""
     let mutable internalExcludedAddresses = [||]
+    let mutable internalAddressStableCoinsToInteract = [||]
     
     member this.AddressStableCoin
         with get() = internalAddressStableCoin
@@ -40,7 +41,11 @@ type ChainSettingsOption() =
 
     member this.ExcludedAddresses
         with get() = internalExcludedAddresses
-        and set(value:string []) = internalExcludedAddresses <- value |> Array.map (fun x -> x.ToLowerInvariant())
+        and set(value:string []) = internalExcludedAddresses <- value |> Array.map (fun x -> x.ToLowerInvariant())    
+    
+    member this.AddressStableCoinsToInteract
+        with get() = internalAddressStableCoinsToInteract
+        and set(value:string []) = internalAddressStableCoinsToInteract <- value |> Array.map (fun x -> x.ToLowerInvariant())
 
     member val DefaultBlockNumber: uint64 = 0UL with get, set
     member val BlocksIn5Minutes = 0 with get, set

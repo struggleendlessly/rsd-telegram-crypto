@@ -42,27 +42,146 @@ let toBigDecimalsWithPrecision precision (bigInt: BigInteger) =
     let combinedStr = sprintf "%s.%s" integerPart fractionalPart
     BigDecimal.Parse(combinedStr)
 
-let inOut (addressChainCoin: string) decimals (listT0T1: string seq) (listValues: BigInteger list) =
-    let (ethIndex1, ethIndex2, tokenIndex1, tokenIndex2) = 
-        if  addressChainCoin.CompareCI(listT0T1 |> Seq.head) then
-            (0, 2, 1, 3)
-        else
-            (1, 3, 0, 2)
+type TOT1_inOutIndexAndDecimals =
+    {
+        ethIndex1: int
+        ethIndex2: int
+        tokenIndex1: int
+        tokenIndex2: int
+
+        ethDecimals: int
+        tokenDecimals: int
+
+        ethUsdPrice: float
+    }
+
+type TOT1_toEthOrStableCoin = 
+    | Eth of TOT1_inOutIndexAndDecimals
+    | StableCoin of TOT1_inOutIndexAndDecimals
+
+let TOT1_v1 = 
+    {
+        ethIndex1 = 0 
+        ethIndex2 = 2
+        tokenIndex1 = 1 
+        tokenIndex2 = 3 
+        ethDecimals = 18
+        tokenDecimals = 6
+        ethUsdPrice = 0 }
+
+let TOT1_v2 =
+    {
+        ethIndex1 = 1 
+        ethIndex2 = 3
+        tokenIndex1 = 0 
+        tokenIndex2 = 2 
+        ethDecimals = 18
+        tokenDecimals = 6
+        ethUsdPrice = 0 }
+
+let TOT1_toEthOrStableCoin 
+        (addressChainCoin: string) 
+        (addressStableCoinsToInteract: string []) 
+        (decimals: int)
+        (ethUsdPrice: float)
+        (listT0T1: string []) = 
+
+        if Array.contains listT0T1[0] addressStableCoinsToInteract && not (Array.contains listT0T1[1] addressStableCoinsToInteract) 
+        then
+            Some ( StableCoin  { TOT1_v1 with
+                                    ethDecimals = 6
+                                    tokenDecimals = decimals
+                                    ethUsdPrice = ethUsdPrice })
+        elif Array.contains listT0T1[1] addressStableCoinsToInteract && not (Array.contains listT0T1[0] addressStableCoinsToInteract)
+        then
+            Some (StableCoin { TOT1_v2 with
+                                    ethDecimals = 6
+                                    tokenDecimals = decimals
+                                    ethUsdPrice = ethUsdPrice })
+        elif addressChainCoin.CompareCI(listT0T1[0]) && not (addressChainCoin.CompareCI(listT0T1[1]))
+        then
+            Some (Eth { TOT1_v1 with
+                                    ethDecimals = 18
+                                    tokenDecimals = decimals
+                                    ethUsdPrice = ethUsdPrice })
+        elif addressChainCoin.CompareCI(listT0T1[1]) && not (addressChainCoin.CompareCI(listT0T1[0]))
+        then
+            Some (Eth { TOT1_v2 with
+                                    ethDecimals = 18
+                                    tokenDecimals = decimals
+                                    ethUsdPrice = ethUsdPrice })
+        else    
+            None
+
+let inOut 
+        (ethOrStableCoin: TOT1_toEthOrStableCoin option)
+        (listValues: BigInteger list) =
     
-    let EthIn = toBigDecimalsWithPrecision 18 listValues.[ethIndex1]
-    let EthOut = toBigDecimalsWithPrecision 18 listValues.[ethIndex2]
-    let TokenIn = toBigDecimalsWithPrecision decimals listValues.[tokenIndex1]
-    let TokenOut = toBigDecimalsWithPrecision decimals listValues.[tokenIndex2]
+    match ethOrStableCoin with
+    | Some (StableCoin x) -> 
+                        let EthIn = (toBigDecimalsWithPrecision x.ethDecimals listValues.[x.ethIndex1] / BigDecimal.Parse(x.ethUsdPrice|> string))
+                        let EthOut = (toBigDecimalsWithPrecision x.ethDecimals listValues.[x.ethIndex2] / BigDecimal.Parse(x.ethUsdPrice|> string))
+                        let TokenIn = toBigDecimalsWithPrecision x.tokenDecimals listValues.[x.tokenIndex1]
+                        let TokenOut = toBigDecimalsWithPrecision x.tokenDecimals listValues.[x.tokenIndex2]
 
-    EthIn, EthOut, TokenIn, TokenOut
+                        Some (EthIn, EthOut, TokenIn, TokenOut)
+    | Some (Eth x) -> 
+                        let EthIn = toBigDecimalsWithPrecision x.ethDecimals listValues.[x.ethIndex1]
+                        let EthOut = toBigDecimalsWithPrecision x.ethDecimals listValues.[x.ethIndex2]
+                        let TokenIn = toBigDecimalsWithPrecision x.tokenDecimals listValues.[x.tokenIndex1]
+                        let TokenOut = toBigDecimalsWithPrecision x.tokenDecimals listValues.[x.tokenIndex2]
 
-let inOutSum addressChainCoin decimals (listT0T1: string seq) (listValues: BigInteger list seq) =
+                        Some (EthIn, EthOut, TokenIn, TokenOut)
+    | None -> None
+
+    //let EthIn = toBigDecimalsWithPrecision TOT1_toEthOrStableCoin.ethDecimals listValues.[TOT1_toEthOrStableCoin.ethIndex1]
+    //let EthOut = toBigDecimalsWithPrecision TOT1_toEthOrStableCoin.ethDecimals listValues.[TOT1_toEthOrStableCoin.ethIndex2]
+    //let TokenIn = toBigDecimalsWithPrecision TOT1_toEthOrStableCoin.tokenDecimals listValues.[TOT1_toEthOrStableCoin.tokenIndex1]
+    //let TokenOut = toBigDecimalsWithPrecision TOT1_toEthOrStableCoin.tokenDecimals listValues.[TOT1_toEthOrStableCoin.tokenIndex2]
+
+    //EthIn, EthOut, TokenIn, TokenOut
+
+let inOutSum 
+        addressChainCoin 
+        addressStableCoinsToInteract 
+        decimals 
+        (listT0T1: string []) 
+        (listValues: BigInteger list seq) 
+        ethPriceInCloseBlock
+        =
+
     let sumBigDecimals (a: BigDecimal) (b: BigDecimal) = a + b
     let divideBigDecimal (a: BigDecimal) (b: BigDecimal) = a / b
 
+    let e =
+        listValues
+        |> Seq.map ( fun x -> 
+                          let ethOrStableCoin = TOT1_toEthOrStableCoin 
+                                                             addressChainCoin 
+                                                             addressStableCoinsToInteract 
+                                                             decimals 
+                                                             ethPriceInCloseBlock
+                                                             listT0T1
+                          let inOutOption = inOut ethOrStableCoin x
+                          let aa = None
+                          inOutOption
+                          )
+        |> Seq.choose id
+
     let ethInSum, ethOutSum, tokenInSum, tokenOutSum =
         listValues
-        |> Seq.map (inOut addressChainCoin decimals listT0T1)
+        |> Seq.map ( fun x -> 
+                          let ethOrStableCoin = TOT1_toEthOrStableCoin 
+                                                             addressChainCoin 
+                                                             addressStableCoinsToInteract 
+                                                             decimals 
+                                                             ethPriceInCloseBlock
+                                                             listT0T1
+                          let inOutOption = inOut ethOrStableCoin x
+                          let aa = None
+                          inOutOption
+                          )
+        |> Seq.choose id
         |> Seq.fold (fun (ethInAcc, ethOutAcc, tokenInAcc, tokenOutAcc) 
                            (ethIn, ethOut, tokenIn, tokenOut) ->
                                 (sumBigDecimals ethInAcc ethIn, 
@@ -73,17 +192,14 @@ let inOutSum addressChainCoin decimals (listT0T1: string seq) (listValues: BigIn
 
     let count = BigDecimal.Parse(listValues |> Seq.length |> string)
 
-    let ethInAvg =  ethInSum 
-    let ethOutAvg =  ethOutSum 
-    let tokenInAvg =  tokenInSum 
-    let tokenOutAvg =  tokenOutSum 
-
-    //let ethInAvg = divideBigDecimal ethInSum count
-    //let ethOutAvg = divideBigDecimal ethOutSum count
-    //let tokenInAvg = divideBigDecimal tokenInSum count
-    //let tokenOutAvg = divideBigDecimal tokenOutSum count
-
-    ethInAvg, ethOutAvg, tokenInAvg, tokenOutAvg
+    if ethInSum = BigDecimal.Parse("0") && 
+       tokenOutSum = BigDecimal.Parse("0") &&
+       ethOutSum = BigDecimal.Parse("0") &&
+       tokenInSum = BigDecimal.Parse("0")
+    then
+        None
+    else
+        Some (ethInSum, ethOutSum, tokenInSum, tokenOutSum)
 
 let getFromTo (topics: string[][]) =
     let (fromList, toList) =

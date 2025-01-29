@@ -11,9 +11,10 @@ open responseSwap
 
 let mapETH_USD 
         addressChainCoin 
+        addressStableCoinsToInteract
         addressChainCoinDecimals 
-        t0 
-        t1 
+        (t0: string)
+        (t1: string) 
         (responseSwapDTO: responseSwap) = 
 
     let res = new SwapsETH_USD()
@@ -21,40 +22,54 @@ let mapETH_USD
     if Array.isEmpty responseSwapDTO.result
     then 
         res.blockNumberInt <- responseSwapDTO.id
+        Some res
     else        
         let va = responseSwapDTO.result[0]
         let data = splitString va.data [| 32; 32; 32; 32; |] // swap
         
-        let firstInOrder = [|t0; t1|] 
+        let firstInOrder = [|t0.ToLowerInvariant(); t1.ToLowerInvariant()|] 
                             |> Array.sortWith comparer
 
-        let (EthIn, EthOut, TokenIn, TokenOut) = inOut addressChainCoin addressChainCoinDecimals firstInOrder data
-        res.blockNumberInt <- responseSwapDTO.id
-        res.pairAddress <- va.address
+        let ethOrStableCoin  = TOT1_toEthOrStableCoin 
+                                     addressChainCoin 
+                                     addressStableCoinsToInteract 
+                                     addressChainCoinDecimals 
+                                     0.0
+                                     firstInOrder
+        let inOutOption = inOut ethOrStableCoin data
 
-        res.txsHash <- va.transactionHash
-        res.from <- va.topics[1].Replace("000000000000000000000000", "")  
-        res.``to`` <- va.topics[2].Replace("000000000000000000000000", "")
+        match inOutOption with
+        | Some x -> 
+                    let (EthIn, EthOut, TokenIn, TokenOut) = x
+                    res.blockNumberInt <- responseSwapDTO.id
+                    res.pairAddress <- va.address
 
-        res.EthIn <- EthIn.ToString()
-        res.EthOut <- EthOut.ToString()
-        res.TokenIn <- TokenIn.ToString()
+                    res.txsHash <- va.transactionHash
+                    res.from <- va.topics[1].Replace("000000000000000000000000", "")  
+                    res.``to`` <- va.topics[2].Replace("000000000000000000000000", "")
 
-        res.TokenOut <- TokenOut.ToString()
+                    res.EthIn <- EthIn.ToString()
+                    res.EthOut <- EthOut.ToString()
+                    res.TokenIn <- TokenIn.ToString()
 
-        if EthIn > 0 && TokenOut > 0 then
-            res.priceEthInUsd <- Math.Round (float (TokenOut / EthIn), 2)
-            res.isBuyDai <- true 
+                    res.TokenOut <- TokenOut.ToString()
 
-        if EthOut > 0 && TokenIn > 0 then
-            res.priceEthInUsd <- Math.Round (float (TokenIn / EthOut), 2)
-            res.isBuyEth <- true
+                    if EthIn > 0 && TokenOut > 0 then
+                        res.priceEthInUsd <- Math.Round (float (TokenOut / EthIn), 2)
+                        res.isBuyDai <- true 
 
-    res
+                    if EthOut > 0 && TokenIn > 0 then
+                        res.priceEthInUsd <- Math.Round (float (TokenIn / EthOut), 2)
+                        res.isBuyEth <- true
+
+                    Some res
+
+        | None -> None
 
 
 let mapResponseSwapResult 
         addressChainCoin
+        addressStableCoinsToInteract
         blocksIn5Minutes
         blockId 
         (token0and1: TokenInfo seq)  
@@ -69,46 +84,55 @@ let mapResponseSwapResult
         responseSwapDTO
         |> Array.map (fun x -> splitString x.data [| 32; 32; 32; 32; |])
 
-    let firstInOrder = [|token0and1.AddressToken0; token0and1.AddressToken1|] 
+    let firstInOrder = [|token0and1.AddressToken0.ToLowerInvariant(); token0and1.AddressToken1.ToLowerInvariant()|] 
                         |> Array.sortWith comparer
 
-    let (EthIn, EthOut, TokenIn, TokenOut) = inOutSum addressChainCoin decimals firstInOrder datas 
+    let inOutSumOption = inOutSum 
+                                addressChainCoin 
+                                addressStableCoinsToInteract 
+                                decimals 
+                                firstInOrder 
+                                datas
+                                ethPriceInCloseBlock
 
-    res.blockNumberStartInt <- blockId - blocksIn5Minutes
-    res.blockNumberEndInt <- blockId
+    match inOutSumOption with
+    | Some (EthIn, EthOut, TokenIn, TokenOut) ->
+            res.blockNumberStartInt <- blockId - blocksIn5Minutes
+            res.blockNumberEndInt <- blockId
     
-    res.pairAddress <- address
+            res.pairAddress <- address
 
-    let (from1, to1) = responseSwapDTO 
-                    |> Array.map (fun result -> result.topics)
-                    |> getFromTo
-    let hashes = responseSwapDTO 
-                    |> Array.map (fun result -> result.transactionHash)
-                    |> String.concat ", "
+            let (from1, to1) = responseSwapDTO 
+                            |> Array.map (fun result -> result.topics)
+                            |> getFromTo
+            let hashes = responseSwapDTO 
+                            |> Array.map (fun result -> result.transactionHash)
+                            |> String.concat ", "
 
-    res.txsHash <- hashes
+            res.txsHash <- hashes
 
-    res.from <- from1   
-    res.``to`` <- to1
+            res.from <- from1   
+            res.``to`` <- to1
 
-    // Regex to capture up to 5 decimal places
-    let regex = Regex(@"^\d+\.\d{0,7}")
+            // Regex to capture up to 5 decimal places
+            let regex = Regex(@"^\d+\.\d{0,15}")
 
-    res.EthIn <- regex.Match(EthIn.ToString()).ToString()
-    res.EthOut <- regex.Match(EthOut.ToString()).ToString() 
-    res.TokenIn <-regex.Match(TokenIn.ToString()).ToString() 
-    res.TokenOut <- regex.Match(TokenOut.ToString()).ToString()
+            res.EthIn <- regex.Match(EthIn.ToString()).ToString()
+            res.EthOut <- regex.Match(EthOut.ToString()).ToString() 
+            res.TokenIn <-regex.Match(TokenIn.ToString()).ToString() 
+            res.TokenOut <- regex.Match(TokenOut.ToString()).ToString()
     
-    res.priceETH_USD <- ethPriceInCloseBlock
+            res.priceETH_USD <- ethPriceInCloseBlock
 
-    if EthIn > 0 && TokenOut > 0 then
-        res.priceTokenInETH <- Math.Round (float (EthIn / TokenOut), 15)
-        res.isBuyToken <- true 
+            if EthIn > 0 && TokenOut > 0 then
+                res.priceTokenInETH <- Math.Round (float (EthIn / TokenOut), 15)
+                res.isBuyToken <- true 
 
-    if EthOut > 0 && TokenIn > 0 then
-        res.priceTokenInETH <- Math.Round (float (EthOut / TokenIn ), 15)
-        res.isBuyEth <- true
+            if EthOut > 0 && TokenIn > 0 then
+                res.priceTokenInETH <- Math.Round (float (EthOut / TokenIn ), 15)
+                res.isBuyEth <- true
 
-    res
+            Some (res)
+    | None -> None
 
 

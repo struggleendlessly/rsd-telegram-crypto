@@ -26,6 +26,7 @@ open scopedSwapsTokens
 open scopedNames
 open scoped_trigger_5mins
 open scoped_telegram
+open debugSettingsOption
 
 let getRetryPolicy() : IAsyncPolicy<HttpResponseMessage> =
     HttpPolicyExtensions
@@ -50,6 +51,7 @@ let exponentially = float >> (uncurry2 Math.Pow 2) >> TimeSpan.FromSeconds
 
 let configureServices (services: IServiceCollection) (configuration: IConfiguration) =
     
+    services.Configure<debugSettingsOption>(configuration.GetSection(debugSettingsOption.SectionName)) |> ignore
     services.Configure<AppSettingsOption>(configuration.GetSection(AppSettingsOption.SectionName)) |> ignore
     services.Configure<telegramOption>(configuration.GetSection(telegramOption.SectionName)) |> ignore
     services.Configure<telemetryOption>(configuration.GetSection(telemetryOption.SectionName)) |> ignore

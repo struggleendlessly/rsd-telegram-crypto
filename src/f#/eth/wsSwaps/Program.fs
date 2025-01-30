@@ -18,6 +18,7 @@ open telemetryOption
 open AlchemyOptionModule
 open ChainSettingsOptionModule
 open configurationExtensions
+open debugSettingsOption
 
 open alchemy
 open dbMigration
@@ -85,8 +86,26 @@ module Program =
 
             configureServices builder.Services builder.Configuration
 
+            let debugSettings = builder.Configuration.GetSection($"{debugSettingsOption.SectionName}").Get<debugSettingsOption>()
+
+            if debugSettings.wsSwaps.swapsETH = 1
+            then 
+                builder.Services.AddHostedService<swapsETH>() |> ignore
+
+            if debugSettings.wsSwaps.swapsTokens = 1
+            then 
+                builder.Services.AddHostedService<swapsTokens>() |> ignore
+
+            if debugSettings.wsSwaps.lastBlock = 1
+            then 
+                builder.Services.AddHostedService<lastBlock>() |> ignore
+
+            if debugSettings.wsSwaps.tokenInfo = 1
+            then 
+                builder.Services.AddHostedService<tokenInfo>() |> ignore
+
             //builder.Services.AddHostedService<swapsETH>() |> ignore
-            builder.Services.AddHostedService<swapsTokens>() |> ignore
+            //builder.Services.AddHostedService<swapsTokens>() |> ignore
             //builder.Services.AddHostedService<lastBlock>() |> ignore
             //builder.Services.AddHostedService<tokenInfo>() |> ignore
 

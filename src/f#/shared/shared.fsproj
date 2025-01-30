@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="logic\bl_others.fs" />
     <Compile Include="logic\bl_createSeq.fs" />
+    <Compile Include="Options\debugSettingsOption.fs" />
     <Compile Include="Options\telegramOption.fs" />
     <Compile Include="Extentions.fs" />
     <Compile Include="staticStrings\scopedNames.fs" />

@@ -18,6 +18,7 @@ open telemetryOption
 open AlchemyOptionModule
 open ChainSettingsOptionModule
 open configurationExtensions
+open debugSettingsOption
 open workers
 open telegramOption
 open alchemy
@@ -83,7 +84,13 @@ module Program =
 
         configureServices builder.Services builder.Configuration
         let telegramOption = builder.Configuration.GetSection($"{telegramOption.SectionName}").Get<telegramOption>()
-        builder.Services.AddHostedService<trigger_5mins>() |> ignore
+
+        let debugSettings = builder.Configuration.GetSection($"{debugSettingsOption.SectionName}").Get<debugSettingsOption>()
+
+        if debugSettings.wsTrigger.trigger_5mins = 1
+        then 
+            builder.Services.AddHostedService<trigger_5mins>() |> ignore
+
 
         builder.Services.AddWindowsService(fun options -> options.ServiceName <- "wsTrigger_eth" ) |> ignore
 

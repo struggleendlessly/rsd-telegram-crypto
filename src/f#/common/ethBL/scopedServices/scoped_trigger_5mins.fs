@@ -80,28 +80,28 @@ type scoped_trigger_5mins(
 
 
     let comparePrices (v: swapT[] * swapT[])  =
-        let firstInPeriod, lastInPeriod = v
+        let prevNPeriod, currentPeriod = v
 
-        lastInPeriod
-        |> Array.choose (fun lastInPeriodElem ->
-            match firstInPeriod 
-                    |> Array.tryFind (fun firstInPeriodElem -> firstInPeriodElem.pairAddress = lastInPeriodElem.pairAddress) 
+        currentPeriod
+        |> Array.choose (fun currentPeriodElem ->
+            match prevNPeriod 
+                    |> Array.tryFind (fun prevNPeriodElem -> prevNPeriodElem.pairAddress = currentPeriodElem.pairAddress) 
             with
             | Some firstInPeriodElem ->
-                let priceDifference = lastInPeriodElem.ethInUsdAverage / firstInPeriodElem.ethInUsdAverage
-                if lastInPeriodElem.ethInUsdSum > firstInPeriodElem.ethOutUsdSum && priceDifference > 4.0
+                let priceDifference = currentPeriodElem.ethInUsdAverage / firstInPeriodElem.ethInUsdAverage
+                if currentPeriodElem.ethInUsdSum > currentPeriodElem.ethOutUsdSum && priceDifference > 4.0
                 then
                     Some { 
-                            pairAddress = lastInPeriodElem.pairAddress
+                            pairAddress = currentPeriodElem.pairAddress
                             priceDifference = priceDifference 
-                            volumeInUsd = lastInPeriodElem.ethInUsdAverage
-                            priceETH_USD = lastInPeriodElem.priceETH_USD
-                            ethInUsdSum = lastInPeriodElem.ethInUsdSum
-                            ethOutUsdSum = lastInPeriodElem.ethOutUsdSum
+                            volumeInUsd = currentPeriodElem.ethInUsdAverage
+                            priceETH_USD = currentPeriodElem.priceETH_USD
+                            ethInUsdSum = currentPeriodElem.ethInUsdSum
+                            ethOutUsdSum = currentPeriodElem.ethOutUsdSum
                             nameLong = ""
                             nameShort = ""
                             totalSupply = ""
-                            priceTokenInETH = lastInPeriodElem.priceTokenInETH
+                            priceTokenInETH = currentPeriodElem.priceTokenInETH
                          }
                 else
                     None

@@ -81,14 +81,14 @@ type scoped_telegram(
         //res
 
     member this.sendMessages_trigger_5min = 
-        Array.map mapTriggerToMessage
-        >> Array.map ( fun x ->
+        Seq.map mapTriggerToMessage
+        >> Seq.map ( fun x ->
                 match x with
                 | MKless100k res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_less100k|> string) (telemetryOption.chat_id_coins|> string) res
                 | MKmore100kLess1m res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_more100kLess1m|> string) (telemetryOption.chat_id_coins|> string) res 
                 | MKmore1m res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_more1m|> string) (telemetryOption.chat_id_coins|> string) res
                 )
-        >> Array.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
+        >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
         >> Async.Parallel
 
     interface IScopedProcessingService with

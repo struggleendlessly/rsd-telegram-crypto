@@ -59,37 +59,39 @@ type scoped_trigger_5mins(
             .ToListAsync()
             |> Async.AwaitTask
 
-    let avarage (swaps: string * SwapsETH_Token []) = 
+    let avarage (swaps: string * SwapsETH_Token seq) = 
         let (pairAddress, swap) = swaps
 
         let ethInSum = swap 
-                      |> Array.fold (fun acc x -> 
+                      |> Seq.fold (fun acc x -> 
                                 acc + BigDecimal.Parse(x.EthIn.ToZero()) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
         let ethOutSum = swap 
-                      |> Array.fold (fun acc x -> 
+                      |> Seq.fold (fun acc x -> 
                                 acc + BigDecimal.Parse(x.EthOut.ToZero()) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
 
-        let res = { ethInUsdAverage = ethInSum / BigDecimal.Parse(string swap.Length)
+        let res = { ethInUsdAverage = ethInSum / BigDecimal.Parse( swap |> Seq.length |> string)
                     ethInUsdSum = ethInSum  
                     ethOutUsdSum = ethOutSum
                     pairAddress = pairAddress 
-                    priceETH_USD = (Array.head swap).priceETH_USD
-                    priceTokenInETH = (Array.head swap).priceTokenInETH
+                    priceETH_USD = (Seq.head swap).priceETH_USD
+                    priceTokenInETH = (Seq.head swap).priceTokenInETH
                   }
         res
 
 
-    let comparePrices (v: swapT[] * swapT[])  =
+    let comparePrices (v: swapT seq * swapT seq)  =
         let prevNPeriod, currentPeriod = v
 
         currentPeriod
-        |> Array.choose (fun currentPeriodElem ->
+        |> Seq.choose (fun currentPeriodElem ->
             match prevNPeriod 
-                    |> Array.tryFind (fun prevNPeriodElem -> prevNPeriodElem.pairAddress = currentPeriodElem.pairAddress) 
+                    |> Seq.tryFind (fun prevNPeriodElem -> prevNPeriodElem.pairAddress = currentPeriodElem.pairAddress) 
             with
-            | Some firstInPeriodElem ->
-                let priceDifference = currentPeriodElem.ethInUsdAverage / firstInPeriodElem.ethInUsdAverage
-                if currentPeriodElem.ethInUsdSum > currentPeriodElem.ethOutUsdSum && priceDifference > 4.0
+            | Some prevNPeriodElem ->
+                let priceDifference = currentPeriodElem.ethInUsdAverage / prevNPeriodElem.ethInUsdAverage
+
+                if currentPeriodElem.ethInUsdSum > currentPeriodElem.ethOutUsdSum && 
+                   priceDifference > 4.0
                 then
                     Some { 
                             pairAddress = currentPeriodElem.pairAddress
@@ -110,19 +112,27 @@ type scoped_trigger_5mins(
 
     let splitList grouped = 
         match grouped with
-        | [| true, lastInPeriod; false, firstInPeriod |] -> firstInPeriod, lastInPeriod
-        | [| false, firstInPeriod; true, lastInPeriod |] -> firstInPeriod, lastInPeriod
-        | _ -> [||], [||]
+        | [ true, currentPeriod; false, prevNPeriod ] -> prevNPeriod, currentPeriod
+        | [ false, prevNPeriod; true, currentPeriod ] -> prevNPeriod, currentPeriod
+        | _ -> [], []   
+        
+    //let splitList1 grouped = 
 
-    let transformPeriod  : SwapsETH_Token [] -> swapT []  =
-        Array.filter (fun x -> not (x.EthIn = ""))
-        >> Array.groupBy (fun entity-> entity.pairAddress) 
-        >> Array.map avarage
-        >> Array.filter (fun x -> x.ethInUsdAverage > 0) 
+        
+    //    match grouped with
+    //    | [ true, lastInPeriod; false, firstInPeriod ] -> firstInPeriod, lastInPeriod
+    //    | [ false, firstInPeriod; true, lastInPeriod ] -> firstInPeriod, lastInPeriod
+    //    | _ -> [], []
+
+    let transformPeriod  : SwapsETH_Token seq -> swapT seq  =
+        Seq.filter (fun x -> not (x.EthIn = ""))
+        >> Seq.groupBy (fun entity-> entity.pairAddress) 
+        >> Seq.map avarage
+        >> Seq.filter (fun x -> x.ethInUsdAverage > 0) 
             
-    let transformPeriods (lst:(SwapsETH_Token [] * SwapsETH_Token []) ) =
-        let firstInPeriod, lastInPeriod = lst
-        (firstInPeriod |> transformPeriod, lastInPeriod |> transformPeriod)
+    let transformPeriods (lst:(SwapsETH_Token seq * SwapsETH_Token seq) ) =
+        let prevNPeriod, currentPeriod = lst
+        (prevNPeriod |> transformPeriod, currentPeriod |> transformPeriod)
     
     let updateLatestTrigger (lastBlock: int) =
         let trigger = TriggerHistory()
@@ -131,10 +141,10 @@ type scoped_trigger_5mins(
         ethDB.triggerHistoriesEntities.Add(trigger) |> ignore
         ethDB.SaveChangesAsync() |> Async.AwaitTask
 
-    let getTokenInfos (triggerResults: triggerResults []) =
+    let getTokenInfos (triggerResults: triggerResults seq) =
         async {
                  let pairAddresses = triggerResults 
-                                        |> Array.map (fun x -> x.pairAddress)
+                                        |> Seq.map (fun x -> x.pairAddress)
                  let! infos = ethDB.
                                 tokenInfoEntities.
                                 Where(fun x -> pairAddresses.Contains(x.AddressPair)).
@@ -142,7 +152,7 @@ type scoped_trigger_5mins(
                                 |> Async.AwaitTask
                  
                  let r = triggerResults
-                         |> Array.map (fun x -> 
+                         |> Seq.map (fun x -> 
                              let info = infos
                                         |> Seq.tryFind (fun y -> y.AddressPair = x.pairAddress)
 
@@ -160,8 +170,7 @@ type scoped_trigger_5mins(
 
     let trigger lastBlock = 
                 Async.map ( List.ofSeq
-                            >> List.toArray 
-                            >> Array.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
+                            >> List.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
                             >> splitList
                             >> transformPeriods
                             >> comparePrices
@@ -183,7 +192,11 @@ type scoped_trigger_5mins(
                     return ()
                 else
                     let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
-
+                    //let! dd =  periods |>
+                    //            Async.map ( List.ofSeq
+                    //                        >> List.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
+                    //                        >> splitList1
+                    //                        )
                     do! trigger lastBlock periods
                         |> Async.Ignore
 

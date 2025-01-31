@@ -90,6 +90,7 @@ type scopedSwapsETH(
                                         block.blockNumberInt <= max &&
                                         block.priceEthInUsd > 0.0
                                         )
+                    .OrderByDescending(fun x -> x.blockNumberInt)
                     .Take(10)
                     .ToListAsync()
                 |> Async.AwaitTask

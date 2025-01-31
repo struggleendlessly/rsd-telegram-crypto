@@ -120,7 +120,7 @@ type scoped_trigger_5mins(
         //Seq.filter (fun x -> not (x.EthIn = ""))
         Seq.groupBy (fun entity-> entity.pairAddress) 
         >> Seq.map (avarage countIn5minPeriods)
-        >> Seq.filter (fun x -> x.ethInUsdAverage > 0) 
+        >> Seq.filter (fun x -> x.ethInUsdAverage > 1) 
             
     let transformPeriods countIn5minPeriods (lst:(SwapsETH_Token seq * SwapsETH_Token seq) ) =
         let prevNPeriod, currentPeriod = lst

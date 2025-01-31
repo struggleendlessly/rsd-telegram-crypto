@@ -44,7 +44,7 @@ type scoped_trigger_0volumeNperiods(
         let getNumberInt (x: TriggerHistory) = x.blockNumberEndInt
 
         ethDB.triggerHistoriesEntities
-            .Where(fun x -> x.title = scopedNames.trigger_5mins_Name)
+            .Where(fun x -> x.title = scopedNames.trigger_0volumeNperiods_Name)
             .OrderByDescending(fun x -> x.blockNumberEndInt)
             .Take(1)
             .FirstOrDefaultAsync()
@@ -53,18 +53,77 @@ type scoped_trigger_0volumeNperiods(
                 >> Option.defaultValue noBlock
                 >> getNumberInt)
 
-    let getTxnsForPeriod (firstBlockInPeriod) =
+    let getTxnsForPeriod (blockInt) =
         ethDB.swapsETH_TokenEntities
-            .Where(fun x -> x.blockNumberEndInt >= firstBlockInPeriod)
+            .Where(fun x -> x.blockNumberEndInt >= blockInt)
             .ToListAsync()
             |> Async.AwaitTask
 
+    let getTxnsForPrevNPeriods (blockIntStart) blockIntEnd =
+        ethDB.swapsETH_TokenEntities
+            .Where(fun x -> x.blockNumberEndInt >= blockIntStart && x.blockNumberEndInt < blockIntEnd)
+            .Select(fun x -> x.pairAddress)
+            .Distinct()
+            .ToListAsync()
+            |> Async.AwaitTask
+    
+    let getTokenInfos (triggerResults: triggerResults seq) =
+        async {
+                 let pairAddresses = triggerResults 
+                                        |> Seq.map (fun x -> x.pairAddress)
+                 let! infos = ethDB.
+                                tokenInfoEntities.
+                                Where(fun x -> pairAddresses.Contains(x.AddressPair)).
+                                ToListAsync()
+                                |> Async.AwaitTask
+                 
+                 let r = triggerResults
+                         |> Seq.map (fun x -> 
+                             let info = infos
+                                        |> Seq.tryFind (fun y -> y.AddressPair = x.pairAddress)
+
+                             match info with
+                             | Some i -> { x with 
+                                                nameLong = i.NameLong
+                                                nameShort = i.NameShort
+                                                totalSupply = i.TotalSupply
+                                                }
+                             | None -> x
+                         )
+
+                 return r
+               }
+    let updateLatestTrigger (lastBlock: int) =
+        let trigger = TriggerHistory()
+        trigger.title <- scopedNames.trigger_0volumeNperiods_Name
+        trigger.blockNumberEndInt <- lastBlock
+        ethDB.triggerHistoriesEntities.Add(trigger) |> ignore
+        ethDB.SaveChangesAsync() |> Async.AwaitTask
+
+    let mapToTriggerResult (swap: SwapsETH_Token) = 
+        let ethInUsdSum = BigDecimal.Parse(swap.EthIn.ToZero()) * BigDecimal.Parse(string swap.priceETH_USD)  
+        let ethOutUsdSum = BigDecimal.Parse(swap.EthOut.ToZero()) * BigDecimal.Parse(string swap.priceETH_USD)
+
+        let res = 
+                  { 
+                            pairAddress = swap.pairAddress
+                            priceDifference = BigDecimal.Parse("".ToZero()) 
+                            volumeInUsd = ethInUsdSum
+                            priceETH_USD = swap.priceETH_USD
+                            ethInUsdSum = ethInUsdSum
+                            ethOutUsdSum = ethOutUsdSum
+                            nameLong = ""
+                            nameShort = ""
+                            totalSupply = ""
+                            priceTokenInETH = swap.priceTokenInETH
+                  }
+        res
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let countInPeriods = 12
+                let countIn5minPeriods = 12 * 12// * 0,5 // 1 day
 
                 let! lastBlock = getLastProcessedBlock()
                 let! latestTrigger = getLatestTrigger()
@@ -73,6 +132,24 @@ type scoped_trigger_0volumeNperiods(
                 then
                     return ()
                 else
-                    return ()
+                    let! currentPeriod = getTxnsForPeriod( lastBlock)
+                    let! prevNPeriods = getTxnsForPrevNPeriods (lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods) lastBlock
 
+                    let difference1 = currentPeriod 
+                                        |>   (Seq.map (fun x -> x.pairAddress) 
+                                              >> Seq.except prevNPeriods       )
+                                              
+                    let! difference = currentPeriod 
+                                        |>   (Seq.map (fun x -> x.pairAddress) 
+                                              >> Seq.except prevNPeriods
+                                              >> Seq.map (fun x -> Seq.find (fun (q:SwapsETH_Token)-> q.pairAddress = x ) currentPeriod )
+                                              >> Seq.map mapToTriggerResult
+                                              >> getTokenInfos
+                                              >> Async.Bind scoped_telegram.sendMessages_trigger_0volumeNperiods
+                                              )
+
+                    //let tokenInfos = getTokenInfo difference
+
+                    do! updateLatestTrigger lastBlock 
+                        |> Async.Ignore
             }

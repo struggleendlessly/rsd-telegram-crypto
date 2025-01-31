@@ -41,7 +41,7 @@ type scoped_telegram(
     let chainSettingsOption = chainSettingsOption.Value;
     let telemetryOption = telegramOption.Value;
 
-    let mapTriggerToMessage (x:triggerResults)= 
+    let mapTriggerToMessage_5mins (x:triggerResults)= 
 
         let sb = StringBuilder()
         sb.Append($"{x.nameLong} / {x.nameShort}") |> ignore
@@ -78,15 +78,51 @@ type scoped_telegram(
             MKmore100kLess1m res
         else
             MKmore1m res
-        //res
+
+    let mapTriggerToMessage_0volumeNperiods (x:triggerResults)= 
+
+        let sb = StringBuilder()
+        sb.Append($"{x.nameLong} / {x.nameShort}") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"`{x.pairAddress}`") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"MK: {x.mkStr} USD") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"TS: {x.totalSupplyStr}") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"{x.priceDifferenceStr}") |> ignore
+        sb.Append(" X") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"Buy:{x.ethInUsdSumStr} / Sell:{x.ethOutUsdSumStr} / Total: {x.ethOutInUsdSumStr}"  ) |> ignore
+        sb.Append(" USD") |> ignore
+
+        sb.Append("\n") |> ignore
+        sb.Append($"""{apiCallerTLGRM.icons["chart"]} [dextools]({telemetryOption.dextoolsUrl}app/en/{telemetryOption.chainName}/pair-explorer/{x.pairAddress}""")  |> ignore
+
+        let res =  sb.ToString()
+
+        res
 
     member this.sendMessages_trigger_5min = 
-        Seq.map mapTriggerToMessage
+        Seq.map mapTriggerToMessage_5mins
         >> Seq.map ( fun x ->
                 match x with
                 | MKless100k res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_less100k|> string) (telemetryOption.chat_id_coins|> string) res
                 | MKmore100kLess1m res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_more100kLess1m|> string) (telemetryOption.chat_id_coins|> string) res 
                 | MKmore1m res -> apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5mins_more1m|> string) (telemetryOption.chat_id_coins|> string) res
+                )
+        >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
+        >> Async.Parallel
+
+    member this.sendMessages_trigger_0volumeNperiods = 
+        Seq.map mapTriggerToMessage_0volumeNperiods
+        >> Seq.map ( fun x ->
+                apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_0volumeNperiods|> string) (telemetryOption.chat_id_coins|> string) x
                 )
         >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
         >> Async.Parallel

@@ -182,7 +182,7 @@ type scoped_trigger_5mins(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let countInPeriods = 12
+                let countIn5minPeriods = 12
 
                 let! lastBlock = getLastProcessedBlock()
                 let! latestTrigger = getLatestTrigger()
@@ -191,12 +191,8 @@ type scoped_trigger_5mins(
                 then
                     return ()
                 else
-                    let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countInPeriods)
-                    //let! dd =  periods |>
-                    //            Async.map ( List.ofSeq
-                    //                        >> List.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
-                    //                        >> splitList1
-                    //                        )
+                    let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods)
+
                     do! trigger lastBlock periods
                         |> Async.Ignore
 

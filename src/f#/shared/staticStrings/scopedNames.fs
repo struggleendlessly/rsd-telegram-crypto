@@ -13,4 +13,5 @@ let scopedLastSlotName = "scopedLastSlot"
 let scopedSwapsBlockName = "scopedSwapsBlock"
 
 let trigger_5mins_Name = "5mins"
+let trigger_0volumeNperiods_Name = "0volumeNperiods"
 

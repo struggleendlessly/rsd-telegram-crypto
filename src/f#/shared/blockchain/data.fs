@@ -163,7 +163,6 @@ let inOutSum
                                                              ethPriceInCloseBlock
                                                              listT0T1
                           let inOutOption = inOut ethOrStableCoin x
-                          let aa = None
                           inOutOption
                           )
         |> Seq.choose id

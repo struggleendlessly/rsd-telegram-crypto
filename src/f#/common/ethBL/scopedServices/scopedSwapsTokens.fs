@@ -61,12 +61,15 @@ type scopedSwapsTokens(
                 result
         
     let getDistinctPairAddresses =
+        Seq.map (fun  (key, data) -> key) 
+        >> Seq.distinct
+
+    let groupAndFilter = 
         Seq.collect id 
         >> Seq.collect (fun swap -> swap.result) 
-        >> Seq.map (fun res -> res.address) 
-        >> Seq.filter (fun address -> not (chainSettingsOption.ExcludedAddresses |> Seq.contains address))
-        >> Seq.distinct
-    
+        >> Seq.groupBy (fun x -> x.address)
+        >> Seq.filter (fun (key, data) -> not (chainSettingsOption.ExcludedAddresses |> Seq.contains key))
+
     let processBlocks (blocks: responseSwap seq seq) = 
         async {       
                 if Seq.isEmpty blocks 
@@ -74,10 +77,12 @@ type scopedSwapsTokens(
                     let emptyArray : SwapsETH_Token seq = Seq.empty
                     return emptyArray
                 else
-
-                    let distinctPairAddresses = 
-                        
-                        blocks
+                    let groupedAndFiltered = 
+                        blocks 
+                        |> groupAndFilter
+                    let aa = groupedAndFiltered |> Seq.length
+                    let distinctPairAddresses =                        
+                        groupedAndFiltered
                         |> getDistinctPairAddresses
 
                     let! tokenAddresses =
@@ -92,15 +97,20 @@ type scopedSwapsTokens(
                     let max = blocks |> Seq.head |> Seq.maxBy (fun x -> x.id)
                     let! priceAverageForBlocks = scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
 
-                    let t =
+                    let t1 =
                             blocks
                             |> Seq.head
                             |> Seq.map (fun block -> 
+                                block.result |> Array.groupBy (fun x -> x.address) )            
+                    let t =
+                            blocks
+                            |> Seq.head
+                            |> Seq.map (fun block -> // because it could be up to N 5 mins periods. every 5 min period process separately. do not collect!!!!
                                 block.result
                                 |> Array.groupBy (fun x -> x.address)    
-                                |> Array.filter (fun  (add, res) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains add))
-                                |> Array.choose (fun (add, res) -> 
-                                    match Map.tryFind add decimals with
+                                |> Array.filter (fun  (key, data) -> not (chainSettingsOption.ExcludedAddresses |> Array.contains key))
+                                |> Array.choose (fun (key, data) -> 
+                                    match Map.tryFind key decimals with
                                     | Some decimalValue -> Some (mapResponseSwap.mapResponseSwapResult 
                                                                         chainSettingsOption.AddressChainCoin 
                                                                         chainSettingsOption.AddressStableCoinsToInteract
@@ -109,13 +119,12 @@ type scopedSwapsTokens(
                                                                         tokenAddresses 
                                                                         decimalValue 
                                                                         priceAverageForBlocks 
-                                                                        (add, res))
+                                                                        (key, data))
                                     | None -> None
                                                    ) 
                                     |> Seq.choose id
                                   )                           
                             |> Seq.collect id
-
                     return t
         }
     interface IScopedProcessingService with

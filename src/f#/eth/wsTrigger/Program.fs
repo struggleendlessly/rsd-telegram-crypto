@@ -91,6 +91,10 @@ module Program =
         then 
             builder.Services.AddHostedService<trigger_5mins>() |> ignore
 
+        if debugSettings.wsTrigger.trigger_0volumeNperiods = 1
+        then 
+            builder.Services.AddHostedService<trigger_0volumeNperiods>() |> ignore
+
 
         builder.Services.AddWindowsService(fun options -> options.ServiceName <- "wsTrigger_eth" ) |> ignore
 

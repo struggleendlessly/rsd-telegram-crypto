@@ -123,7 +123,7 @@ type scoped_trigger_0volumeNperiods(
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let countIn5minPeriods = 12 * 12// * 0,5 // 1 day
+                let countIn5minPeriods = 12 * 24 * 1 // 1 day
 
                 let! lastBlock = getLastProcessedBlock()
                 let! latestTrigger = getLatestTrigger()

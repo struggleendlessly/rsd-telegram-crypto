@@ -134,21 +134,17 @@ type scoped_trigger_0volumeNperiods(
                 else
                     let! currentPeriod = getTxnsForPeriod( lastBlock)
                     let! prevNPeriods = getTxnsForPrevNPeriods (lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods) lastBlock
-
-                    let difference1 = currentPeriod 
-                                        |>   (Seq.map (fun x -> x.pairAddress) 
-                                              >> Seq.except prevNPeriods       )
                                               
-                    let! difference = currentPeriod 
-                                        |>   (Seq.map (fun x -> x.pairAddress) 
-                                              >> Seq.except prevNPeriods
-                                              >> Seq.map (fun x -> Seq.find (fun (q:SwapsETH_Token)-> q.pairAddress = x ) currentPeriod )
-                                              >> Seq.map mapToTriggerResult
-                                              >> getTokenInfos
-                                              >> Async.Bind scoped_telegram.sendMessages_trigger_0volumeNperiods
-                                              )
+                    do! currentPeriod 
+                        |>   (Seq.map (fun x -> x.pairAddress) 
+                                >> Seq.except prevNPeriods
+                                >> Seq.map (fun x -> Seq.find (fun (q:SwapsETH_Token)-> q.pairAddress = x ) currentPeriod )
+                                >> Seq.map mapToTriggerResult
+                                >> getTokenInfos
+                                >> Async.Bind scoped_telegram.sendMessages_trigger_0volumeNperiods
+                                )
+                        |> Async.Ignore
 
-                    //let tokenInfos = getTokenInfo difference
 
                     do! updateLatestTrigger lastBlock 
                         |> Async.Ignore

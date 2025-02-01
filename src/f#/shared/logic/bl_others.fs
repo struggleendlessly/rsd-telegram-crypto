@@ -29,7 +29,12 @@ let splitList list =
 //    |> string   
 let addDots (input: string) = 
     let regex = Regex(@"\B(?=(\d{3})+(?!\d))")
-    regex.Replace(input, ".")
+
+    if String.IsNullOrEmpty(input) 
+    then 
+        ""
+    else
+        regex.Replace(input, ".")
 
 type swapT =
     {

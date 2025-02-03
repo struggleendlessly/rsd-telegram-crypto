@@ -20,6 +20,7 @@ open telegramOption
 
 open IScopedProcessingService
 open scoped_trigger_0volumeNperiods
+open scoped_trigger_5mins5percOfMK
 open scopedTokenInfo
 open scopedSwapsETH
 open scopedLastBlock
@@ -75,6 +76,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
     services.AddScoped<scoped_telegram>() |> ignore
 
     services.AddScoped<scoped_trigger_5mins>() |> ignore
+    services.AddScoped<scoped_trigger_5mins5percOfMK>() |> ignore
     services.AddScoped<scoped_trigger_0volumeNperiods>() |> ignore
 
     services.AddScoped<IDictionary<string, IScopedProcessingService>>(
@@ -86,6 +88,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
             dict.Add(scoped_tokenInfo_Name, sp.GetRequiredService<scopedTokenInfo>() :> IScopedProcessingService) 
 
             dict.Add(scoped_trigger_5mins_Name, sp.GetRequiredService<scoped_trigger_5mins>() :> IScopedProcessingService) 
+            dict.Add(scoped_trigger_5mins5percOfMK_Name, sp.GetRequiredService<scoped_trigger_5mins5percOfMK>() :> IScopedProcessingService) 
             dict.Add(scoped_trigger_0volumeNperiods_Name, sp.GetRequiredService<scoped_trigger_0volumeNperiods>() :> IScopedProcessingService) 
 
             dict :> IDictionary<string, IScopedProcessingService> ) |> ignore

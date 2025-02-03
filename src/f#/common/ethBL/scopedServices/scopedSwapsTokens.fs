@@ -91,7 +91,7 @@ type scopedSwapsTokens(
 
                     let! decimals =
                         distinctPairAddresses
-                        |> scopedTokenInfo.getDecimals
+                        |> scopedTokenInfo.getDecimals 
             
                     let min = blocks |> Seq.head |> Seq.minBy (fun x -> x.id) 
                     let max = blocks |> Seq.head |> Seq.maxBy (fun x -> x.id)

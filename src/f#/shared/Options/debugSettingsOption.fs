@@ -9,6 +9,7 @@ type WsSwaps() =
 type WsTrigger() =
     member val trigger_5mins = 0 with get, set
     member val trigger_0volumeNperiods = 0 with get, set
+    member val trigger_5mins5percOfMK = 0 with get, set
 
 type debugSettingsOption() =
     static member val SectionName = "DebugSettings" with get

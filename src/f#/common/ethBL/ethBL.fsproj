@@ -8,9 +8,11 @@
   <ItemGroup>
     <Compile Include="scopedServices\scoped_telegram.fs" />
     <Compile Include="scopedServices\scoped_trigger_0volumeNperiods.fs" />
+    <Compile Include="scopedServices\scoped_trigger_5mins5percOfMK.fs" />
     <Compile Include="scopedServices\scoped_trigger_5mins.fs" />
     <Compile Include="workers\tokenInfo.fs" />
     <Compile Include="workers\trigger_0volumeNperiods.fs" />
+    <Compile Include="workers\trigger_5mins5percOfMK.fs" />
     <Compile Include="workers\trigger_5mins.fs" />
     <Compile Include="workers\lastBlock.fs" />
     <Compile Include="workers\swapsETH.fs" />

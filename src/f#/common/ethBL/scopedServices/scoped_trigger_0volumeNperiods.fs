@@ -14,6 +14,7 @@ open Extensions
 open responseSwap
 open scoped_telegram
 open bl_others
+open telegramOption
 
 open alchemy
 open ethCommonDB
@@ -26,6 +27,7 @@ type scoped_trigger_0volumeNperiods(
         alchemy: alchemyEVM,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
         scoped_telegram: scoped_telegram,
+        telegramOption:  IOptions<telegramOption>,
 
         ethDB: IEthDB) =
 
@@ -39,12 +41,12 @@ type scoped_trigger_0volumeNperiods(
             .FirstOrDefaultAsync()
             |> Async.AwaitTask
 
-    let getLatestTrigger () =
+    let getLatestTrigger historyName =
         let noBlock = TriggerHistory.Default()
         let getNumberInt (x: TriggerHistory) = x.blockNumberEndInt
 
         ethDB.triggerHistoriesEntities
-            .Where(fun x -> x.title = scopedNames.trigger_0volumeNperiods_Name)
+            .Where(fun x -> x.title = historyName)
             .OrderByDescending(fun x -> x.blockNumberEndInt)
             .Take(1)
             .FirstOrDefaultAsync()
@@ -93,9 +95,9 @@ type scoped_trigger_0volumeNperiods(
 
                  return r
                }
-    let updateLatestTrigger (lastBlock: int) =
+    let updateLatestTrigger historyName (lastBlock: int) =
         let trigger = TriggerHistory()
-        trigger.title <- scopedNames.trigger_0volumeNperiods_Name
+        trigger.title <- historyName
         trigger.blockNumberEndInt <- lastBlock
         ethDB.triggerHistoriesEntities.Add(trigger) |> ignore
         ethDB.SaveChangesAsync() |> Async.AwaitTask
@@ -119,33 +121,54 @@ type scoped_trigger_0volumeNperiods(
                   }
         res
 
+    let processNperiod telegremThread countIn5minPeriods historyName = 
+        task {
+            let! lastBlock = getLastProcessedBlock()
+            let! latestTrigger = getLatestTrigger historyName
+
+            if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
+            then
+                return ()
+            else
+                let! currentPeriod = getTxnsForPeriod( lastBlock)
+                let! prevNPeriods = getTxnsForPrevNPeriods (lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods) lastBlock
+                                              
+                do! currentPeriod 
+                    |>   (Seq.map (fun x -> x.pairAddress) 
+                            >> Seq.except prevNPeriods
+                            >> Seq.map (fun x -> Seq.find (fun (q:SwapsETH_Token)-> q.pairAddress = x ) currentPeriod )
+                            >> Seq.map mapToTriggerResult
+                            >> getTokenInfos
+                            >> Async.Bind (scoped_telegram.sendMessages_trigger_0volumeNperiods telegremThread)
+                            )
+                    |> Async.Ignore
+
+
+                do! updateLatestTrigger historyName lastBlock 
+                    |> Async.Ignore
+              }
+
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let countIn5minPeriods = 12 * 24 * 1 // 1 day
 
-                let! lastBlock = getLastProcessedBlock()
-                let! latestTrigger = getLatestTrigger()
+                let countIn5minPeriods_1d = 12 * 24 * 1 // 1 day
+                let countIn5minPeriods_7d = 12 * 24 * 7 // 1 day
+                let countIn5minPeriods_14d = 12 * 24 * 14 // 1 day
 
-                if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
-                then
-                    return ()
-                else
-                    let! currentPeriod = getTxnsForPeriod( lastBlock)
-                    let! prevNPeriods = getTxnsForPrevNPeriods (lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods) lastBlock
-                                              
-                    do! currentPeriod 
-                        |>   (Seq.map (fun x -> x.pairAddress) 
-                                >> Seq.except prevNPeriods
-                                >> Seq.map (fun x -> Seq.find (fun (q:SwapsETH_Token)-> q.pairAddress = x ) currentPeriod )
-                                >> Seq.map mapToTriggerResult
-                                >> getTokenInfos
-                                >> Async.Bind scoped_telegram.sendMessages_trigger_0volumeNperiods
-                                )
-                        |> Async.Ignore
+                do! processNperiod 
+                        telegramOption.Value.message_thread_id_0volume1d
+                        countIn5minPeriods_1d 
+                        scopedNames.trigger_0volumeNperiods_1d_Name
 
+                do! processNperiod 
+                        telegramOption.Value.message_thread_id_0volume7d
+                        countIn5minPeriods_7d 
+                        scopedNames.trigger_0volumeNperiods_7d_Name
 
-                    do! updateLatestTrigger lastBlock 
-                        |> Async.Ignore
+                do! processNperiod 
+                        telegramOption.Value.message_thread_id_0volume14d
+                        countIn5minPeriods_14d 
+                        scopedNames.trigger_0volumeNperiods_14d_Name
             }

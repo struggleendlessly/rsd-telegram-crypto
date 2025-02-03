@@ -14,7 +14,9 @@ type telegramOption() =
     member val message_thread_id_5mins_more100kLess1m = 0 with get, set
     member val message_thread_id_5mins_more1m = 0 with get, set
 
-    member val message_thread_id_0volumeNperiods = 0 with get, set
+    member val message_thread_id_0volume1d = 0 with get, set
+    member val message_thread_id_0volume7d = 0 with get, set
+    member val message_thread_id_0volume14d = 0 with get, set
 
     member val etherscanUrl = "" with get, set
     member val dextoolsUrl = "" with get, set

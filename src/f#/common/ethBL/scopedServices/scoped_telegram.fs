@@ -115,10 +115,10 @@ type scoped_telegram(
         >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
         >> Async.Parallel
 
-    member this.sendMessages_trigger_0volumeNperiods = 
+    member this.sendMessages_trigger_0volumeNperiods telegremThread= 
         Seq.map mapTriggerToMessage_0volumeNperiods
         >> Seq.map ( fun x ->
-                apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_0volumeNperiods|> string) (telemetryOption.chat_id_coins|> string) x
+                apiCallerTLGRM.urlBuilder (telegremThread|> string) (telemetryOption.chat_id_coins|> string) x
                 )
         >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
         >> Async.Parallel

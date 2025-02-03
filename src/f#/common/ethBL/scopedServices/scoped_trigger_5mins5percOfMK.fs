@@ -44,7 +44,7 @@ type scoped_trigger_5mins5percOfMK(
         let getNumberInt (x: TriggerHistory) = x.blockNumberEndInt
 
         ethDB.triggerHistoriesEntities
-            .Where(fun x -> x.title = scopedNames.trigger_5mins_Name)
+            .Where(fun x -> x.title = scopedNames.trigger_5mins5percOfMK_Name)
             .OrderByDescending(fun x -> x.blockNumberEndInt)
             .Take(1)
             .FirstOrDefaultAsync()
@@ -53,86 +53,11 @@ type scoped_trigger_5mins5percOfMK(
                 >> Option.defaultValue noBlock
                 >> getNumberInt)
 
-    let getTxnsForPeriod (firstBlockInPeriod) =
+    let getTxnsForPeriod (blockInt) =
         ethDB.swapsETH_TokenEntities
-            .Where(fun x -> x.blockNumberEndInt >= firstBlockInPeriod)
+            .Where(fun x -> x.blockNumberEndInt >= blockInt)
             .ToListAsync()
             |> Async.AwaitTask
-
-    let avarage countIn5minPeriods (swaps: string * SwapsETH_Token seq) = 
-        let (pairAddress, swap) = swaps
-
-        let ethInSum = swap 
-                      |> Seq.fold (fun acc x -> 
-                                acc + BigDecimal.Parse(x.EthIn.ToZero()) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
-        let ethOutSum = swap 
-                      |> Seq.fold (fun acc x -> 
-                                acc + BigDecimal.Parse(x.EthOut.ToZero()) * BigDecimal.Parse(string x.priceETH_USD) ) (BigDecimal.Parse("0"))
-
-        let res = { ethInUsdAverage = ethInSum / BigDecimal.Parse( countIn5minPeriods |> string)
-                    ethInUsdSum = ethInSum  
-                    ethOutUsdSum = ethOutSum
-                    pairAddress = pairAddress 
-                    priceETH_USD = (Seq.head swap).priceETH_USD
-                    priceTokenInETH = (Seq.head swap).priceTokenInETH
-                  }
-        res
-
-
-    let comparePrices (v: swapT seq * swapT seq)  =
-        let prevNPeriod, currentPeriod = v
-        let koef = BigDecimal.Parse("4")
-        currentPeriod
-        |> Seq.choose (fun currentPeriodElem ->
-            match prevNPeriod 
-                    |> Seq.tryFind (fun prevNPeriodElem -> prevNPeriodElem.pairAddress = currentPeriodElem.pairAddress) 
-            with
-            | Some prevNPeriodElem ->
-                let priceDifference = currentPeriodElem.ethInUsdSum / prevNPeriodElem.ethInUsdAverage
-
-                if currentPeriodElem.ethInUsdSum > currentPeriodElem.ethOutUsdSum && 
-                   priceDifference > koef
-                then
-                    Some { 
-                            pairAddress = currentPeriodElem.pairAddress
-                            priceDifference = priceDifference 
-                            volumeInUsd = currentPeriodElem.ethInUsdAverage
-                            priceETH_USD = currentPeriodElem.priceETH_USD
-                            ethInUsdSum = currentPeriodElem.ethInUsdSum
-                            ethOutUsdSum = currentPeriodElem.ethOutUsdSum
-                            nameLong = ""
-                            nameShort = ""
-                            totalSupply = ""
-                            priceTokenInETH = currentPeriodElem.priceTokenInETH
-                         }
-                else
-                    None
-            | None -> None
-        )
-
-    let splitList grouped = 
-        match grouped with
-        | [ true, currentPeriod; false, prevNPeriod ] -> prevNPeriod, currentPeriod
-        | [ false, prevNPeriod; true, currentPeriod ] -> prevNPeriod, currentPeriod
-        | _ -> [], []          
-
-    let transformPeriod countIn5minPeriods : SwapsETH_Token seq -> swapT seq  =
-        //Seq.filter (fun x -> not (x.EthIn = ""))
-        Seq.groupBy (fun entity-> entity.pairAddress) 
-        >> Seq.map (avarage countIn5minPeriods)
-        >> Seq.filter (fun x -> x.ethInUsdAverage > 1) 
-            
-    let transformPeriods countIn5minPeriods (lst:(SwapsETH_Token seq * SwapsETH_Token seq) ) =
-        let prevNPeriod, currentPeriod = lst
-        let aa = currentPeriod |> Seq.distinctBy (fun x -> x.pairAddress) |> Seq.length
-        (prevNPeriod |> transformPeriod countIn5minPeriods, currentPeriod |> transformPeriod countIn5minPeriods)
-    
-    let updateLatestTrigger (lastBlock: int) =
-        let trigger = TriggerHistory()
-        trigger.title <- scopedNames.trigger_5mins_Name
-        trigger.blockNumberEndInt <- lastBlock
-        ethDB.triggerHistoriesEntities.Add(trigger) |> ignore
-        ethDB.SaveChangesAsync() |> Async.AwaitTask
 
     let getTokenInfos (triggerResults: triggerResults seq) =
         async {
@@ -160,22 +85,37 @@ type scoped_trigger_5mins5percOfMK(
 
                  return r
                }
+    let updateLatestTrigger (lastBlock: int) =
+        let trigger = TriggerHistory()
+        trigger.title <- scopedNames.trigger_5mins5percOfMK_Name
+        trigger.blockNumberEndInt <- lastBlock
+        ethDB.triggerHistoriesEntities.Add(trigger) |> ignore
+        ethDB.SaveChangesAsync() |> Async.AwaitTask
 
-    let trigger lastBlock countIn5minPeriods = 
-                Async.map ( List.ofSeq
-                            >> List.groupBy (fun (entity:SwapsETH_Token)-> entity.blockNumberEndInt = lastBlock)
-                            >> splitList
-                            >> (transformPeriods countIn5minPeriods)
-                            >> comparePrices
-                            )
-                >> Async.Bind getTokenInfos
-                >> Async.Bind scoped_telegram.sendMessages_trigger_5min
+    let mapToTriggerResult (swap: SwapsETH_Token) = 
+        let ethInUsdSum = BigDecimal.Parse(swap.EthIn.ToZero()) * BigDecimal.Parse(string swap.priceETH_USD)  
+        let ethOutUsdSum = BigDecimal.Parse(swap.EthOut.ToZero()) * BigDecimal.Parse(string swap.priceETH_USD)
 
+        let res = 
+                  { 
+                            pairAddress = swap.pairAddress
+                            priceDifference = BigDecimal.Parse("".ToZero()) 
+                            volumeInUsd = ethInUsdSum
+                            priceETH_USD = swap.priceETH_USD
+                            ethInUsdSum = ethInUsdSum
+                            ethOutUsdSum = ethOutUsdSum
+                            nameLong = ""
+                            nameShort = ""
+                            totalSupply = ""
+                            priceTokenInETH = swap.priceTokenInETH
+                  }
+        res
+        
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-                let countIn5minPeriods = 12
+                let countIn5minPeriods = 12 * 24 * 1 // 1 day
 
                 let! lastBlock = getLastProcessedBlock()
                 let! latestTrigger = getLatestTrigger()
@@ -184,10 +124,19 @@ type scoped_trigger_5mins5percOfMK(
                 then
                     return ()
                 else
-                    let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods)
-
-                    do! trigger lastBlock countIn5minPeriods periods
+                    let! currentPeriod = getTxnsForPeriod( lastBlock)
+                    let a = 1
+                    return ()
+                                              
+                    do! currentPeriod 
+                        |>   ( Seq.map mapToTriggerResult
+                                >> getTokenInfos
+                                >> Async.map (Seq.filter (fun x -> x.volumeInUsd > ( x.mkBigDec * BigDecimal.Parse ("0.05"))))
+                                >> Async.map (Seq.map (fun x -> x))
+                                >> Async.Bind scoped_telegram.sendMessages_trigger_5mins5percOfMK
+                                )
                         |> Async.Ignore
+
 
                     do! updateLatestTrigger lastBlock 
                         |> Async.Ignore

@@ -15,4 +15,5 @@ let scopedSwapsBlockName = "scopedSwapsBlock"
 
 let trigger_5mins_Name = "5mins"
 let trigger_0volumeNperiods_Name = "0volumeNperiods"
+let trigger_5mins5percOfMK_Name = "5mins5percOfMK"
 

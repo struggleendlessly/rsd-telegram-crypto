@@ -123,6 +123,14 @@ type scoped_telegram(
         >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
         >> Async.Parallel
 
+    member this.sendMessages_trigger_5mins5percOfMK = 
+        Seq.map mapTriggerToMessage_0volumeNperiods
+        >> Seq.map ( fun x ->
+                apiCallerTLGRM.urlBuilder (telemetryOption.message_thread_id_5min_5percOfMK|> string) (telemetryOption.chat_id_coins|> string) x
+                )
+        >> Seq.map (apiCallerTLGRM.request logger telemetryOption.bot_hash telemetryOption.UrlBase httpClientFactory)
+        >> Async.Parallel
+
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) =
             task {

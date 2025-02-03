@@ -70,13 +70,17 @@ type triggerResults = {
     member this.ethOutInUsdSumStr = (this.ethOutUsdSum + this.ethInUsdSum).RoundAwayFromZero(0) |> string |> addDots 
 
     member this.totalSupplyStr = this.totalSupply|> addDots 
-    member this.mkStr = let ts = if String.IsNullOrEmpty(this.totalSupply) 
+    member this.mkBigDec = 
+                        let ts = if String.IsNullOrEmpty(this.totalSupply) 
                                  then "0" 
                                  else this.totalSupply
                         (BigDecimal.Parse(ts) * 
                         BigDecimal.Parse(this.priceTokenInETH.ToString("F17")) * 
                         BigDecimal.Parse(this.priceETH_USD.ToString()) )
                          .RoundAwayFromZero(0)
+    
+    member this.mkStr = 
+                        this.mkBigDec
                         |> string 
                         |> addDots
     

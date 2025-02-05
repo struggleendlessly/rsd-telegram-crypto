@@ -131,7 +131,9 @@ type scoped_trigger_5mins5percOfMK(
                     do! currentPeriod 
                         |>   ( Seq.map mapToTriggerResult
                                 >> getTokenInfos
-                                >> Async.map (Seq.filter (fun x -> x.volumeInUsd > ( x.mkBigDec * BigDecimal.Parse ("0.05"))))
+                                >> Async.map (Seq.filter (fun x -> 
+                                                            x.mkBigDec > BigDecimal.Parse ("1") && 
+                                                            x.volumeInUsd > ( x.mkBigDec * BigDecimal.Parse ("0.05"))))
                                 >> Async.map (Seq.map (fun x -> x))
                                 >> Async.Bind scoped_telegram.sendMessages_trigger_5mins5percOfMK
                                 )

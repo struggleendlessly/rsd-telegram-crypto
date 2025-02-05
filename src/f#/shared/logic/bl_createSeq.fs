@@ -24,7 +24,7 @@ let getSeqToProcess n step start end1 =
             return seq { startAsync + 1 .. step .. startAsync + n } 
         elif endAsync - startAsync > step
         then
-            return seq { startAsync + 1 .. step .. endAsync } 
+            return Seq.singleton startAsync
         else
             return [||]
     }

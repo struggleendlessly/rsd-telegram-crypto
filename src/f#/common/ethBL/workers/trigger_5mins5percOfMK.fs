@@ -38,4 +38,9 @@ type trigger_5mins5percOfMK(
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scoped_trigger_5mins5percOfMK_Name]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken) |> Async.AwaitTask |> Async.StartAsTask
+
+                try
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) |> Async.AwaitTask |> Async.StartAsTask
+                with ex ->
+                    logger.LogError(ex, "Error in trigger_5mins5percOfMK: {message}", ex.Message)
         }

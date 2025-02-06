@@ -26,8 +26,8 @@ type swapsTokens(
 
                 try
                     do! scopedProcessingService.DoWorkAsync(stoppingToken)
-                with 
-                | ex -> logger.LogError(ex, "Error in swapsTokens")
+                with ex ->
+                    logger.LogError(ex, "Error in swapsTokens: {message}", ex.Message)
 
                 do! Task.Delay(60_000, stoppingToken)
         }

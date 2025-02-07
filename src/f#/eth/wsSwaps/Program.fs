@@ -65,6 +65,8 @@ module Program =
                                 )
                                 .CreateLogger()
 
+            builder.Logging.AddSerilog(Log.Logger) |> ignore 
+
             let optionsAlchemy = builder.Configuration.GetSection($"{AlchemyOption.SectionName}:ChainNames").Get<ChainNames>()
 
             let configureAlchemy(

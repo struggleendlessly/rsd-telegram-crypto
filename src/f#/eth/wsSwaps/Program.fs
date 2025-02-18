@@ -103,6 +103,10 @@ module Program =
             if debugSettings.wsSwaps.tokenInfo = 1
             then 
                 builder.Services.AddHostedService<tokenInfo>() |> ignore
+                
+            if debugSettings.wsSwaps.swapsTokensToNhours = 1
+            then 
+                builder.Services.AddHostedService<swapsTokensToNhours>() |> ignore
 
             //builder.Services.AddHostedService<swapsETH>() |> ignore
             //builder.Services.AddHostedService<swapsTokens>() |> ignore

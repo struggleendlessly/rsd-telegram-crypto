@@ -12,14 +12,17 @@ open Microsoft.Extensions.DependencyInjection
 open IScopedProcessingService
 open scopedNames
 open Cronos
-
+open Microsoft.Extensions.Options
+open debugSettingsOption
 
 type trigger_5mins5percOfMK(
         logger: ILogger<trigger_5mins5percOfMK>, 
+        debugSettingsOption: IOptions<debugSettingsOption>, 
         serviceScopeFactory: IServiceScopeFactory) =
 
     inherit BackgroundService()
-    
+
+    let debugSettings = debugSettingsOption.Value;
     let schedule = "0/5 * * * *"; // every 5 min
     let _cron = CronExpression.Parse(schedule);
 
@@ -30,8 +33,7 @@ type trigger_5mins5percOfMK(
                 let nextUtc = _cron.GetNextOccurrence(utcNow)
                 let delay = nextUtc.Value - utcNow
 
-                let isTimersOff = String.Equals("true", Environment.GetEnvironmentVariable("DOTNET_TIMERS"), StringComparison.InvariantCultureIgnoreCase)
-                if not isTimersOff then
+                if debugSettings.delayOnOff = 1 then
                     do! Task.Delay(delay, stoppingToken) 
 
                 use scope = serviceScopeFactory.CreateScope()

@@ -16,5 +16,6 @@ type debugSettingsOption() =
 
     member val wsSwaps = WsSwaps() with get, set
     member val wsTrigger = WsTrigger() with get, set
+    member val delayOnOff = 0 with get, set
 
 

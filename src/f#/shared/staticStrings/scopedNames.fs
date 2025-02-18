@@ -8,7 +8,7 @@ let scoped_trigger_5mins5percOfMK_Name = "scoped_trigger_5mins5percOfMK"
 let scoped_trigger_0volumeNperiods_Name = "scoped_trigger_0volumeNperiods"
 let scoped_telegram_Name = "scoped_telegram"
 let scoped_tokenInfo_Name = "scopedTokenInfo"
-let scoped_swapsTokensToNhours_Name = "swapsTokensToNhours"
+let scoped_swapsTokens5minTo30mins_Name = "swapsTokensToNhours"
 
 
 let scopedLastSlotName = "scopedLastSlot"

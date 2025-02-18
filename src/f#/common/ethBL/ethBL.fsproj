@@ -17,14 +17,14 @@
     <Compile Include="workers\lastBlock.fs" />
     <Compile Include="workers\swapsETH.fs" />
     <Compile Include="workers\swapsTokens.fs" />
-    <Compile Include="workers\swapsTokensToNhours.fs" />
+    <Compile Include="workers\swapsTokens5minTo30mins.fs" />
     <Compile Include="mappers\mapResponseEthCall_decimals.fs" />
     <Compile Include="mappers\mapResponseGetBlock.fs" />
     <Compile Include="mappers\mapResponseSwap.fs" />
     <Compile Include="scopedServices\scopedTokenInfo.fs" />
     <Compile Include="scopedServices\scopedSwapsETH.fs" />
     <Compile Include="scopedServices\scopedSwapsTokens.fs" />
-    <Compile Include="scopedServices\scoped_swapsTokensToNhours.fs" />
+    <Compile Include="scopedServices\scoped_swapsTokens5minTo30mins.fs" />
     <Compile Include="scopedServices\scopedLastBlock.fs" />
     <Compile Include="configurationExtensions.fs" />
   </ItemGroup>

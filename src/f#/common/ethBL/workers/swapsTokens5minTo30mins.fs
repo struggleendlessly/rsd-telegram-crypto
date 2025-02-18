@@ -15,7 +15,7 @@ open Cronos
 open Microsoft.Extensions.Options
 open debugSettingsOption
 
-type swapsTokensToNhours(
+type swapsTokens5minTo30mins(
         logger: ILogger<tokenInfo>, 
         debugSettingsOption: IOptions<debugSettingsOption>, 
         serviceScopeFactory: IServiceScopeFactory) =
@@ -39,6 +39,6 @@ type swapsTokensToNhours(
 
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
-                let scopedProcessingService = serviceFactory.[scoped_swapsTokensToNhours_Name]
+                let scopedProcessingService = serviceFactory.[scoped_swapsTokens5minTo30mins_Name]
                 do! scopedProcessingService.DoWorkAsync(stoppingToken)(0)  |> Async.AwaitTask |> Async.StartAsTask
         }

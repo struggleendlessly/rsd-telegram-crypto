@@ -22,8 +22,8 @@ open System.Globalization
 open responseTokenMetadata
 
 
-type scoped_swapsTokensToNhours(
-        logger: ILogger<scoped_swapsTokensToNhours>,
+type scoped_swapsTokens5minTo30mins(
+        logger: ILogger<scoped_swapsTokens5minTo30mins>,
         alchemy: alchemyEVM,
         chainSettingsOption:  IOptions<ChainSettingsOption>,
         ethDB: IEthDB) =

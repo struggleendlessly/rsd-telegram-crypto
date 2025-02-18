@@ -37,5 +37,5 @@ type trigger_5mins5percOfMK(
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scoped_trigger_5mins5percOfMK_Name]
-                do! scopedProcessingService.DoWorkAsync(stoppingToken) |> Async.AwaitTask |> Async.StartAsTask
+                do! scopedProcessingService.DoWorkAsync(stoppingToken)(0) |> Async.AwaitTask |> Async.StartAsTask
         }

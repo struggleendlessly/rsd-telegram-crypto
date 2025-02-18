@@ -172,7 +172,7 @@ type scoped_trigger_5mins(
                 >> Async.Bind scoped_telegram.sendMessages_trigger_5min
 
     interface IScopedProcessingService with
-        member _.DoWorkAsync(ct: CancellationToken) =
+        member _.DoWorkAsync(ct: CancellationToken) (value: int) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 let countIn5minPeriods = 12

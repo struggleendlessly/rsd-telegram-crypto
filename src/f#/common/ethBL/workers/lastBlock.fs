@@ -23,6 +23,6 @@ type lastBlock(
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scopedLastBlockName]
-                do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                do! scopedProcessingService.DoWorkAsync(stoppingToken)(0)
                 do! Task.Delay(12_000, stoppingToken)
         }

@@ -28,7 +28,7 @@ $env:ASPNETCORE_ENVIRONMENT="Production"
 
 dotnet ef migrations add In26 -o DB/Migrations --project Shared --startup-project WorkerServiceRead
 
-dotnet ef migrations add In3 --project db --startup-project wsSwaps
+dotnet ef migrations add In11 --project db --startup-project wsSwaps
 dotnet ef database update --project db --startup-project wsSwaps
 
 dotnet ef database update --project Shared --startup-project WorkerServiceRead

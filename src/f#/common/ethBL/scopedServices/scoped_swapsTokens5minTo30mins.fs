@@ -35,6 +35,9 @@ type scoped_swapsTokens5minTo30mins(
         member _.DoWorkAsync(ct: CancellationToken) (value: int) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
-
+                // get last 30 mins (6 5mins)
+                // calculate the sum for swaps
+                // calculate min/max/avg token price
+                // save to DB
                 return 0
             }

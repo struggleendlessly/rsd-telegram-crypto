@@ -13,6 +13,22 @@ let getSeqToProcess1 n start end1 =
             return seq { startAsync + 1 .. endAsync }
     }
 
+//let getSeqToProcess2 n step start end1 = 
+//    async{
+//        let! startAsync  = start()
+//        let! endAsync = end1()
+//        let diff = endAsync - startAsync 
+
+//        if endAsync - startAsync > n
+//        then
+//            return seq { startAsync + 1 .. step .. startAsync + n } 
+//        elif endAsync - startAsync > step
+//        then
+//            return Seq.singleton startAsync
+//        else
+//            return [||]
+//    }
+
 let getSeqToProcess n step start end1 =
     async{
         let! startAsync  = start()

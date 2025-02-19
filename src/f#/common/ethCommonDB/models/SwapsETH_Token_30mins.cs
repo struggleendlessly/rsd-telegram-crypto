@@ -38,9 +38,9 @@ namespace ethCommonDB.models
         public bool isBuyToken { get; set; }
         public bool isBuyEth { get; set; }
 
-        public static SwapsETH_Token Default(int block)
+        public static SwapsETH_Token_30mins Default(int block)
         {
-            var res = new SwapsETH_Token();
+            var res = new SwapsETH_Token_30mins();
             res.blockNumberEndInt = block;
 
             return res;

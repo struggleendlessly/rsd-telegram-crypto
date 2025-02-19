@@ -25,7 +25,7 @@ type swapsETH(
                 let scopedProcessingService = serviceFactory.[scopedSwapsETHName]
                 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) 0
                 with ex ->
                     logger.LogError(ex, "Error in swapsETH: {message}", ex.Message)
 

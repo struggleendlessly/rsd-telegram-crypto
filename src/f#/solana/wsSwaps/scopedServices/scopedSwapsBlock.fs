@@ -321,7 +321,7 @@ type scopedSwapsBlock(
         }      
 
     interface IScopedProcessingService with
-        member _.DoWorkAsync(ct: CancellationToken) =
+        member _.DoWorkAsync(ct: CancellationToken) (value: int) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 //let a = File.ReadAllText("C:\Users\strug\Downloads\Untitled.json")
@@ -331,16 +331,16 @@ type scopedSwapsBlock(
                 let startBlock = Seq.head seqX
                 let endBlock = Seq.last seqX
                 let! solUsdDefault = getLastSolUsdDefault()
-                let t =     
-                        seq
-                        |> Async.Bind alchemy.getBlock 
-                        |> Async.map (Array.collect id) 
-                        |> Async.map processTransactions   
-                        |> Async.map (Array.map mapToSwapToken)
-                        |> Async.map (Array.map filterSwaps)
-                        |> Async.map (mapToEnteties chainSettingsOption.ExcludedAddresses solUsdDefault startBlock endBlock)
-                        |> Async.Bind saveToDB
-                        |> Async.RunSynchronously 
+                //let t =     
+                //        seq
+                //        |> Async.Bind alchemy.getBlock 
+                //        |> Async.map (Array.collect id) 
+                //        |> Async.map processTransactions   
+                //        |> Async.map (Array.map mapToSwapToken)
+                //        |> Async.map (Array.map filterSwaps)
+                //        |> Async.map (mapToEnteties chainSettingsOption.ExcludedAddresses solUsdDefault startBlock endBlock)
+                //        |> Async.Bind saveToDB
+                //        |> Async.RunSynchronously 
 
                 return ()
             }

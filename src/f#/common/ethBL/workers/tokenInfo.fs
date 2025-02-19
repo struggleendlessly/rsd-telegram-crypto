@@ -42,7 +42,7 @@ type tokenInfo(
                 let scopedProcessingService = serviceFactory.[scoped_tokenInfo_Name]
 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken)  |> Async.AwaitTask |> Async.StartAsTask
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) 0  
                 with ex ->
                     logger.LogError(ex, "Error in tokenInfo: {message}", ex.Message)
         }

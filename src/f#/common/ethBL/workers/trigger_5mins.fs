@@ -41,7 +41,7 @@ type trigger_5mins(
                 let scopedProcessingService = serviceFactory.[scoped_trigger_5mins_Name]
 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken) |> Async.AwaitTask |> Async.StartAsTask
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) 0 
                 with ex ->
                     logger.LogError(ex, "Error in trigger_5mins: {message}", ex.Message)
         }

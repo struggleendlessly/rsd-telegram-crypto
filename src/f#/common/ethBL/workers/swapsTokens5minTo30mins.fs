@@ -23,7 +23,7 @@ type swapsTokens5minTo30mins(
     inherit BackgroundService()
     
     let debugSettings = debugSettingsOption.Value;
-    let schedule = "0/1 * * * *"; // every 5 min
+    let schedule = "0/10 * * * *"; // every 5 min
     let _cron = CronExpression.Parse(schedule);
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =

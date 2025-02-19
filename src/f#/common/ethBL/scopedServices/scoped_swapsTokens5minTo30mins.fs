@@ -100,9 +100,9 @@ type scoped_swapsTokens5minTo30mins(
         let res = new SwapsETH_Token_30mins()
         res.blockNumberStartInt <- a.startBlock
         res.blockNumberEndInt <- a.startBlock + a.step
-        res.priceTokenInUSD_min <- minPriceUsd
-        res.priceTokenInUSD_max <- maxPriceUsd
-        res.priceTokenInUSD_avr <- minPriceUsd + maxPriceUsd / 2.0M
+        res.priceTokenInUSD_min <- Decimal.Round(minPriceUsd, 15, MidpointRounding.AwayFromZero)
+        res.priceTokenInUSD_max <- Decimal.Round(maxPriceUsd, 15, MidpointRounding.AwayFromZero)
+        res.priceTokenInUSD_avr <- Decimal.Round((minPriceUsd + maxPriceUsd) / 2.0M, 15, MidpointRounding.AwayFromZero)
 
         res.pairAddress <- a.data |> Seq.head |> (fun x -> x.pairAddress) 
 
@@ -129,14 +129,29 @@ type scoped_swapsTokens5minTo30mins(
             a.data
             |> Seq.groupBy (fun x -> x.pairAddress)
             |> Seq.map (fun (key, data) -> processToken { a with data = data })
-        let t = e.Count()
+            |> Seq.filter (fun (x:SwapsETH_Token_30mins)-> x.priceTokenInUSD_avr < 100.0M)
         e
 
-    let saveToDB blocks = 
-                let a = blocks |> Array.map (fun (x: SwapsETH_Token) -> x.priceTokenInETH)
-                ethDB.swapsETH_TokenEntities.AddRangeAsync(blocks) |> Async.AwaitTask |> ignore
-                let result = ethDB.SaveChangesAsync() |> Async.AwaitTask
-                result
+    let saveToDB items =             
+        async {
+            try
+                //let a = Array.find (fun (x:SwapsETH_Token_30mins)-> x.priceTokenInUSD_avr > 10.0M) items
+                // Attempt to add and save changes
+                do! ethDB.swapsETH_Token_30MinsEntities.AddRangeAsync(Array.take 100 items) |> Async.AwaitTask
+                let! result = ethDB.SaveChangesAsync() |> Async.AwaitTask
+                return result // Return the result of SaveChangesAsync()
+            with
+            | :? OverflowException as ex ->
+                // Handle overflow exception
+                printfn "Overflow exception occurred: %s" ex.Message
+                return -1 // Return an error code
+            | ex ->
+                // Handle other exceptions
+                printfn "An error occurred: %s" ex.Message
+                return -1 // Return an error code
+        }
+
+
 
     interface IScopedProcessingService with
         member _.DoWorkAsync(ct: CancellationToken) (value: int) =
@@ -150,6 +165,7 @@ type scoped_swapsTokens5minTo30mins(
                         |> Seq.map ( 
                                     getDataFromDB blocksIn30min
                                     >> Async.map processRange 
+                                    >> Async.Bind (Seq.toArray >> saveToDB) 
                                     ) 
 
                         |> Async.Sequential

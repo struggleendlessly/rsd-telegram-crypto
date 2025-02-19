@@ -30,9 +30,9 @@ type swapsTokens(
                 let scopedProcessingService = serviceFactory.[scopedSwapsTokensName]
 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken)(0)
-                with 
-                | ex -> logger.LogError(ex, "Error in swapsTokens")
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                with ex ->
+                    logger.LogError(ex, "Error in swapsTokens: {message}", ex.Message)
 
                 do! Task.Delay(60_000, stoppingToken)
         }

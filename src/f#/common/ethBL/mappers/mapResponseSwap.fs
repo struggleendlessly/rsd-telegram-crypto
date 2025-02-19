@@ -2,10 +2,9 @@
 
 open System
 open System.Linq
-open System.Text.RegularExpressions
-
 open ethCommonDB.models
 
+open Extensions
 open data
 open responseSwap
 
@@ -114,13 +113,10 @@ let mapResponseSwapResult
             res.from <- from1   
             res.``to`` <- to1
 
-            // Regex to capture up to 5 decimal places
-            let regex = Regex(@"^\d+\.\d{0,15}")
-
-            res.EthIn <- regex.Match(EthIn.ToString()).ToString()
-            res.EthOut <- regex.Match(EthOut.ToString()).ToString() 
-            res.TokenIn <-regex.Match(TokenIn.ToString()).ToString() 
-            res.TokenOut <- regex.Match(TokenOut.ToString()).ToString()
+            res.EthIn <- EthIn.ToString15()
+            res.EthOut <- EthOut.ToString15()
+            res.TokenIn <- TokenIn.ToString15()
+            res.TokenOut <- TokenOut.ToString15()
     
             res.priceETH_USD <- ethPriceInCloseBlock
 

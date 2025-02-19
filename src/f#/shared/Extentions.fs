@@ -1,5 +1,7 @@
 ﻿module Extensions
 open System
+open System.Text.RegularExpressions
+open Nethereum.Util
 
     type System.Int32 with
         member this.ToHex() = sprintf "0x%X" this
@@ -9,6 +11,16 @@ open System
 
     type System.String with
         member this.ToInt64() = Convert.ToInt64 this
+    
+    type BigDecimal with
+        member this.ToString15() =
+            let regex = Regex(@"^\d+(\.\d{0,15})?")
+            let matchResult = regex.Match(this.ToString())
+            
+            if matchResult.Success && 
+               matchResult.Value <> "0" 
+            then matchResult.Value 
+            else ""
 
     type System.String with
         member this.ToInt() =

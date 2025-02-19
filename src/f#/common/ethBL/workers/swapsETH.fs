@@ -23,6 +23,11 @@ type swapsETH(
                 use scope = serviceScopeFactory.CreateScope()
                 let serviceFactory = scope.ServiceProvider.GetRequiredService<IDictionary<string, IScopedProcessingService>>()
                 let scopedProcessingService = serviceFactory.[scopedSwapsETHName]
-                do! scopedProcessingService.DoWorkAsync(stoppingToken)(0)
+                
+                try
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                with ex ->
+                    logger.LogError(ex, "Error in swapsETH: {message}", ex.Message)
+
                 do! Task.Delay(12_000, stoppingToken)
         }

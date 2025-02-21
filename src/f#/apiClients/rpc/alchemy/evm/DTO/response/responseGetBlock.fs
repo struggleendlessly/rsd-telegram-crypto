@@ -70,7 +70,7 @@ type Result = {
 type responseGetBlock = {
     jsonrpc: string
     id: int
-    result: Result
+    result: Result option
     error: responseError
 }
 

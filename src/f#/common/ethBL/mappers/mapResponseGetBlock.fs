@@ -6,24 +6,25 @@ open responseGetBlock
 open Extensions
 open ethCommonDB.models
 
-let map (responseGetBlocksDTO: responseGetBlock) = 
+let map (responseGetBlocksDTO: responseGetBlock.Result) = 
     let res = new BlocksEntity()
-    let block = responseGetBlocksDTO.result
+    //let block = responseGetBlocksDTO.result
 
-    res.numberInt <- block.number.ToInt()
-    res.numberHex <- block.number
+    res.numberInt <- responseGetBlocksDTO.number.ToInt()
+    res.numberHex <- responseGetBlocksDTO.number
 
-    res.timestampUnix <- block.timestamp
-    res.timestampNormal <-  DateTimeOffset.FromUnixTimeSeconds(block.timestamp.HexToInt64()).UtcDateTime 
+    res.timestampUnix <- responseGetBlocksDTO.timestamp
+    res.timestampNormal <-  DateTimeOffset.FromUnixTimeSeconds(responseGetBlocksDTO.timestamp.HexToInt64()).UtcDateTime 
 
-    res.baseFeePerGas <- block.baseFeePerGas
-    res.gasLimit <- block.gasLimit
-    res.gasUsed <- block.gasUsed
+    res.baseFeePerGas <- responseGetBlocksDTO.baseFeePerGas
+    res.gasLimit <- responseGetBlocksDTO.gasLimit
+    res.gasUsed <- responseGetBlocksDTO.gasUsed
 
-    res.hash <- block.hash
+    res.hash <- responseGetBlocksDTO.hash
 
     res
 
-let mapBlocks () =          
+let mapBlocks () =   
         Seq.collect id
+        >> Seq.choose (fun x -> x.result)
         >> Seq.map map             

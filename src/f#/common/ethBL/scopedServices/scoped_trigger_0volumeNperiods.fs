@@ -20,8 +20,6 @@ open alchemy
 open ethCommonDB
 open ethCommonDB.models
 open Nethereum.Util
-open System.Net.Http
-
 type scoped_trigger_0volumeNperiods(
         logger: ILogger<scoped_trigger_0volumeNperiods>,
         alchemy: alchemyEVM,

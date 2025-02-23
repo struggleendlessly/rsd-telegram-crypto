@@ -23,7 +23,7 @@ type trigger_0volumeNperiods(
     inherit BackgroundService()
 
     let debugSettings = debugSettingsOption.Value;
-    let schedule = "0/5 * * * *"; // every 5 min
+    let schedule = "* * * * *"; // every 5 min
     let _cron = CronExpression.Parse(schedule);
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =

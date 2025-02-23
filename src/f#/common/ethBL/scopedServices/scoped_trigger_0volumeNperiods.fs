@@ -128,6 +128,7 @@ type scoped_trigger_0volumeNperiods(
 
             if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
             then
+                logger.LogWarning($"Number of blocks in DB {lastBlock - latestTrigger} is less than desired number of blocks {chainSettingsOption.BlocksIn5Minutes}")
                 return ()
             else
                 let! currentPeriod = getTxnsForPeriod( lastBlock)
@@ -154,8 +155,8 @@ type scoped_trigger_0volumeNperiods(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
 
                 let countIn5minPeriods_1d = 12 * 24 * 1 // 1 day
-                let countIn5minPeriods_7d = 12 * 24 * 7 // 1 day
-                let countIn5minPeriods_14d = 12 * 24 * 14 // 1 day
+                let countIn5minPeriods_7d = 12 * 24 * 7 // 7 days
+                let countIn5minPeriods_14d = 12 * 24 * 14 // 14 days
 
                 do! processNperiod 
                         telegramOption.Value.message_thread_id_0volume1d

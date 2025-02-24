@@ -51,7 +51,6 @@ module Program =
                 ServiceLifetime.Transient) 
                 |> ignore
 
-
             let openTelemetryOptions = builder.Configuration.GetSection($"{telemetryOption.SectionName}").Get<telemetryOption>()
 
             Log.Logger <- LoggerConfiguration()

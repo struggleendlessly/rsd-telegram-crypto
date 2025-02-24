@@ -23,8 +23,8 @@ type trigger_5mins(
     inherit BackgroundService()
   
     let debugSettings = debugSettingsOption.Value;
-    let schedule = "0/5 * * * *"; // every 5 min
-    let _cron = CronExpression.Parse(schedule);
+    let schedule = "10 0/5 * * * *"; // every 5 min
+    let _cron = CronExpression.Parse(schedule, CronFormat.IncludeSeconds);
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =
         task {

@@ -25,7 +25,7 @@ type lastBlock(
                 let scopedProcessingService = serviceFactory.[scopedLastBlockName]
 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) 0
                 with ex ->
                     logger.LogError(ex, "Error in lastBlock: {message}", ex.Message)
 

@@ -13,5 +13,6 @@ namespace dbMigration
         public required DbSet<BlocksEntity> blocksEntities { get; set; }
         public required DbSet<SwapsETH_USD> swapsETH_USDEntities { get; set; }
         public required DbSet<SwapsETH_Token> swapsETH_TokenEntities { get; set; }
+        public required DbSet<SwapsETH_Token_30mins> swapsETH_Token_30MinsEntities { get; set; }
     }
 }

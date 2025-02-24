@@ -112,7 +112,7 @@ type scoped_trigger_5mins5percOfMK(
         res
         
     interface IScopedProcessingService with
-        member _.DoWorkAsync(ct: CancellationToken) =
+        member _.DoWorkAsync(ct: CancellationToken) (value: int) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                 let countIn5minPeriods = 12 * 24 * 1 // 1 day
@@ -134,11 +134,9 @@ type scoped_trigger_5mins5percOfMK(
                                 >> Async.map (Seq.filter (fun x -> 
                                                             x.mkBigDec > BigDecimal.Parse ("1") && 
                                                             x.volumeInUsd > ( x.mkBigDec * BigDecimal.Parse ("0.05"))))
-                                >> Async.map (Seq.map (fun x -> x))
                                 >> Async.Bind scoped_telegram.sendMessages_trigger_5mins5percOfMK
                                 )
                         |> Async.Ignore
-
 
                     do! updateLatestTrigger lastBlock 
                         |> Async.Ignore

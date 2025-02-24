@@ -27,7 +27,7 @@ type scopedTokenInfo(
     let chainSettingsOption = chainSettingsOption.Value;
 
     interface IScopedProcessingService with
-        member _.DoWorkAsync(ct: CancellationToken) =
+        member _.DoWorkAsync(ct: CancellationToken) (value: int) =
             task {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now)
                     

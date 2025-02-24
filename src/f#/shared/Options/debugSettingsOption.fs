@@ -5,6 +5,7 @@ type WsSwaps() =
     member val swapsTokens = 0 with get, set
     member val lastBlock = 0 with get, set
     member val tokenInfo = 0 with get, set
+    member val swapsTokensToNhours = 0 with get, set
 
 type WsTrigger() =
     member val trigger_5mins = 0 with get, set
@@ -16,5 +17,6 @@ type debugSettingsOption() =
 
     member val wsSwaps = WsSwaps() with get, set
     member val wsTrigger = WsTrigger() with get, set
+    member val delayOnOff = 0 with get, set
 
 

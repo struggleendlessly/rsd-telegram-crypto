@@ -10,11 +10,16 @@ open Microsoft.Extensions.DependencyInjection
 
 open IScopedProcessingService
 open scopedNames
+open Microsoft.Extensions.Options
+open debugSettingsOption
 
 type swapsTokens(
         logger: ILogger<swapsTokens>, 
+        debugSettingsOption: IOptions<debugSettingsOption>, 
         serviceScopeFactory: IServiceScopeFactory) =
     inherit BackgroundService()
+
+    let debugSettings = debugSettingsOption.Value;
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =
         task {
@@ -25,7 +30,7 @@ type swapsTokens(
                 let scopedProcessingService = serviceFactory.[scopedSwapsTokensName]
 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken)
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) 0
                 with ex ->
                     logger.LogError(ex, "Error in swapsTokens: {message}", ex.Message)
 

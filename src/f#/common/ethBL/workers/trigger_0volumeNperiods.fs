@@ -12,15 +12,18 @@ open Microsoft.Extensions.DependencyInjection
 open IScopedProcessingService
 open scopedNames
 open Cronos
-
+open Microsoft.Extensions.Options
+open debugSettingsOption
 
 type trigger_0volumeNperiods(
         logger: ILogger<trigger_0volumeNperiods>, 
+        debugSettingsOption: IOptions<debugSettingsOption>, 
         serviceScopeFactory: IServiceScopeFactory) =
 
     inherit BackgroundService()
-    
-    let schedule = "0/5 * * * *"; // every 5 min
+
+    let debugSettings = debugSettingsOption.Value;
+    let schedule = "* * * * *"; // every 5 min
     let _cron = CronExpression.Parse(schedule);
 
     override this.ExecuteAsync(stoppingToken: CancellationToken) =
@@ -30,8 +33,7 @@ type trigger_0volumeNperiods(
                 let nextUtc = _cron.GetNextOccurrence(utcNow)
                 let delay = nextUtc.Value - utcNow
 
-                let isTimersOff = String.Equals("true", Environment.GetEnvironmentVariable("DOTNET_TIMERS"), StringComparison.InvariantCultureIgnoreCase)
-                if not isTimersOff then
+                if debugSettings.delayOnOff = 1 then
                     do! Task.Delay(delay, stoppingToken) 
 
                 use scope = serviceScopeFactory.CreateScope()
@@ -39,7 +41,7 @@ type trigger_0volumeNperiods(
                 let scopedProcessingService = serviceFactory.[scoped_trigger_0volumeNperiods_Name]
 
                 try
-                    do! scopedProcessingService.DoWorkAsync(stoppingToken) |> Async.AwaitTask |> Async.StartAsTask
+                    do! scopedProcessingService.DoWorkAsync(stoppingToken) 0 
                 with ex ->
                     logger.LogError(ex, "Error in trigger_0volumeNperiods: {message}", ex.Message)
         }

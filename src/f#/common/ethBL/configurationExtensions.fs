@@ -29,6 +29,7 @@ open scopedNames
 open scoped_trigger_5mins
 open scoped_telegram
 open debugSettingsOption
+open scoped_swapsTokensToNhours
 
 let getRetryPolicy() : IAsyncPolicy<HttpResponseMessage> =
     HttpPolicyExtensions
@@ -74,6 +75,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
     services.AddScoped<scopedSwapsTokens>() |> ignore
     services.AddScoped<scopedLastBlock>() |> ignore
     services.AddScoped<scoped_telegram>() |> ignore
+    services.AddScoped<scoped_swapsTokens5minTo30mins>() |> ignore
 
     services.AddScoped<scoped_trigger_5mins>() |> ignore
     services.AddScoped<scoped_trigger_5mins5percOfMK>() |> ignore
@@ -86,6 +88,7 @@ let configureServices (services: IServiceCollection) (configuration: IConfigurat
             dict.Add(scopedSwapsTokensName, sp.GetRequiredService<scopedSwapsTokens>() :> IScopedProcessingService) 
             dict.Add(scopedLastBlockName, sp.GetRequiredService<scopedLastBlock>() :> IScopedProcessingService) 
             dict.Add(scoped_tokenInfo_Name, sp.GetRequiredService<scopedTokenInfo>() :> IScopedProcessingService) 
+            dict.Add(scoped_swapsTokens5minTo30mins_Name, sp.GetRequiredService<scoped_swapsTokens5minTo30mins>() :> IScopedProcessingService) 
 
             dict.Add(scoped_trigger_5mins_Name, sp.GetRequiredService<scoped_trigger_5mins>() :> IScopedProcessingService) 
             dict.Add(scoped_trigger_5mins5percOfMK_Name, sp.GetRequiredService<scoped_trigger_5mins5percOfMK>() :> IScopedProcessingService) 

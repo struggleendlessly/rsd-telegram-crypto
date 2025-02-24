@@ -13,6 +13,22 @@ let getSeqToProcess1 n start end1 =
             return seq { startAsync + 1 .. endAsync }
     }
 
+//let getSeqToProcess2 n step start end1 = 
+//    async{
+//        let! startAsync  = start()
+//        let! endAsync = end1()
+//        let diff = endAsync - startAsync 
+
+//        if endAsync - startAsync > n
+//        then
+//            return seq { startAsync + 1 .. step .. startAsync + n } 
+//        elif endAsync - startAsync > step
+//        then
+//            return Seq.singleton startAsync
+//        else
+//            return [||]
+//    }
+
 let getSeqToProcess n step start end1 =
     async{
         let! startAsync  = start()
@@ -22,6 +38,9 @@ let getSeqToProcess n step start end1 =
         if endAsync - startAsync > n
         then
             return seq { startAsync + 1 .. step .. startAsync + n } 
+        elif endAsync - startAsync > step * 2
+        then
+            return seq { startAsync + 1 .. step .. endAsync - step} 
         elif endAsync - startAsync > step
         then
             return Seq.singleton startAsync
@@ -38,7 +57,7 @@ let getSeqToProcessUint64 n step (start: unit -> Async<uint64>) (end1:unit -> As
         if endAsync - startAsync > n
         then
             return seq { startAsync + 1UL  .. startAsync + n } 
-        elif endAsync - startAsync > step
+        elif endAsync - startAsync > step // update like above!!!!!!! Seq.singleton startAsync
         then
             return seq { startAsync + 1UL  .. endAsync }
         else

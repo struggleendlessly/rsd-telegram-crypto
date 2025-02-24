@@ -6,11 +6,15 @@
     <title>Scout</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; width: 200px; padding: 10px; }
-        button { width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; }
+        button, input { width: 100%; padding: 10px; margin: 5px 0; cursor: pointer; }
+        input { text-align: center; }
     </style>
 </head>
 <body>
     <h3>Scout</h3>
+    <label for="interval">Интервал (мин):</label>
+    <input type="number" id="interval" value="60" min="1">
+    <button id="save">Сохранить</button>
     <button id="start">Старт</button>
     <button id="stop">Стоп</button>
     <script src="popup.js"></script>

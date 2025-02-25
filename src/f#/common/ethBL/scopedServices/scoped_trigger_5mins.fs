@@ -11,7 +11,6 @@ open Microsoft.Extensions.Options
 open ChainSettingsOptionModule
 open IScopedProcessingService
 open Extensions
-open responseSwap
 open scoped_telegram
 open bl_others
 
@@ -19,7 +18,6 @@ open alchemy
 open ethCommonDB
 open ethCommonDB.models
 open Nethereum.Util
-open System.Net.Http
 
 type scoped_trigger_5mins(
         logger: ILogger<scoped_trigger_5mins>,
@@ -182,7 +180,9 @@ type scoped_trigger_5mins(
 
                 if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
                 then
+                    logger.LogWarning($"scoped_trigger_5mins - Number of blocks in DB {lastBlock - latestTrigger} is less than desired number of blocks {chainSettingsOption.BlocksIn5Minutes}")
                     return ()
+
                 else
                     let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods)
 

@@ -127,7 +127,7 @@ type scoped_trigger_0volumeNperiods(
 
             if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
             then
-                logger.LogWarning($"Number of blocks in DB {lastBlock - latestTrigger} is less than desired number of blocks {chainSettingsOption.BlocksIn5Minutes}")
+                logger.LogWarning($"scoped_trigger_0volumeNperiods - Number of blocks in DB {lastBlock - latestTrigger} is less than desired number of blocks {chainSettingsOption.BlocksIn5Minutes}")
                 return ()
             else
                 let! currentPeriod = getTxnsForPeriod( lastBlock)

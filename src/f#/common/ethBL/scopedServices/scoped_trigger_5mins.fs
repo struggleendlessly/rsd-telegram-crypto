@@ -183,6 +183,7 @@ type scoped_trigger_5mins(
                 if lastBlock - latestTrigger < chainSettingsOption.BlocksIn5Minutes
                 then
                     return ()
+
                 else
                     let periods = getTxnsForPeriod( lastBlock - chainSettingsOption.BlocksIn5Minutes * countIn5minPeriods)
 

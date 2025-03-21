@@ -65,7 +65,7 @@ let getSwapLogsUri_Token
         (chainBlockInMinutes: int)
         (blockNumber: int) =
 
-        let lastBlock = blockNumber + chainBlockInMinutes - 1
+        let lastBlock = blockNumber + chainBlockInMinutes
         let res =
              { 
                  requestSingleDTO.Default 

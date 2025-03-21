@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.2.358" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
-    <PackageReference Include="Nethereum.Util" Version="4.27.1" />
+    <PackageReference Include="ExtendedNumerics.BigDecimal" Version="3000.0.3.40" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
+    <PackageReference Include="Nethereum.Util" Version="4.29.0" />
   </ItemGroup>
 
 </Project>

@@ -173,7 +173,7 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network) {
     redirect: "follow"
     };
     
-    fetch("https://188.208.25.181:82/data", requestOptions)
+    fetch("https://remsoftdev.dynamic-dns.net:82/data", requestOptions)
     .then((response) => response.text())
     .then((result) => console.log(result))
     .catch((error) => console.error(error));

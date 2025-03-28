@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>CryptChatV2.F_</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<Compile Include="Base\Logic.fs" />
+    <Compile Include="Services\TelegramBotService.fs" />
+    <Compile Include="Services\NgrokService.fs" />
+    <None Include="Properties\launchSettings.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Telegram.Bot" Version="22.4.4" />
+  </ItemGroup>
+
+</Project>

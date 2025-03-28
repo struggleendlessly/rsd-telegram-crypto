@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptChatV2", "CryptChatV2.csproj", "{20444AE3-DA43-456A-9F6A-A497C85D26C4}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CryptChatV2.F#", "..\CryptChatV2.F#\CryptChatV2.F#.fsproj", "{5BBA0015-7AEE-4991-A3B4-3779CE7B3E1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20444AE3-DA43-456A-9F6A-A497C85D26C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20444AE3-DA43-456A-9F6A-A497C85D26C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20444AE3-DA43-456A-9F6A-A497C85D26C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20444AE3-DA43-456A-9F6A-A497C85D26C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BBA0015-7AEE-4991-A3B4-3779CE7B3E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BBA0015-7AEE-4991-A3B4-3779CE7B3E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BBA0015-7AEE-4991-A3B4-3779CE7B3E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BBA0015-7AEE-4991-A3B4-3779CE7B3E1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2093B37B-35A6-435C-887D-8FB77BF983B3}
+	EndGlobalSection
+EndGlobal

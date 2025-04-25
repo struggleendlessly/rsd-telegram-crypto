@@ -173,7 +173,7 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network) {
     redirect: "follow"
     };
     
-    fetch("https://188.239.185.18:82/data", requestOptions)
+    fetch("https://remsoftdev.dynamic-dns.net:82/data", requestOptions)
     .then((response) => response.text())
     .then((result) => console.log(result))
     .catch((error) => console.error(error));
@@ -234,6 +234,36 @@ if (typeof targetNode === "undefined") {
                                 {
                                     logNewMessagePhanes(doc);
                                     console.log("Starting Procces: Phanes");
+                                }
+                            }
+                            else{
+                                var baseText = node.innerText;
+
+                                const ethRegex = /0x[a-fA-F0-9]{40}/;
+                                const solRegex = /[1-9A-HJ-NP-Za-km-z]{32,44}/;
+
+                                let valueAddress = '';
+                                let network = '';
+                                let valueName = '';
+                                let numericValue = '';
+
+                                if (ethRegex.test(baseText)) {
+                                    valueAddress = ethRegex.exec(baseText)[0];
+                                    network = 'Ethereum';
+                                } else if (solRegex.test(baseText)) {
+                                    valueAddress = solRegex.exec(baseText)[0];
+                                    network = 'Solana';
+                                }
+
+                                if (valueAddress && network) {
+                                    var raw = JSON.stringify({
+                                        "Address": valueAddress,
+                                        "Network": network
+                                    });
+
+                                    console.log("Extracted:", raw);
+
+                                    sendPOSTRequest(valueName, numericValue, valueAddress, network);
                                 }
                             }
                         } catch (error) {

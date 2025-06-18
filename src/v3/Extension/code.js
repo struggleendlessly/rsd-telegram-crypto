@@ -236,36 +236,6 @@ if (typeof targetNode === "undefined") {
                                     console.log("Starting Procces: Phanes");
                                 }
                             }
-                            else{
-                                var baseText = node.innerText;
-
-                                const ethRegex = /0x[a-fA-F0-9]{40}/;
-                                const solRegex = /[1-9A-HJ-NP-Za-km-z]{32,44}/;
-
-                                let valueAddress = '';
-                                let network = '';
-                                let valueName = '';
-                                let numericValue = '';
-
-                                if (ethRegex.test(baseText)) {
-                                    valueAddress = ethRegex.exec(baseText)[0];
-                                    network = 'Ethereum';
-                                } else if (solRegex.test(baseText)) {
-                                    valueAddress = solRegex.exec(baseText)[0];
-                                    network = 'Solana';
-                                }
-
-                                if (valueAddress && network) {
-                                    var raw = JSON.stringify({
-                                        "Address": valueAddress,
-                                        "Network": network
-                                    });
-
-                                    console.log("Extracted:", raw);
-
-                                    sendPOSTRequest(valueName, numericValue, valueAddress, network);
-                                }
-                            }
                         } catch (error) {
                             console.error("Error processing node:", error);
                         }

@@ -1,5 +1,5 @@
 // Function to log "trigger" to the console when a new message appears
-function logNewMessagePhanes(doc) {
+function logNewMessagePhanes(doc, chatTitle) {
     var elements = Array.from(doc.querySelectorAll('.translatable-message'));
 
     var element = elements.reverse().find(element => !/^[A-Za-z0-9]{32,}$/.test(element.textContent.trim()));
@@ -35,10 +35,10 @@ function logNewMessagePhanes(doc) {
 
     console.log("Network:", network);
 
-    console.log('Phanes PostRequest:', valueName, numericValue, valueAddress, network);
+    console.log('Phanes PostRequest:',chatTitle, valueName, numericValue, valueAddress, network);
 
     if (valueName !== null && numericValue !== null && valueAddress !== null && network !== null) {
-        sendPOSTRequest(valueName, numericValue, valueAddress, network);
+        sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
     }
 }
 
@@ -61,7 +61,7 @@ function convertToNumeric(valueMk) {
     return numericValue;
 }
 
-function logNewMessageRick(doc) {
+function logNewMessageRick(doc, chatTitle) {
     var elements = Array.from(doc.querySelectorAll('.translatable-message'));
     
     var element = elements.reverse().find(element => !/^[A-Za-z0-9]{32,}$/.test(element.textContent.trim()));
@@ -112,11 +112,11 @@ function logNewMessageRick(doc) {
         console.log("Target <img> not found");
     }
 
-    console.log('Rick PostRequest:', valueName, numericValue, valueAddress, network);
-    sendPOSTRequest(valueName, numericValue, valueAddress, network);
+    console.log('Rick PostRequest:',chatTitle, valueName, numericValue, valueAddress, network);
+    sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
 }
 
-function logNewMessageMonke(doc) {
+function logNewMessageMonke(doc, chatTitle) {
     var element = doc.querySelector('.translatable-message');
 
     if (!element) {
@@ -150,11 +150,11 @@ function logNewMessageMonke(doc) {
 
     console.log("Network:", network);
 
-    console.log('Monke PostRequest:', valueName, numericValue, valueAddress, network);
-    sendPOSTRequest(valueName, numericValue, valueAddress, network);
+    console.log('Monke PostRequest:', chatTitle, valueName, numericValue, valueAddress, network);
+    sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
 }
 
-function sendPOSTRequest(valueName, numericValue, valueAddress, network) {
+function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle) {
     
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -163,7 +163,8 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network) {
     "Name": valueName,
     "MK": numericValue,
     "Address": valueAddress,
-    "Network": network
+    "Network": network,
+    "ChatTitle": chatTitle
     });
     
     const requestOptions = {
@@ -216,23 +217,26 @@ if (typeof targetNode === "undefined") {
                             scrollChatToBottom();
                             // Parse the string as an HTML document
                             var parser = new DOMParser();
+                            const chatTitleElement = document.querySelector('[class*="chat-info"] [class*="title"]');
+                            const chatTitle = chatTitleElement?.textContent.trim();
+
                             var doc = parser.parseFromString(node.outerHTML, 'text/html');
                             var senderTitleElement = doc.querySelector('.translatable-message');
 
                             if(senderTitleElement){
                                 if (node.outerText.startsWith('Rick'))
                                 {
-                                    logNewMessageRick(doc);
+                                    logNewMessageRick(doc, chatTitle);
                                     console.log("Starting Procces: Rick");
                                 }
                                 else if (node.outerText.startsWith('MonkeBot'))
                                 {
-                                    logNewMessageMonke(doc);
+                                    logNewMessageMonke(doc, chatTitle);
                                     console.log("Starting Procces: MonkeBot");        
                                 }
                                 else
                                 {
-                                    logNewMessagePhanes(doc);
+                                    logNewMessagePhanes(doc, chatTitle);
                                     console.log("Starting Procces: Phanes");
                                 }
                             }
@@ -263,7 +267,7 @@ if (typeof targetNode === "undefined") {
 
                                     console.log("Extracted:", raw);
 
-                                    sendPOSTRequest(valueName, numericValue, valueAddress, network);
+                                    sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
                                 }
                             }
                         } catch (error) {

@@ -7,6 +7,8 @@
         public string Name { get; set; } = string.Empty;
         public double MK { get; set; }
         public string Address { get; set; } = string.Empty;
+        public string Network { get; set; } = string.Empty;
+        public string ChatTitle { get; set; } = string.Empty;
 
         public bool isSolana { get; set; }
         public bool isBase { get; set; }

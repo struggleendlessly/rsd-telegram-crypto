@@ -82,6 +82,8 @@ async (
         Name = message.Name.Trim().ToLower(),
         MK = message.MK,
         Address = message.Address,
+        ChatTitle = message.ChatTitle,
+        Network = message.Network,
 
         isSent = false
     };
@@ -122,6 +124,7 @@ public class TelegramMessage
     public double MK { get; set; }
     public string Address { get; set; } = string.Empty;
     public string Network { get; set; } = string.Empty;
+    public string ChatTitle { get; set; } = string.Empty;
 }
 
 public class TelegramApi

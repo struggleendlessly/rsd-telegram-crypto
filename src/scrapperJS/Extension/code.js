@@ -155,29 +155,34 @@ function logNewMessageMonke(doc, chatTitle) {
 }
 
 function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle) {
-    
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    
+
+    const mkValue = isNaN(parseFloat(numericValue)) ? 0.0 : parseFloat(numericValue);
+
     const raw = JSON.stringify({
-    "Name": valueName,
-    "MK": numericValue,
-    "Address": valueAddress,
-    "Network": network,
-    "ChatTitle": chatTitle
+        "Name": valueName,
+        "MK": mkValue,
+        "Address": valueAddress,
+        "Network": network,
+        "ChatTitle": chatTitle
     });
-    
+
     const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow"
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
     };
-    
+
+    // https://localhost:7111/data
     fetch("https://remsoftdev.dynamic-dns.net:82/data", requestOptions)
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
+        .then((response) => {
+            console.log('HTTP status:', response.status);
+            return response.text();
+        })
+        .then((result) => console.log('Server response:', result))
+        .catch((error) => console.error('Fetch error:', error));
 }
 
 // Function to scan all existing messages

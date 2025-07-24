@@ -82,7 +82,7 @@ async (
         var entity = new messagesEntity
         {
             Name = message.Name.Trim().ToLower(),
-            MK = message.MK,
+            MK = message.MK ?? 0.0,
             Address = message.Address,
             ChatTitle = message.ChatTitle,
             Network = message.Network,
@@ -113,7 +113,7 @@ async (
         entity.isSent = true;
         await db.SaveChangesAsync();
 
-        return Results.Ok();
+        return Results.Ok(entity);
     }
     catch (Exception ex)
     {
@@ -128,7 +128,7 @@ app.Run();
 public class TelegramMessage
 {
     public string Name { get; set; } = string.Empty;
-    public double MK { get; set; }
+    public double? MK { get; set; }
     public string Address { get; set; } = string.Empty;
     public string Network { get; set; } = string.Empty;
     public string ChatTitle { get; set; } = string.Empty;

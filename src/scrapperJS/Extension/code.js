@@ -49,7 +49,10 @@ function logNewMessagePhanes(doc, chatTitle) {
 function GetGmgn(network, valueAddress) {
     let token_type = "";
 
-    if (/sol|solana/i.test(network)) {
+    if (!network) {
+        console.warn("GetGmgn: 'network' is null or undefined");
+        token_type = "unknown";
+    } else if (/sol|solana/i.test(network)) {
         token_type = "sol";
     } else if (/eth/i.test(network)) {
         token_type = "eth";
@@ -60,7 +63,6 @@ function GetGmgn(network, valueAddress) {
     }
 
     const gmgnValue = `https://gmgn.ai/${token_type}/token/${valueAddress}`;
-
     return gmgnValue;
 }
 

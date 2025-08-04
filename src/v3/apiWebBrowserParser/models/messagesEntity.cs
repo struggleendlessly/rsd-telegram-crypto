@@ -9,6 +9,7 @@
         public string Address { get; set; } = string.Empty;
         public string Network { get; set; } = string.Empty;
         public string ChatTitle { get; set; } = string.Empty;
+        public string GmgnLink { get; set; } = string.Empty;
 
         public bool isSolana { get; set; }
         public bool isBase { get; set; }

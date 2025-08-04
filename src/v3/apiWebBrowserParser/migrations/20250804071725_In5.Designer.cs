@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using apiWebBrowserParser.models;
 
@@ -10,9 +11,11 @@ using apiWebBrowserParser.models;
 namespace apiWebBrowserParser.migrations
 {
     [DbContext(typeof(telegramMessagesDB))]
-    partial class telegramMessagesDBModelSnapshot : ModelSnapshot
+    [Migration("20250804071725_In5")]
+    partial class In5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

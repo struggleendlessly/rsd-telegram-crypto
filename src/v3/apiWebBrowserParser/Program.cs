@@ -86,6 +86,7 @@ async (
             Address = message.Address,
             ChatTitle = message.ChatTitle,
             Network = message.Network,
+            GmgnLink = message.GmgnLink,
             isSent = false
         };
 
@@ -132,6 +133,8 @@ public class TelegramMessage
     public string Address { get; set; } = string.Empty;
     public string Network { get; set; } = string.Empty;
     public string ChatTitle { get; set; } = string.Empty;
+
+    public string GmgnLink { get; set; } = string.Empty;
 }
 
 public class TelegramApi

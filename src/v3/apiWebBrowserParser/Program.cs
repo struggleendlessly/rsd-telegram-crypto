@@ -69,62 +69,72 @@ async (
         TelegramApi telegramApi,
         IOptions<optionsIPs> IoptionsIPs) =>
 {
-    var allowedIPs = IoptionsIPs.Value.ips;
-    var ipAddress = context.Connection.RemoteIpAddress?.ToString();
-   
-    if (!allowedIPs.Contains(ipAddress))
+    try
     {
-        return Results.Unauthorized();
-    }
+        var allowedIPs = IoptionsIPs.Value.ips;
+        var ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
-    var entity = new messagesEntity
-    {
-        Name = message.Name.Trim().ToLower(),
-        MK = message.MK,
-        Address = message.Address,
-        ChatTitle = message.ChatTitle,
-        Network = message.Network,
-
-        isSent = false
-    };
-
-    if (entity.Address.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
-    {
-        if (message.Network.Trim().Contains("base", StringComparison.InvariantCultureIgnoreCase))
+        if (!allowedIPs.Contains(ipAddress))
         {
-             entity.isBase = true;
+            return Results.Unauthorized();
+        }
+
+        var entity = new messagesEntity
+        {
+            Name = message.Name.Trim().ToLower(),
+            MK = message.MK ?? 0.0,
+            Address = message.Address,
+            ChatTitle = message.ChatTitle,
+            Network = message.Network,
+            GmgnLink = message.GmgnLink,
+            isSent = false
+        };
+
+        if (entity.Address.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
+        {
+            if (message.Network.Trim().Contains("base", StringComparison.InvariantCultureIgnoreCase))
+            {
+                entity.isBase = true;
+            }
+            else
+            {
+                entity.isETH = true;
+            }
         }
         else
         {
-            entity.isETH = true;
+            entity.isSolana = true;
         }
+
+        db.messagesEntities.Add(entity);
+        await db.SaveChangesAsync();
+
+        var msg = await telegramApi.SendSequest(entity);
+
+        entity.isSent = true;
+        await db.SaveChangesAsync();
+
+        return Results.Ok(entity);
     }
-    else
+    catch (Exception ex)
     {
-        entity.isSolana = true;
+        Console.WriteLine($"Error in /data POST: {ex.Message}");
+
+        return Results.Problem("Internal Server Error: " + ex.Message);
     }
-
-    db.messagesEntities.Add(entity);
-    await db.SaveChangesAsync();
-
-    var msg = await telegramApi.SendSequest(entity);
-
-    entity.isSent = true;
-    await db.SaveChangesAsync();
-
-    return Results.Ok();
 });
-
 
 app.Run();
 
 public class TelegramMessage
 {
     public string Name { get; set; } = string.Empty;
-    public double MK { get; set; }
+    public double? MK { get; set; }
     public string Address { get; set; } = string.Empty;
     public string Network { get; set; } = string.Empty;
     public string ChatTitle { get; set; } = string.Empty;
+
+    public string GmgnLink { get; set; } = string.Empty;
 }
 
 public class TelegramApi

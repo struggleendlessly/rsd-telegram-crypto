@@ -35,11 +35,35 @@ function logNewMessagePhanes(doc, chatTitle) {
 
     console.log("Network:", network);
 
-    console.log('Phanes PostRequest:',chatTitle, valueName, numericValue, valueAddress, network);
+    const gmgnValue = GetGmgn(network, valueAddress);
+
+    console.log("Gmgn:", gmgnValue);
+
+    console.log('Phanes PostRequest:', chatTitle, valueName, numericValue, valueAddress, network, gmgnValue);
 
     if (valueName !== null && numericValue !== null && valueAddress !== null && network !== null) {
-        sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
+        sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle, gmgnValue);
     }
+}
+
+function GetGmgn(network, valueAddress) {
+    let token_type = "";
+
+    if (!network) {
+        console.warn("GetGmgn: 'network' is null or undefined");
+        token_type = "unknown";
+    } else if (/sol|solana/i.test(network)) {
+        token_type = "sol";
+    } else if (/eth/i.test(network)) {
+        token_type = "eth";
+    } else if (/base/i.test(network)) {
+        token_type = "base";
+    } else {
+        token_type = network.toLowerCase();
+    }
+
+    const gmgnValue = `https://gmgn.ai/${token_type}/token/${valueAddress}`;
+    return gmgnValue;
 }
 
 function convertToNumeric(valueMk) {
@@ -63,7 +87,7 @@ function convertToNumeric(valueMk) {
 
 function logNewMessageRick(doc, chatTitle) {
     var elements = Array.from(doc.querySelectorAll('.translatable-message'));
-    
+
     var element = elements.reverse().find(element => !/^[A-Za-z0-9]{32,}$/.test(element.textContent.trim()));
 
     if (!element) {
@@ -77,15 +101,15 @@ function logNewMessageRick(doc, chatTitle) {
 
     var valueAddressElement = element.querySelectorAll('code.monospace-text');
 
-    var last = valueAddressElement[valueAddressElement.length- 1];
+    var last = valueAddressElement[valueAddressElement.length - 1];
 
     var valueAddress = last ? last.textContent.trim() : null;
     console.log('Extracted address:', valueAddress);
 
-    var emojis =  doc.querySelectorAll('.emoji');
+    var emojis = doc.querySelectorAll('.emoji');
 
     var targetImgValue = Array.from(emojis)
-    .find(el => (el.innerText && el.innerText.includes('💎')) || (el.alt && el.alt.includes('💎')));
+        .find(el => (el.innerText && el.innerText.includes('💎')) || (el.alt && el.alt.includes('💎')));
 
     var formattedMarketCap = "";
 
@@ -100,19 +124,23 @@ function logNewMessageRick(doc, chatTitle) {
     var numericValue = convertToNumeric(formattedMarketCap);
 
     var targetImgNetwork = Array.from(emojis)
-    .find(el => (el.innerText && el.innerText.includes('🌐')) || (el.alt && el.alt.includes('🌐')));
+        .find(el => (el.innerText && el.innerText.includes('🌐')) || (el.alt && el.alt.includes('🌐')));
 
     var network = "";
 
     if (targetImgNetwork) {
         var network = targetImgNetwork.nextSibling.textContent.trim();
-    
+
         console.log("Network:", network);
     } else {
         console.log("Target <img> not found");
     }
 
-    console.log('Rick PostRequest:',chatTitle, valueName, numericValue, valueAddress, network);
+    const gmgnValue = GetGmgn(network, valueAddress);
+
+    console.log("Gmgn:", gmgnValue);
+
+    console.log('Rick PostRequest:', chatTitle, valueName, numericValue, valueAddress, network, gmgnValue);
     sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
 }
 
@@ -137,53 +165,63 @@ function logNewMessageMonke(doc, chatTitle) {
     var numericValueElement = Array.from(element.querySelectorAll('strong'))
         .find(el => el.textContent.includes('Market Cap (FDV)'));
     var formattedMarketCap = numericValueElement ? numericValueElement.nextSibling.textContent
-    .trim().replace(/\$/g, '').split(':').pop().trim() : null;
-    
+        .trim().replace(/\$/g, '').split(':').pop().trim() : null;
+
     console.log('Extracted value:', formattedMarketCap);
-    
+
     const networkElement = Array.from(element.querySelectorAll('strong'))
         .find(el => el.textContent.includes('Network'));
     const network = networkElement ? networkElement.nextSibling.textContent
-    .trim().split(':').pop().trim() : null;
+        .trim().split(':').pop().trim() : null;
 
     var numericValue = convertToNumeric(formattedMarketCap);
 
     console.log("Network:", network);
 
-    console.log('Monke PostRequest:', chatTitle, valueName, numericValue, valueAddress, network);
+    const gmgnValue = GetGmgn(network, valueAddress);
+
+    console.log("Gmgn:", gmgnValue);
+
+    console.log('Monke PostRequest:', chatTitle, valueName, numericValue, valueAddress, network, gmgnValue);
     sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
 }
 
-function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle) {
-    
+function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle, gmgnValue) {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    
+
+    const mkValue = isNaN(parseFloat(numericValue)) ? 0.0 : parseFloat(numericValue);
+
     const raw = JSON.stringify({
-    "Name": valueName,
-    "MK": numericValue,
-    "Address": valueAddress,
-    "Network": network,
-    "ChatTitle": chatTitle
+        "Name": valueName,
+        "MK": mkValue,
+        "Address": valueAddress,
+        "Network": network,
+        "ChatTitle": chatTitle,
+        "GmgnLink": gmgnValue
     });
-    
+
     const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow"
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
     };
-    
+
+    // https://localhost:7111/data
     fetch("https://remsoftdev.dynamic-dns.net:82/data", requestOptions)
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
+        .then((response) => {
+            console.log('HTTP status:', response.status);
+            return response.text();
+        })
+        .then((result) => console.log('Server response:', result))
+        .catch((error) => console.error('Fetch error:', error));
 }
 
 // Function to scan all existing messages
 function scanExistingMessages() {
     const messages = document.querySelectorAll('.translatable-message');
-    
+
     console.log(new Date().toISOString().replace("T", " ").slice(0, 19));
 
     messages.forEach(message => {
@@ -208,7 +246,7 @@ if (typeof targetNode === "undefined") {
     const config = { childList: true, subtree: true };
 
     // Callback function to execute when mutations are observed
-    const callback = function(mutationsList, observer) {
+    const callback = function (mutationsList, observer) {
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                 mutation.addedNodes.forEach(node => {
@@ -223,24 +261,21 @@ if (typeof targetNode === "undefined") {
                             var doc = parser.parseFromString(node.outerHTML, 'text/html');
                             var senderTitleElement = doc.querySelector('.translatable-message');
 
-                            if(senderTitleElement){
-                                if (node.outerText.startsWith('Rick'))
-                                {
+                            if (senderTitleElement) {
+                                if (node.outerText.startsWith('Rick')) {
                                     logNewMessageRick(doc, chatTitle);
                                     console.log("Starting Procces: Rick");
                                 }
-                                else if (node.outerText.startsWith('MonkeBot'))
-                                {
+                                else if (node.outerText.startsWith('MonkeBot')) {
                                     logNewMessageMonke(doc, chatTitle);
-                                    console.log("Starting Procces: MonkeBot");        
+                                    console.log("Starting Procces: MonkeBot");
                                 }
-                                else
-                                {
+                                else {
                                     logNewMessagePhanes(doc, chatTitle);
                                     console.log("Starting Procces: Phanes");
                                 }
                             }
-                            else{
+                            else {
                                 var baseText = node.innerText;
 
                                 const ethRegex = /0x[a-fA-F0-9]{40}/;
@@ -265,9 +300,11 @@ if (typeof targetNode === "undefined") {
                                         "Network": network
                                     });
 
+                                    const gmgnValue = GetGmgn(network, valueAddress);
+
                                     console.log("Extracted:", raw);
 
-                                    sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle);
+                                    sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTitle, gmgnValue);
                                 }
                             }
                         } catch (error) {

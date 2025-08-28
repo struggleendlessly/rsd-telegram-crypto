@@ -97,11 +97,6 @@ type scopedSwapsTokens(
                     let max = blocks |> Seq.head |> Seq.maxBy (fun x -> x.id)
                     let! priceAverageForBlocks = scopedSwapsETH.getPriceForBlock (min.id - 100) (max.id + 100)
 
-                    let t1 =
-                            blocks
-                            |> Seq.head
-                            |> Seq.map (fun block -> 
-                                block.result |> Array.groupBy (fun x -> x.address) )            
                     let t =
                             blocks
                             |> Seq.head

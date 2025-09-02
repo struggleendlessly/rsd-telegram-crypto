@@ -208,8 +208,10 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTit
         redirect: "follow"
     };
 
+    console.log(requestOptions);
+
     // https://localhost:7111/data
-    fetch("https://remsoftdev.dynamic-dns.net:82/data", requestOptions)
+    fetch("https://webscrapper.cryptoscout.ai/data", requestOptions)
         .then((response) => {
             console.log('HTTP status:', response.status);
             return response.text();

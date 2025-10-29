@@ -6,7 +6,7 @@ import { setTimeout as wait } from 'timers/promises';
 const LOCAL_STORAGE_FILE = './localStorageData.json';
 const COOKIES_FILE = './cookies.json';
 const TELEGRAM_URL = 'https://web.telegram.org/k/';
-const TELEGRAM_CHAT_URL = 'https://web.telegram.org/k/#-5078721003';
+const TELEGRAM_CHAT_URL = 'https://web.telegram.org/k/#-2294837322';
 
 async function saveSession(page) {
   const localStorageData = await page.evaluate(() => {
@@ -62,7 +62,7 @@ async function loadSession(page) {
 (async () => {
     const hasSession = await sessionFilesExist();
     const browser = await puppeteer.launch({
-    headless: hasSession,
+    headless: false,
     args: [
       '--disable-background-timer-throttling',
       '--disable-renderer-backgrounding',

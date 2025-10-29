@@ -62,7 +62,7 @@ async function loadSession(page) {
 (async () => {
     const hasSession = await sessionFilesExist();
     const browser = await puppeteer.launch({
-    headless: false,
+    headless: hasSession,
     args: [
       '--disable-background-timer-throttling',
       '--disable-renderer-backgrounding',

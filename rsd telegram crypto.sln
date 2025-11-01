@@ -128,6 +128,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CryptChatV2.F#", "src\v3\Cr
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "XTwitter.F#", "XTwitter.F#\XTwitter.F#.fsproj", "{EB4E3223-CF19-4E2C-8263-A83DBA6DB2C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puppeteer.Console", "src\v3\Puppeteer.Console\Puppeteer.Console.csproj", "{735DB7E9-8AD4-4B96-9B64-7ED86FF63402}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -302,6 +304,10 @@ Global
 		{EB4E3223-CF19-4E2C-8263-A83DBA6DB2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB4E3223-CF19-4E2C-8263-A83DBA6DB2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB4E3223-CF19-4E2C-8263-A83DBA6DB2C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{735DB7E9-8AD4-4B96-9B64-7ED86FF63402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{735DB7E9-8AD4-4B96-9B64-7ED86FF63402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{735DB7E9-8AD4-4B96-9B64-7ED86FF63402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{735DB7E9-8AD4-4B96-9B64-7ED86FF63402}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -345,6 +351,7 @@ Global
 		{3D310FB4-FAC5-1B63-548E-1D019DD2ABBC} = {9F11798A-F4A3-4D2D-8CBA-4C15D4709721}
 		{AF855FF5-0DE6-1319-F6B9-F15FFD9A128B} = {9F11798A-F4A3-4D2D-8CBA-4C15D4709721}
 		{EB4E3223-CF19-4E2C-8263-A83DBA6DB2C1} = {9F11798A-F4A3-4D2D-8CBA-4C15D4709721}
+		{735DB7E9-8AD4-4B96-9B64-7ED86FF63402} = {9F11798A-F4A3-4D2D-8CBA-4C15D4709721}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D54AC4D8-ED12-40CF-BD73-23C6CD5E0CF1}

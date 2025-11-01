@@ -48,6 +48,7 @@ public class ProfileSingleChatTelegramRunner
                 System.Console.WriteLine("Login timeout. Please try again.");
 
             await browser.CloseAsync();
+            System.Console.WriteLine("Press any key to close the window");
             System.Console.ReadKey();
             return;
         }
@@ -83,21 +84,11 @@ public class ProfileSingleChatTelegramRunner
     private static async Task<bool> WaitForUserLogin(IPage page, double timeoutSeconds)
     {
         int elapsed = 0;
+
         while (elapsed < timeoutSeconds)
         {
-            bool loggedIn = await page.EvaluateFunctionAsync<bool>(@"
-                () => {
-                    const value = localStorage.getItem('number_of_accounts');
-                    if (!value) return false;
-                
-                    const parsed = parseInt(value);
-                    if (isNaN(parsed)) return false;
-
-                    return parsed > 0;
-                }
-            ");
-
-            if (loggedIn)
+            var localStorageJson = await page.EvaluateFunctionAsync<string>("() => JSON.stringify(localStorage)");
+            if (IsUserLoggedInFromLocalStorage(localStorageJson))
                 return true;
 
             await Task.Delay(2000);
@@ -116,13 +107,17 @@ public class ProfileSingleChatTelegramRunner
         });
 
         var page = await browser.NewPageAsync();
-        //doesn't work sometimes. We need to add an additional check, using other parameters from local storage
-        await page.GoToWithDelayAsync(TelegramUrl, (int)TimeSpan.FromSeconds(3).TotalMilliseconds); 
+        await page.GoToWithDelayAsync(TelegramUrl, GoToMilisecondsDelay);
 
         var localStorageJson = await page.EvaluateFunctionAsync<string>("() => JSON.stringify(localStorage)");
         await browser.CloseAsync();
 
-        if (string.IsNullOrEmpty(localStorageJson))
+        return IsUserLoggedInFromLocalStorage(localStorageJson);
+    }
+
+    private static bool IsUserLoggedInFromLocalStorage(string localStorageJson)
+    {
+        if (string.IsNullOrWhiteSpace(localStorageJson))
             return false;
 
         try
@@ -130,13 +125,50 @@ public class ProfileSingleChatTelegramRunner
             using var doc = JsonDocument.Parse(localStorageJson);
             var root = doc.RootElement;
 
-            if (!root.TryGetProperty("number_of_accounts", out var numberOfAccounts))
+            if (!root.TryGetProperty("number_of_accounts", out var numberOfAccountsProp))
                 return false;
 
-            if (!int.TryParse(numberOfAccounts.ToString(), out var numberOfAccountsParsed))
+            int numberOfAccounts = 0;
+            if (numberOfAccountsProp.ValueKind == JsonValueKind.Number && numberOfAccountsProp.TryGetInt32(out var numVal))
+            {
+                numberOfAccounts = numVal;
+            }
+            else
+            {
+                var s = numberOfAccountsProp.GetString();
+                if (!int.TryParse(s, out numberOfAccounts))
+                    return false;
+            }
+
+            if (numberOfAccounts <= 0)
                 return false;
 
-            if (numberOfAccountsParsed <= 0)
+            if (!root.TryGetProperty("user_auth", out var userAuthProp))
+                return false;
+
+            var userAuthRaw = userAuthProp.GetString();
+            if (string.IsNullOrWhiteSpace(userAuthRaw))
+                return false;
+
+            using var authDoc = JsonDocument.Parse(userAuthRaw);
+            var authRoot = authDoc.RootElement;
+
+            if (!authRoot.TryGetProperty("id", out var idProp))
+                return false;
+
+            long userId = 0;
+            if (idProp.ValueKind == JsonValueKind.Number && idProp.TryGetInt64(out var idNum))
+            {
+                userId = idNum;
+            }
+            else
+            {
+                var idStr = idProp.GetString();
+                if (!long.TryParse(idStr, out userId))
+                    return false;
+            }
+
+            if (userId <= 0)
                 return false;
 
             return true;

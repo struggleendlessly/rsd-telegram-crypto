@@ -1,0 +1,34 @@
+﻿@using RazorConsole.Components
+@using Puppeteer.Console.BlazorUI.Services.Implementations
+
+@inject ILoginTelegramService LoginTelegramService;
+@inject AppStateManager StateManager;
+
+<Figlet Content="Login Page" />
+
+<Columns>
+    <p>Save login data</p>
+    <Select Options="SaveOptions"
+            Value="SelectedSaveOption"
+            ValueChanged="OnSaveOptionChanged"
+            Expand="true" />
+</Columns>
+
+<TextButton Content="Run login"
+            OnClick="RunLogin"
+            BackgroundColor="@Spectre.Console.Color.Grey"
+            FocusedColor="@Spectre.Console.Color.Blue" />
+@code {
+    private string[] SaveOptions = ["Yes", "No"];
+    private string SelectedSaveOption { get; set; } = "No";
+
+    private bool SaveLoginData { get; set; }
+
+    private void OnSaveOptionChanged(string value)
+    {
+        SelectedSaveOption = value;
+        StateManager.SetSaveLoginData(SelectedSaveOption);
+    }
+
+    private async Task RunLogin() => await LoginTelegramService.Login();
+}

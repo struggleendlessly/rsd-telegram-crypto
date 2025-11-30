@@ -8,6 +8,8 @@ namespace Puppeteer.Console.BlazorUI.Services.Implementations;
 public interface ILoginTelegramService
 {
     Task Login();
+
+    Task<bool> IsLoggedIn();
 }
 
 public class LoginTelegramService : ILoginTelegramService
@@ -38,6 +40,25 @@ public class LoginTelegramService : ILoginTelegramService
         await browser.CloseAsync();
         System.Console.WriteLine("Press any key to close the window");
         return;
+    }
+
+    public async Task<bool> IsLoggedIn()
+    {
+        var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(new LaunchOptions
+        {
+            Headless = true,
+            UserDataDir = UserSettingsConstants.UserDataDirectory,
+            Args = BrowserConstants.HeadlessBrowserArgs
+        });
+
+        var page = await browser.NewPageAsync();
+        await page.GoToWithDelayAsync(UserSettingsConstants.TelegramBaseUrl, UserSettingsConstants.GoToMilisecondsDelay);
+
+        var timeoutLoginSeconds = TimeSpan.FromSeconds(1).TotalSeconds;
+        bool userLoggedIn = await WaitForUserLogin(page, timeoutLoginSeconds);
+        
+        await browser.CloseAsync();
+        return userLoggedIn;
     }
 
     private static async Task<bool> WaitForUserLogin(IPage page, double timeoutSeconds)

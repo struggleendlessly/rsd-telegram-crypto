@@ -1,0 +1,32 @@
+﻿@using Puppeteer.Console.BlazorUI.Services.Implementations
+
+@inject ILoginTelegramService LoginTelegramService;
+
+@if (!Initialized)
+{
+    <p>Loading...</p>
+}
+else if (!IsLoggedIn)
+{
+    <Login />
+}
+else
+{
+    <h1>User is already logged in</h1>
+}
+
+@code {
+
+    private bool IsLoggedIn;
+    private bool Initialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoggedIn = await LoginTelegramService.IsLoggedIn();
+            Initialized = true;
+            StateHasChanged();
+        }
+    }
+}

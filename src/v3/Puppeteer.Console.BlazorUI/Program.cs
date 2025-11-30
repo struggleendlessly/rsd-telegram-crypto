@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Puppeteer.Console.BlazorUI;
 using Puppeteer.Console.BlazorUI.Components;
+using Puppeteer.Console.BlazorUI.Services;
 using Puppeteer.Console.BlazorUI.Services.Implementations;
 using PuppeteerSharp;
 using RazorConsole.Core;
@@ -13,7 +14,7 @@ hostBuilder.ConfigureServices(services =>
 {
     services.AddScoped<ILoginTelegramService, LoginTelegramService>();
     services.AddScoped<IBrowserService, BrowserService>();
-    services.AddSingleton<AppStateManager>();
+    services.AddSingleton<IUserSettingsService, UserSettingsService>();
 
     services.Configure<ConsoleAppOptions>(options =>
     {
@@ -36,9 +37,12 @@ lifetime.ApplicationStopped.Register(() =>
     if (provider is null)
         return;
 
-    var state = provider.GetRequiredService<AppStateManager>();
+    var userSettingsService = provider.GetService<IUserSettingsService>();
 
-    if (!state.SaveLoginData)
+    if (userSettingsService is null) 
+        return;
+
+    if (!userSettingsService.Settings.SaveLoginData)
     {
         var browserService = provider.GetRequiredService<IBrowserService>();
         browserService.ClearBrowserDataAsync().GetAwaiter().GetResult();

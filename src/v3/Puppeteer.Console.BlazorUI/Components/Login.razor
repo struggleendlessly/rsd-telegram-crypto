@@ -1,8 +1,9 @@
-﻿@using RazorConsole.Components
+﻿@using Puppeteer.Console.BlazorUI.Services
+@using RazorConsole.Components
 @using Puppeteer.Console.BlazorUI.Services.Implementations
 
 @inject ILoginTelegramService LoginTelegramService;
-@inject AppStateManager StateManager;
+@inject IUserSettingsService UserSettingsService;
 
 <Figlet Content="Login Page" />
 
@@ -27,8 +28,12 @@
     private void OnSaveOptionChanged(string value)
     {
         SelectedSaveOption = value;
-        StateManager.SetSaveLoginData(SelectedSaveOption);
+        UserSettingsService.Settings.SaveLoginData = IsSaveLoginData(value);
+        UserSettingsService.Save();
     }
+
+    private bool IsSaveLoginData(string userInput) => 
+        !string.IsNullOrEmpty(userInput) && userInput.Equals("Yes", StringComparison.OrdinalIgnoreCase);
 
     private async Task RunLogin() => await LoginTelegramService.Login();
 }

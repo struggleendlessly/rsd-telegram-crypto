@@ -4,11 +4,6 @@ using PuppeteerSharp;
 
 namespace Puppeteer.Console.BlazorUI.Services.Implementations;
 
-public interface IBrowserService
-{
-    Task ClearBrowserDataAsync();
-}
-
 public class BrowserService : IBrowserService
 {
     public async Task ClearBrowserDataAsync()

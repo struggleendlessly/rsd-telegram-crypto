@@ -5,13 +5,6 @@ using System.Text.Json;
 
 namespace Puppeteer.Console.BlazorUI.Services.Implementations;
 
-public interface ILoginTelegramService
-{
-    Task Login();
-
-    Task<bool> IsLoggedIn();
-}
-
 public class LoginTelegramService : ILoginTelegramService
 {
     public async Task Login()

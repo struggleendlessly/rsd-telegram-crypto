@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Puppeteer.Console.BlazorUI;
 using Puppeteer.Console.BlazorUI.Components;
+using Puppeteer.Console.BlazorUI.Data;
 using Puppeteer.Console.BlazorUI.Services;
 using Puppeteer.Console.BlazorUI.Services.Implementations;
 using PuppeteerSharp;
@@ -19,6 +21,14 @@ hostBuilder.ConfigureServices(services =>
     services.Configure<ConsoleAppOptions>(options =>
     {
         options.AutoClearConsole = false;
+    });
+
+    services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        string dbConnectionString =
+            "Data Source=localhost,5533;Initial Catalog=Puppeteer.Console.BlazorUI;User ID=sa;Password=YourStrong!Passw0rd;Encrypt=False;MultipleActiveResultSets=False;TrustServerCertificate=True;Connection Timeout=30;";
+        
+        options.UseSqlServer(dbConnectionString);
     });
 });
 

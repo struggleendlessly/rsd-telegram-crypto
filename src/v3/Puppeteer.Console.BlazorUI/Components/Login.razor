@@ -9,7 +9,7 @@
 
 <Columns>
     <p>Save login data</p>
-    <Select Options="SaveOptions"
+    <Select Options="_saveOptions"
             Value="SelectedSaveOption"
             ValueChanged="OnSaveOptionChanged"
             Expand="true" />
@@ -20,14 +20,14 @@
             BackgroundColor="@Spectre.Console.Color.Grey"
             FocusedColor="@Spectre.Console.Color.Blue" />
 @code {
-    private string[] SaveOptions = ["Yes", "No"];
-    private string SelectedSaveOption { get; set; } = "No";
+    private string[] _saveOptions = ["Yes", "No"];
+    private string _selectedSaveOption { get; set; } = "No";
 
-    private bool SaveLoginData { get; set; }
+    private bool _saveLoginData { get; set; }
 
     private void OnSaveOptionChanged(string value)
     {
-        SelectedSaveOption = value;
+        _selectedSaveOption = value;
         UserSettingsService.Settings.SaveLoginData = IsSaveLoginData(value);
         UserSettingsService.Save();
     }

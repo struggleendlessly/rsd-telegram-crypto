@@ -1,0 +1,134 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using Puppeteer.Console.BlazorUI.Constants
+@using Puppeteer.Console.BlazorUI.Data
+@using Puppeteer.Console.BlazorUI.Models
+@using RazorConsole.Components
+@using Spectre.Console
+
+@inject ApplicationDbContext ApplicationDbContext;
+
+<Panel Title="Add Chat Url" Border="BoxBorder.Rounded" Expand="true">
+    <Rows>
+		@if (!string.IsNullOrEmpty(_infoMessage))
+		{
+			<Markup Content="@_infoMessage" Foreground="@(_isErrorMessage ? Color.Red : Color.Green)" Decoration="@Decoration.Bold" />
+		}
+
+		<TextInput Label="Url"
+				   Value="@_link"
+				   ValueChanged="OnLinkChanged"
+				   FocusedBorderColor="@(_isLinkError ? Color.Red : Color.DeepSkyBlue1)"
+				   BorderColor="@(_isLinkError ? Color.Red3 : Color.Grey37)"
+				   BorderPadding="@_inputPadding"
+				   Expand="true" />
+		
+		<p>Set Active</p>
+		<Select Options="_activeOptions"
+				Value="_selectedActiveOptions"
+				ValueChanged="OnActiveOptionChanged"
+				Expand="true" />
+		
+		<p>Is active: @_selectedActiveOptions</p>
+		<Columns>
+			<TextButton Content="Save"
+						OnClick="HandleSaveLink"
+						BackgroundColor="@Color.Green"
+						FocusedColor="@Color.Lime" />
+		</Columns>
+	</Rows>
+</Panel>
+
+@code {
+	[Parameter] public Guid? ChatId { get; set; } 
+
+	private static readonly Padding _inputPadding = new(1, 0, 1, 0);
+	private string[] _activeOptions = ["Yes", "No"];
+	private string _selectedActiveOptions { get; set; } = "Yes";
+	private string _link = UserSettingsConstants.TelegramBaseUrl;
+	private string _infoMessage = string.Empty;
+	private bool _isErrorMessage = false;
+	private bool _isLinkError = false;
+	private TelegramChat? _telegramChat;
+
+	protected async override Task OnInitializedAsync()
+	{
+		ResetComponentState();
+
+		if (!ChatId.HasValue)
+			return;
+
+		_telegramChat = await ApplicationDbContext.TelegramChats.FirstOrDefaultAsync(c => c.Id == ChatId);
+
+		if (_telegramChat is null)
+			return;
+
+		_link = _telegramChat.Url;
+		_selectedActiveOptions = _telegramChat.Active ? "Yes" : "No";
+		StateHasChanged();
+	}
+
+	private void OnLinkChanged(string? value)
+	{
+		_link = value ?? string.Empty;
+		StateHasChanged();
+	}
+
+	private void OnActiveOptionChanged(string value)
+	{
+		_selectedActiveOptions = value;
+		StateHasChanged();
+	}
+
+	private bool IsActiveLink() =>
+		!string.IsNullOrEmpty(_selectedActiveOptions) && _selectedActiveOptions.Equals("Yes", StringComparison.OrdinalIgnoreCase);
+
+	private async Task HandleSaveLink()
+	{
+		_isLinkError = false;
+		_isErrorMessage = false;
+		_infoMessage = string.Empty;
+
+		if (string.IsNullOrWhiteSpace(_link))
+		{
+			_isLinkError = true;
+			_isErrorMessage = true;
+			_infoMessage = "Chat url cannot be empty";
+			StateHasChanged();
+			return;
+		}
+
+		if (_telegramChat is not null)
+		{
+			_telegramChat.Url = _link;
+			_telegramChat.Active = IsActiveLink();
+			ApplicationDbContext.TelegramChats.Update(_telegramChat);
+
+			_infoMessage = "Chat was updated";
+			_isErrorMessage = false;
+		}
+		else
+		{
+			var telegramChat = new TelegramChat
+			{
+				Url = _link,
+				Active = IsActiveLink()
+			};
+			ApplicationDbContext.TelegramChats.Add(telegramChat);
+
+			_infoMessage = "Chat was added";
+			_isErrorMessage = false;
+		}
+
+		await ApplicationDbContext.SaveChangesAsync();
+		StateHasChanged();
+	}
+
+	private void ResetComponentState()
+	{
+		_telegramChat = null;
+		_isLinkError = false;
+		_isErrorMessage = false;
+		_infoMessage = string.Empty;
+		_selectedActiveOptions = "Yes";
+	}
+}

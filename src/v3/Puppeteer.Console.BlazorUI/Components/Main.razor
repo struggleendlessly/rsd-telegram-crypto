@@ -1,61 +1,140 @@
-﻿@using Puppeteer.Console.BlazorUI.Services
+﻿@using Microsoft.EntityFrameworkCore
+@using Puppeteer.Console.BlazorUI.Data
+@using Puppeteer.Console.BlazorUI.Models
+@using Puppeteer.Console.BlazorUI.Services
 @using Puppeteer.Console.BlazorUI.Services.Implementations
 @using RazorConsole.Components
+@using Spectre.Console
 
 @inject ILoginTelegramService LoginTelegramService;
+@inject ApplicationDbContext ApplicationDbContext;
 
-@if (!Initialized)
+@if (!_initialized)
 {
     <p>Loading...</p>
 }
-else if (!IsLoggedIn)
+else if (!_isLoggedIn)
 {
     <Login />
 }
 else
 {
-    if (ShowAddLinkComponent)
+    if (_displayAddLinkComponent)
     {
-        <AddLink />
+        <Link />
         <TextButton Content="Back"
                     OnClick="CloseAddLink"
-                    BackgroundColor="@Spectre.Console.Color.Grey"
-        FocusedColor="@Spectre.Console.Color.Blue" />
+                    BackgroundColor="@Color.Grey"
+        FocusedColor="@Color.Blue" />
+    }
+    else if (_displayEditActivity)
+    {
+        <Link ChatId="@_editId" />
+        <TextButton Content="Back"
+                    OnClick="CloseAddLink"
+                    BackgroundColor="@Color.Grey"
+                    FocusedColor="@Color.Blue" />
     }
     else
     {
         <Figlet Content="Main Activity" />
+
+        @RenderChatsTable()
+
+        <Newline />
         <TextButton Content="Add Link"
                     OnClick="AddLink"
-                    BackgroundColor="@Spectre.Console.Color.Grey"
-                    FocusedColor="@Spectre.Console.Color.Blue" />
+                    BackgroundColor="@Color.Grey"
+                    FocusedColor="@Color.Blue" />
     }
 }
 
 @code {
-    private bool IsLoggedIn;
-    private bool Initialized = false;
-    private bool ShowAddLinkComponent = false;
+    private bool _isLoggedIn;
+    private bool _initialized = false;
+    private bool _displayAddLinkComponent = false;
+    private bool _displayEditActivity = false;
+    private Guid _editId; 
+    private List<TelegramChat> _chats = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            IsLoggedIn = await LoginTelegramService.IsLoggedIn();
-            Initialized = true;
+            _isLoggedIn = await LoginTelegramService.IsLoggedIn();
+            _initialized = true;
+            await LoadTelegramChats();
             StateHasChanged();
         }
     }
 
     private void AddLink()
     {
-        ShowAddLinkComponent = true;
+        _displayAddLinkComponent = true;
         StateHasChanged();
     }
 
-    private void CloseAddLink()
+    private async Task CloseAddLink()
     {
-        ShowAddLinkComponent = false;
+        _displayAddLinkComponent = false;
+        _displayEditActivity = false;
+        await LoadTelegramChats();
         StateHasChanged();
     }
+
+    private async Task ReloadChats()
+    {
+        _chats = await ApplicationDbContext.TelegramChats.ToListAsync();
+        StateHasChanged();
+    }
+
+    private void Edit(Guid id)
+    {
+        _editId = id;
+        _displayEditActivity = true;
+        StateHasChanged();
+    }
+
+    private async Task LoadTelegramChats()
+    {
+        _chats = await ApplicationDbContext.TelegramChats.OrderBy(c => c.Url).ToListAsync();
+    }
+
+    private RenderFragment RenderChatsTable() => __builder =>
+    {
+        <SpectreTable class="table"
+               data-title="Saved Telegram Chats"
+               data-expand="true"
+               data-border="Rounded">
+            <thead>
+                <tr>
+                    <th data-align="left">Url</th>
+                    <th data-align="center">Active</th>
+                    <th data-align="center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var chat in _chats)
+                {
+                    <tr>
+                        <td>
+                            <Markup Content="@chat.Url" />
+                        </td>
+
+                        <td>
+                            @(chat.Active ? "Yes" : "No")
+                        </td>
+
+                        <td>
+                            <TextButton Content="Edit"
+                                        OnClick="@(() => Edit(chat.Id))"
+                                        BackgroundColor="@Color.Grey"
+                                        FocusedColor="@Color.Blue" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </SpectreTable>;
+    };
 }

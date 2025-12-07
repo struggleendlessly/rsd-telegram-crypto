@@ -7,6 +7,7 @@
 @using Spectre.Console
 
 @inject ILoginTelegramService LoginTelegramService;
+@inject ITelegramRunnerService TelegramRunnerService;
 @inject ApplicationDbContext ApplicationDbContext;
 
 @if (!_initialized)
@@ -44,6 +45,11 @@ else
         <Newline />
         <TextButton Content="Add Link"
                     OnClick="AddLink"
+                    BackgroundColor="@Color.Grey"
+                    FocusedColor="@Color.Blue" />
+        
+        <TextButton Content="Run Scraper"
+                    OnClick="RunScraper"
                     BackgroundColor="@Color.Grey"
                     FocusedColor="@Color.Blue" />
     }
@@ -98,6 +104,11 @@ else
     private async Task LoadTelegramChats()
     {
         _chats = await ApplicationDbContext.TelegramChats.OrderBy(c => c.Url).ToListAsync();
+    }
+
+    private async Task RunScraper()
+    {
+        await TelegramRunnerService.RunScrap(runOnlyActive: true);
     }
 
     private RenderFragment RenderChatsTable() => __builder =>

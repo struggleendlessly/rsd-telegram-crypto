@@ -21,7 +21,7 @@ public class BrowserService : IBrowserService
 
         await client.SendAsync("Storage.clearDataForOrigin", new
         {
-            origin = "https://web.telegram.org",
+            origin = UserSettingsConstants.TelegramBaseUrl,
             storageTypes = "all"
         });
 

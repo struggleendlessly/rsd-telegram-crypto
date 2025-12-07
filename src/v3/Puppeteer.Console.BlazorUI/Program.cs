@@ -16,6 +16,7 @@ hostBuilder.ConfigureServices(services =>
 {
     services.AddScoped<ILoginTelegramService, LoginTelegramService>();
     services.AddScoped<IBrowserService, BrowserService>();
+    services.AddSingleton<ITelegramRunnerService, TelegramRunnerService>();
     services.AddSingleton<IUserSettingsService, UserSettingsService>();
 
     services.Configure<ConsoleAppOptions>(options =>
@@ -57,6 +58,25 @@ lifetime.ApplicationStopped.Register(() =>
         var browserService = provider.GetRequiredService<IBrowserService>();
         browserService.ClearBrowserDataAsync().GetAwaiter().GetResult();
     }
+
+    var telegramRunnerService = provider.GetService<ITelegramRunnerService>();
+
+    if (telegramRunnerService is null)
+        return;
+
+    if (telegramRunnerService.RunningBrowsers.Count !=0)
+        foreach (var rb in telegramRunnerService.RunningBrowsers)
+        {
+            try
+            {
+                Console.WriteLine($"[{rb.CharUrl}] Closing browser...");
+                rb.Browser.CloseAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error closing browser [{rb.CharUrl}]: {ex.Message}");
+            }
+        }
 });
 
 await host.RunAsync();

@@ -27,7 +27,7 @@ public class TelegramRunnerService(
 
         foreach (var telegramChat in telegramChats)
         {
-            var runningBrowser = await GetBrowserWithRunningScraperForChat(telegramChat.Url);
+            var runningBrowser = await GetBrowserWithRunningScraperForChat(telegramChat.Id, telegramChat.Url);
 
             if (runningBrowser is null)
                 continue;
@@ -41,7 +41,7 @@ public class TelegramRunnerService(
         System.Console.ResetColor();
     }
 
-    private async Task<IBrowser?> GetBrowserWithRunningScraperForChat(string chatUrl)
+    private async Task<IBrowser?> GetBrowserWithRunningScraperForChat(Guid chatId, string chatUrl)
     {
         try
         {
@@ -50,6 +50,7 @@ public class TelegramRunnerService(
             {
                 Headless = true,
                 Args = BrowserConstants.HeadlessBrowserArgs,
+                UserDataDir = chatId.ToString().ToLower()
             });
 
             var page = await browser.NewPageAsync();

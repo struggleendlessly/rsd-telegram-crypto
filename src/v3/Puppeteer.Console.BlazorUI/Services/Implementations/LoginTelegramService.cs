@@ -7,12 +7,12 @@ namespace Puppeteer.Console.BlazorUI.Services.Implementations;
 
 public class LoginTelegramService : ILoginTelegramService
 {
-    public async Task Login()
+    public async Task<bool> Login(string chatId)
     {
         var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = false,
-            UserDataDir = UserSettingsConstants.UserDataDirectory,
+            UserDataDir = chatId,
             Args = BrowserConstants.HeadlessBrowserArgs
         });
 
@@ -23,31 +23,6 @@ public class LoginTelegramService : ILoginTelegramService
         System.Console.WriteLine("Waiting for authentication...");
 
         var timeoutLoginSeconds = TimeSpan.FromMinutes(5).TotalSeconds;
-        bool userLoggedIn = await WaitForUserLogin(page, timeoutLoginSeconds);
-
-        if (userLoggedIn)
-            System.Console.WriteLine("Login detected, closing browser...");
-        else
-            System.Console.WriteLine("Login timeout. Please try again.");
-
-        await browser.CloseAsync();
-        System.Console.WriteLine("Press any key to close the window");
-        return;
-    }
-
-    public async Task<bool> IsLoggedIn()
-    {
-        var browser = await PuppeteerSharp.Puppeteer.LaunchAsync(new LaunchOptions
-        {
-            Headless = true,
-            UserDataDir = UserSettingsConstants.UserDataDirectory,
-            Args = BrowserConstants.HeadlessBrowserArgs
-        });
-
-        var page = await browser.NewPageAsync();
-        await page.GoToWithDelayAsync(UserSettingsConstants.TelegramBaseUrl, UserSettingsConstants.GoToMilisecondsDelay);
-
-        var timeoutLoginSeconds = TimeSpan.FromSeconds(1).TotalSeconds;
         bool userLoggedIn = await WaitForUserLogin(page, timeoutLoginSeconds);
         
         await browser.CloseAsync();

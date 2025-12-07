@@ -7,36 +7,43 @@
 
 @inject ApplicationDbContext ApplicationDbContext;
 
-<Panel Title="Add Chat Url" Border="BoxBorder.Rounded" Expand="true">
-    <Rows>
-		@if (!string.IsNullOrEmpty(_infoMessage))
-		{
-			<Markup Content="@_infoMessage" Foreground="@(_isErrorMessage ? Color.Red : Color.Green)" Decoration="@Decoration.Bold" />
-		}
+@if (_displayLoginComponent)
+{
+	<Login ChatUrl="@_link" IsActive="@IsActiveLink()" />
+}
+else
+{
+	<Panel Title="Add Chat Url" Border="BoxBorder.Rounded" Expand="true">
+		<Rows>
+			@if (!string.IsNullOrEmpty(_infoMessage))
+			{
+				<Markup Content="@_infoMessage" Foreground="@(_isErrorMessage? Color.Red: Color.Green)" Decoration="@Decoration.Bold" />
+			}
 
-		<TextInput Label="Url"
-				   Value="@_link"
-				   ValueChanged="OnLinkChanged"
-				   FocusedBorderColor="@(_isLinkError ? Color.Red : Color.DeepSkyBlue1)"
-				   BorderColor="@(_isLinkError ? Color.Red3 : Color.Grey37)"
-				   BorderPadding="@_inputPadding"
-				   Expand="true" />
-		
-		<p>Set Active</p>
-		<Select Options="_activeOptions"
-				Value="_selectedActiveOptions"
-				ValueChanged="OnActiveOptionChanged"
-				Expand="true" />
-		
-		<p>Is active: @_selectedActiveOptions</p>
-		<Columns>
-			<TextButton Content="Save"
-						OnClick="HandleSaveLink"
-						BackgroundColor="@Color.Green"
-						FocusedColor="@Color.Lime" />
-		</Columns>
-	</Rows>
-</Panel>
+			<TextInput Label="Url"
+					   Value="@_link"
+					   ValueChanged="OnLinkChanged"
+					   FocusedBorderColor="@(_isLinkError ? Color.Red : Color.DeepSkyBlue1)"
+					   BorderColor="@(_isLinkError ? Color.Red3 : Color.Grey37)"
+					   BorderPadding="@_inputPadding"
+					   Expand="true" />
+
+			<p>Set Active</p>
+			<Select Options="_activeOptions"
+					Value="_selectedActiveOptions"
+					ValueChanged="OnActiveOptionChanged"
+					Expand="true" />
+
+			<p>Is active: @_selectedActiveOptions</p>
+			<Columns>
+				<TextButton Content="Save"
+							OnClick="HandleSaveLink"
+							BackgroundColor="@Color.Green"
+							FocusedColor="@Color.Lime" />
+			</Columns>
+		</Rows>
+	</Panel>
+}
 
 @code {
 	[Parameter] public Guid? ChatId { get; set; } 
@@ -49,6 +56,7 @@
 	private bool _isErrorMessage = false;
 	private bool _isLinkError = false;
 	private TelegramChat? _telegramChat;
+	private bool _displayLoginComponent;
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -102,24 +110,16 @@
 			_telegramChat.Url = _link;
 			_telegramChat.Active = IsActiveLink();
 			ApplicationDbContext.TelegramChats.Update(_telegramChat);
-
 			_infoMessage = "Chat was updated";
 			_isErrorMessage = false;
+
+			await ApplicationDbContext.SaveChangesAsync();
 		}
 		else
 		{
-			var telegramChat = new TelegramChat
-			{
-				Url = _link,
-				Active = IsActiveLink()
-			};
-			ApplicationDbContext.TelegramChats.Add(telegramChat);
-
-			_infoMessage = "Chat was added";
-			_isErrorMessage = false;
+			_displayLoginComponent = true;
 		}
 
-		await ApplicationDbContext.SaveChangesAsync();
 		StateHasChanged();
 	}
 

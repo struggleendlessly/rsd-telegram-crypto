@@ -7,4 +7,6 @@ public class TelegramChat
     public string Url { get; set; } = string.Empty;
 
     public bool Active { get; set; }
+
+    public bool SaveLoginData { get; set; }
 }

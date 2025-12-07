@@ -2,7 +2,5 @@
 
 public interface ILoginTelegramService
 {
-    Task Login();
-
-    Task<bool> IsLoggedIn();
+    Task<bool> Login(string chatIdChromeProfile);
 }

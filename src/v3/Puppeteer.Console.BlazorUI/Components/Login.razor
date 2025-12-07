@@ -1,40 +1,99 @@
-﻿@using Puppeteer.Console.BlazorUI.Services
+﻿@using Microsoft.EntityFrameworkCore
+@using Puppeteer.Console.BlazorUI.Data
+@using Puppeteer.Console.BlazorUI.Models
+@using Puppeteer.Console.BlazorUI.Services
 @using RazorConsole.Components
 @using Puppeteer.Console.BlazorUI.Services.Implementations
+@using Spectre.Console
 
 @inject ILoginTelegramService LoginTelegramService;
-@inject IUserSettingsService UserSettingsService;
+@inject ApplicationDbContext ApplicationDbContext;
 
-<Figlet Content="Login Page" />
+@if (!string.IsNullOrEmpty(_infoMessage))
+{
+    <Markup Content="@_infoMessage" Foreground="@(_isErrorMessage? Color.Red: Color.Green)" Decoration="@Decoration.Bold" />
+}
+else
+{
+    <Figlet Content="Login Page" />
+    <Columns>
+        <p>Save login data</p>
+        <Select Options="_saveOptions"
+                Value="SelectedSaveOption"
+                ValueChanged="OnSaveOptionChanged"
+                Expand="true" />
+        <p>Is save login data: @_selectedSaveOption</p>
+    </Columns>
 
-<Columns>
-    <p>Save login data</p>
-    <Select Options="_saveOptions"
-            Value="SelectedSaveOption"
-            ValueChanged="OnSaveOptionChanged"
-            Expand="true" />
-    <p>Is save login data: @_saveLoginData</p>
-</Columns>
+    <TextButton Content="Run login"
+                OnClick="RunLogin"
+                BackgroundColor="@Spectre.Console.Color.Grey"
+                FocusedColor="@Spectre.Console.Color.Blue" />
+}
 
-<TextButton Content="Run login"
-            OnClick="RunLogin"
-            BackgroundColor="@Spectre.Console.Color.Grey"
-            FocusedColor="@Spectre.Console.Color.Blue" />
 @code {
-    private string[] _saveOptions = ["Yes", "No"];
-    private string _selectedSaveOption { get; set; } = "No";
+    [Parameter] public string ChatUrl { get; set; } = string.Empty;
+    [Parameter] public bool IsActive { get; set; }
 
-    private bool _saveLoginData { get; set; }
+    private string[] _saveOptions = ["Yes", "No"];
+    private string _selectedSaveOption { get; set; } = "Yes";
+    private Guid _chatId;
+    private string _infoMessage = string.Empty;
+    private bool _isErrorMessage = false;
 
     private void OnSaveOptionChanged(string value)
     {
         _selectedSaveOption = value;
-        UserSettingsService.Settings.SaveLoginData = IsSaveLoginData(value);
-        UserSettingsService.Save();
+        StateHasChanged();
     }
 
-    private bool IsSaveLoginData(string userInput) => 
-        !string.IsNullOrEmpty(userInput) && userInput.Equals("Yes", StringComparison.OrdinalIgnoreCase);
+    private bool IsSaveLoginData() => 
+        !string.IsNullOrEmpty(_selectedSaveOption) && _selectedSaveOption.Equals("Yes", StringComparison.OrdinalIgnoreCase);
 
-    private async Task RunLogin() => await LoginTelegramService.Login();
+    private async Task RunLogin()
+    {
+        if (string.IsNullOrEmpty(ChatUrl))
+        {
+            _isErrorMessage = true;
+            _infoMessage = "Chat Id could not be null or empty";
+            StateHasChanged();
+            return;
+        }
+
+        _chatId = Guid.NewGuid();
+        string chatIdChromeProfile = _chatId.ToString().ToLower();
+        var loginResult = await LoginTelegramService.Login(chatIdChromeProfile);
+
+        if (loginResult)
+        {
+            var telegramChat = new TelegramChat
+            {
+                Id = _chatId,
+                Url = ChatUrl,
+                Active = IsActive,
+                SaveLoginData = IsSaveLoginData()
+            };
+
+            if (await ApplicationDbContext.TelegramChats.AnyAsync(c => c.Url == ChatUrl))
+            {
+                _isErrorMessage = true;
+                _infoMessage = "Telegram chat was already added";
+            }
+            else
+            {
+                ApplicationDbContext.TelegramChats.Add(telegramChat);
+                await ApplicationDbContext.SaveChangesAsync();
+
+                _isErrorMessage = false;
+                _infoMessage = "Telegram chat was added";
+            }
+        }
+        else
+        {
+            _isErrorMessage = true;
+            _infoMessage = "Telegram chat was not added. Try again";
+        }
+
+        StateHasChanged();
+    }
 }

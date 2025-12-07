@@ -17,6 +17,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(x => x.Id).ValueGeneratedOnAdd();
             entity.Property(x => x.Url).IsRequired().HasMaxLength(500);
             entity.Property(x => x.Active).IsRequired();
+            entity.Property(x => x.SaveLoginData).IsRequired();
         });
     }
 }

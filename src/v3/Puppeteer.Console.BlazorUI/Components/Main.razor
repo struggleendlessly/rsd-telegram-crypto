@@ -14,45 +14,38 @@
 {
     <p>Loading...</p>
 }
-else if (!_isLoggedIn)
+else if (_displayAddLinkComponent)
 {
-    <Login />
+    <Link />
+    <TextButton Content="Back"
+                OnClick="CloseAddLink"
+                BackgroundColor="@Color.Grey"
+                FocusedColor="@Color.Blue" />
+}
+else if (_displayEditActivity)
+{
+    <Link ChatId="@_editId" />
+    <TextButton Content="Back"
+                OnClick="CloseAddLink"
+                BackgroundColor="@Color.Grey"
+                FocusedColor="@Color.Blue" />
 }
 else
 {
-    if (_displayAddLinkComponent)
-    {
-        <Link />
-        <TextButton Content="Back"
-                    OnClick="CloseAddLink"
-                    BackgroundColor="@Color.Grey"
-        FocusedColor="@Color.Blue" />
-    }
-    else if (_displayEditActivity)
-    {
-        <Link ChatId="@_editId" />
-        <TextButton Content="Back"
-                    OnClick="CloseAddLink"
-                    BackgroundColor="@Color.Grey"
-                    FocusedColor="@Color.Blue" />
-    }
-    else
-    {
-        <Figlet Content="Main Activity" />
+    <Figlet Content="Main Activity" />
 
-        @RenderChatsTable()
+    @RenderChatsTable()
 
-        <Newline />
-        <TextButton Content="Add Link"
-                    OnClick="AddLink"
-                    BackgroundColor="@Color.Grey"
-                    FocusedColor="@Color.Blue" />
-        
-        <TextButton Content="Run Scraper"
-                    OnClick="RunScraper"
-                    BackgroundColor="@Color.Grey"
-                    FocusedColor="@Color.Blue" />
-    }
+    <Newline />
+    <TextButton Content="Add Link"
+                OnClick="AddLink"
+                BackgroundColor="@Color.Grey"
+                FocusedColor="@Color.Blue" />
+
+    <TextButton Content="Run Scraper"
+                OnClick="RunScraper"
+                BackgroundColor="@Color.Grey"
+                FocusedColor="@Color.Blue" />
 }
 
 @code {
@@ -67,10 +60,8 @@ else
     {
         if (firstRender)
         {
-            _isLoggedIn = await LoginTelegramService.IsLoggedIn();
             _initialized = true;
-            await LoadTelegramChats();
-            StateHasChanged();
+            await ReloadChats();
         }
     }
 
@@ -84,8 +75,7 @@ else
     {
         _displayAddLinkComponent = false;
         _displayEditActivity = false;
-        await LoadTelegramChats();
-        StateHasChanged();
+        await ReloadChats();
     }
 
     private async Task ReloadChats()

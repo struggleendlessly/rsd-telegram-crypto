@@ -91,9 +91,16 @@ else
         StateHasChanged();
     }
 
-    private async Task LoadTelegramChats()
+    private async Task Delete(Guid id)
     {
-        _chats = await ApplicationDbContext.TelegramChats.OrderBy(c => c.Url).ToListAsync();
+        var chat = _chats.FirstOrDefault(c => c.Id == id);
+
+        if (chat is null)
+            return;
+
+        ApplicationDbContext.TelegramChats.Remove(chat);
+        await ApplicationDbContext.SaveChangesAsync();
+        await ReloadChats();
     }
 
     private async Task RunScraper()
@@ -128,10 +135,17 @@ else
                         </td>
 
                         <td>
-                            <TextButton Content="Edit"
-                                        OnClick="@(() => Edit(chat.Id))"
-                                        BackgroundColor="@Color.Grey"
-                                        FocusedColor="@Color.Blue" />
+                            <Columns Expand="true">
+                                <TextButton Content="Edit"
+                                            OnClick="@(() => Edit(chat.Id))"
+                                            BackgroundColor="@Color.Grey"
+                                            FocusedColor="@Color.Blue" />
+
+                                <TextButton Content="Delete"
+                                            OnClick="@(() => Delete(chat.Id))"
+                                            BackgroundColor="@Color.Grey"
+                                            FocusedColor="@Color.Blue" />
+                            </Columns>
                         </td>
                     </tr>
                 }

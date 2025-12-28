@@ -73,6 +73,7 @@ else
 
     private async Task CloseAddLink()
     {
+        Console.Clear();
         _displayAddLinkComponent = false;
         _displayEditActivity = false;
         await ReloadChats();

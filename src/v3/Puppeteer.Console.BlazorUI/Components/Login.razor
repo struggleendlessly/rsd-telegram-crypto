@@ -54,6 +54,7 @@ else
     {
         if (string.IsNullOrEmpty(ChatUrl))
         {
+            Console.Clear();
             _isErrorMessage = true;
             _infoMessage = "Chat Id could not be null or empty";
             StateHasChanged();
@@ -61,6 +62,7 @@ else
         }
 
         _chatId = Guid.NewGuid();
+        string infoMessage = string.Empty;
         string chatIdChromeProfile = _chatId.ToString().ToLower();
         var loginResult = await LoginTelegramService.Login(chatIdChromeProfile);
 
@@ -77,7 +79,7 @@ else
             if (await ApplicationDbContext.TelegramChats.AnyAsync(c => c.Url == ChatUrl))
             {
                 _isErrorMessage = true;
-                _infoMessage = "Telegram chat was already added";
+                infoMessage = "Telegram chat was already added";
             }
             else
             {
@@ -85,15 +87,18 @@ else
                 await ApplicationDbContext.SaveChangesAsync();
 
                 _isErrorMessage = false;
-                _infoMessage = "Telegram chat was added";
+                infoMessage = "Telegram chat was added";
             }
         }
         else
         {
             _isErrorMessage = true;
-            _infoMessage = "Telegram chat was not added. Try again";
+            infoMessage = "Telegram chat was not added. Try again";
         }
 
+        Console.Clear();
+        _infoMessage = infoMessage;
+        
         StateHasChanged();
     }
 }

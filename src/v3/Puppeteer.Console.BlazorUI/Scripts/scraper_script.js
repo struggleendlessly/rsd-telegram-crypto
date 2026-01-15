@@ -208,17 +208,12 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTit
         redirect: "follow"
     };
 
-    console.log(requestOptions);
-
-    const apiUrl = "https://localhost:7111/data";
+    const apiUrl = "https://remsoftdev.dynamic-dns.net:82/data";
 
     fetch(apiUrl, requestOptions)
-        .then((response) => {
-            console.log('HTTP status:', response.status);
-            return response.text();
-        })
-        .then((result) => console.log('Server response:', result))
-        .catch((error) => console.error('Fetch error:', error));
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.error(error));
 }
 
 // Function to scan all existing messages

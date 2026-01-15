@@ -16,8 +16,8 @@ hostBuilder.ConfigureServices(services =>
 {
     services.AddScoped<ILoginTelegramService, LoginTelegramService>();
     services.AddScoped<IBrowserService, BrowserService>();
-    services.AddSingleton<ITelegramRunnerService, TelegramRunnerService>();
-    services.AddSingleton<IUserSettingsService, UserSettingsService>();
+    services.AddScoped<ITelegramRunnerService, TelegramRunnerService>();
+    services.AddScoped<IUserSettingsService, UserSettingsService>();
 
     services.Configure<ConsoleAppOptions>(options =>
     {
@@ -26,10 +26,12 @@ hostBuilder.ConfigureServices(services =>
 
     services.AddDbContext<ApplicationDbContext>(options =>
     {
-        string dbConnectionString =
-            "Data Source=localhost,5533;Initial Catalog=Puppeteer.Console.BlazorUI;User ID=sa;Password=YourStrong!Passw0rd;Encrypt=False;MultipleActiveResultSets=False;TrustServerCertificate=True;Connection Timeout=30;";
-        
-        options.UseSqlServer(dbConnectionString);
+        //string sqlServerConnectionString =
+        //    "Data Source=localhost,5533;Initial Catalog=Puppeteer.Console.BlazorUI;User ID=sa;Password=YourStrong!Passw0rd;Encrypt=False;MultipleActiveResultSets=False;TrustServerCertificate=True;Connection Timeout=30;";
+        //options.UseSqlServer(sqlServerConnectionString);
+
+        string sqliteConnectionString = $"Data Source={Path.Combine(AppContext.BaseDirectory, "Puppeteer.Console.BlazorUI.db")}";
+        options.UseSqlite(sqliteConnectionString);
     });
 });
 
@@ -39,8 +41,13 @@ await browserFetcher.DownloadAsync();
 IHost host = hostBuilder.Build();
 AppServices.Provider = host.Services;
 
-var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+using (var scope = host.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
+var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
 lifetime.ApplicationStopped.Register(() =>
 {
     var provider = AppServices.Provider;

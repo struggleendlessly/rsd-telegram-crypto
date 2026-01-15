@@ -209,6 +209,7 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTit
     };
 
     const apiUrl = "https://remsoftdev.dynamic-dns.net:82/data";
+    //const apiUrl = "https://localhost:7111/data";
 
     fetch(apiUrl, requestOptions)
         .then((response) => response.text())

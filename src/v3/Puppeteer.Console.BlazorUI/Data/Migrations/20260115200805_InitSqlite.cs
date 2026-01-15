@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Puppeteer.Console.BlazorUI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddTelegramChatsTable : Migration
+    public partial class InitSqlite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,9 +15,10 @@ namespace Puppeteer.Console.BlazorUI.Migrations
                 name: "TelegramChats",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Url = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Active = table.Column<bool>(type: "INTEGER", nullable: false),
+                    SaveLoginData = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

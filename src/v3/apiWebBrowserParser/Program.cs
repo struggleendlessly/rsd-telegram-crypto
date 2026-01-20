@@ -75,10 +75,15 @@ async (
         var ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
         if (string.IsNullOrWhiteSpace(ipAddress) || !allowedIPs.Contains(ipAddress))
+        {
             return Results.Unauthorized();
+        }
 
-        if (string.IsNullOrWhiteSpace(message.UserKey))
+        if (string.IsNullOrWhiteSpace(message.UserKey) ||
+            await db.ApplicationActivations.AnyAsync(a => a.UserKey == message.UserKey))
+        {
             return Results.Forbid();
+        }
 
         var entity = new messagesEntity
         {

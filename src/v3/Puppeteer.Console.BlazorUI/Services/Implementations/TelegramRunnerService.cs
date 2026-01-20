@@ -25,9 +25,14 @@ public class TelegramRunnerService(
         if (telegramChats.Count == 0)
             return;
 
+        var userSettings = await applicationDbContext.UserSettings.FirstOrDefaultAsync();
+
+        if (userSettings is null)
+            return;
+
         foreach (var telegramChat in telegramChats)
         {
-            var runningBrowser = await GetBrowserWithRunningScraperForChat(telegramChat.Id, telegramChat.Url);
+            var runningBrowser = await GetBrowserWithRunningScraperForChat(telegramChat.Id, telegramChat.Url, userSettings.UserKey);
 
             if (runningBrowser is null)
                 continue;
@@ -41,7 +46,7 @@ public class TelegramRunnerService(
         System.Console.ResetColor();
     }
 
-    private async Task<IBrowser?> GetBrowserWithRunningScraperForChat(Guid chatId, string chatUrl)
+    private async Task<IBrowser?> GetBrowserWithRunningScraperForChat(Guid chatId, string chatUrl, string userKey)
     {
         try
         {
@@ -56,6 +61,7 @@ public class TelegramRunnerService(
             var page = await browser.NewPageAsync();
             
             await page.GoToWithDelayAsync(chatUrl, UserSettingsConstants.GoToMilisecondsDelay);
+            await page.EvaluateExpressionAsync($@"window.USER_KEY = '{userKey}';");
             await page.AddScriptTagAsync(new AddTagOptions { Path = UserSettingsConstants.ScraperScriptPath });
             await page.AddScriptTagAsync(new AddTagOptions
             {

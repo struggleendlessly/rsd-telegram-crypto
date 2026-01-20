@@ -198,7 +198,8 @@ function sendPOSTRequest(valueName, numericValue, valueAddress, network, chatTit
         "Address": valueAddress,
         "Network": network,
         "ChatTitle": chatTitle,
-        "GmgnLink": gmgnValue
+        "GmgnLink": gmgnValue,
+        "UserKey": window.USER_KEY || ""
     });
 
     const requestOptions = {

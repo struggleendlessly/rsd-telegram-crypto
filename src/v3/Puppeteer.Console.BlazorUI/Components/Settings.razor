@@ -1,0 +1,130 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using Puppeteer.Console.BlazorUI.Data
+@using Puppeteer.Console.BlazorUI.Models
+@using RazorConsole.Components
+@using Spectre.Console
+
+@inject ApplicationDbContext ApplicationDbContext;
+
+<Panel Title="Add Chat Url" Border="BoxBorder.Rounded" Expand="true">
+		<Rows>
+			@if (!string.IsNullOrEmpty(_infoMessage))
+			{
+				<Markup Content="@_infoMessage" Foreground="@(_isErrorMessage? Color.Red: Color.Green)" Decoration="@Decoration.Bold" />
+			}
+
+			<TextInput Label="User Key"
+				       Value="@_userKey"
+					   ValueChanged="OnUserKeyChanged"
+					   FocusedBorderColor="@(_isUserKeyError ? Color.Red : Color.DeepSkyBlue1)"
+					   BorderColor="@(_isUserKeyError ? Color.Red3 : Color.Grey37)"
+					   BorderPadding="@_inputPadding"
+					   Expand="true" />
+
+			<p>Set Save Login Data</p>
+			<Select Options="_saveLoginDataOptions"
+					Value="_selectedSaveLoginDataOption"
+					ValueChanged="OnSaveLoginDataOptionChanged"
+					Expand="true" />
+
+			<p>Is save login data: @_selectedSaveLoginDataOption</p>
+			<Columns>
+				<TextButton Content="Save"
+							OnClick="HandleSaveLink"
+							BackgroundColor="@Color.Green"
+							FocusedColor="@Color.Lime" />
+			</Columns>
+		</Rows>
+</Panel>
+
+@code {
+	private static readonly Padding _inputPadding = new(1, 0, 1, 0);
+	private string _infoMessage = string.Empty;
+	private bool _isErrorMessage = false;
+	private bool _isUserKeyError = false;
+	private string[] _saveLoginDataOptions = ["Yes", "No"];
+	private string _selectedSaveLoginDataOption { get; set; } = "Yes";
+	private UserSettings? _userSettings;
+	private string _userKey = string.Empty;
+
+	protected async override Task OnInitializedAsync()
+	{
+		ResetComponentState();
+
+		_userSettings = await ApplicationDbContext.UserSettings.FirstOrDefaultAsync();
+
+		if (_userSettings is null)
+			return;
+
+		_userKey = _userSettings.UserKey;
+		_selectedSaveLoginDataOption = _userSettings.SaveLoginData ? "Yes" : "No";
+		StateHasChanged();
+	}
+
+	private void OnUserKeyChanged(string? value)
+	{
+		_userKey = value ?? string.Empty;
+		StateHasChanged();
+	}
+
+	private void OnSaveLoginDataOptionChanged(string value)
+	{
+		_selectedSaveLoginDataOption = value;
+		StateHasChanged();
+	}
+
+	private bool IsSaveLoginData() =>
+		!string.IsNullOrEmpty(_selectedSaveLoginDataOption) && _selectedSaveLoginDataOption.Equals("Yes", StringComparison.OrdinalIgnoreCase);
+
+	private async Task HandleSaveLink()
+	{
+		_isUserKeyError = false;
+		_isErrorMessage = false;
+		_infoMessage = string.Empty;
+
+		if (string.IsNullOrWhiteSpace(_userKey))
+		{
+			_isUserKeyError = true;
+			_isErrorMessage = true;
+			_infoMessage = "User key cannot be empty";
+			StateHasChanged();
+			return;
+		}
+
+		if (_userSettings is not null)
+		{
+			_userSettings.UserKey = _userKey;
+			_userSettings.SaveLoginData = IsSaveLoginData();
+			ApplicationDbContext.UserSettings.Update(_userSettings);
+			_infoMessage = "User settings was updated";
+			_isErrorMessage = false;
+
+			await ApplicationDbContext.SaveChangesAsync();
+		}
+		else
+		{
+			_userSettings = new()
+			{
+				UserKey = _userKey,
+				SaveLoginData = IsSaveLoginData()
+			};
+
+			ApplicationDbContext.UserSettings.Add(_userSettings);
+			_infoMessage = "User settings was created";
+			_isErrorMessage = false;
+
+			await ApplicationDbContext.SaveChangesAsync();
+		}
+
+		StateHasChanged();
+	}
+
+	private void ResetComponentState()
+	{
+		_userSettings = null;
+		_isUserKeyError = false;
+		_isErrorMessage = false;
+		_infoMessage = string.Empty;
+		_selectedSaveLoginDataOption = "Yes";
+	}
+}

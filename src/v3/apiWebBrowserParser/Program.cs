@@ -80,9 +80,9 @@ async (
         }
 
         if (string.IsNullOrWhiteSpace(message.UserKey) ||
-            await db.ApplicationActivations.AnyAsync(a => a.UserKey == message.UserKey))
+            !await db.ApplicationActivations.AnyAsync(a => a.UserKey == message.UserKey))
         {
-            return Results.Forbid();
+            return Results.Unauthorized();
         }
 
         var entity = new messagesEntity
@@ -146,7 +146,7 @@ app.MapPost("/activate", async (
 
         var applicationActivationEntity = new ApplicationActivation
         {
-            UserKey = Guid.NewGuid().ToString(),
+            UserKey = /*Guid.NewGuid().ToString()*/ "123",
             ActivatedAt = DateTime.UtcNow
         };
 

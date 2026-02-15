@@ -17,7 +17,6 @@ hostBuilder.ConfigureServices(services =>
     services.AddScoped<ILoginTelegramService, LoginTelegramService>();
     services.AddScoped<IBrowserService, BrowserService>();
     services.AddScoped<ITelegramRunnerService, TelegramRunnerService>();
-    services.AddScoped<IUserSettingsService, UserSettingsService>();
 
     services.Configure<ConsoleAppOptions>(options =>
     {
@@ -55,12 +54,17 @@ lifetime.ApplicationStopped.Register(() =>
     if (provider is null)
         return;
 
-    var userSettingsService = provider.GetService<IUserSettingsService>();
+    var applicationDbContext = provider.GetService<ApplicationDbContext>();
 
-    if (userSettingsService is null) 
+    if (applicationDbContext is null)
         return;
 
-    if (!userSettingsService.Settings.SaveLoginData)
+    var userSettings = applicationDbContext.UserSettings.FirstOrDefaultAsync().GetAwaiter().GetResult();
+
+    if (userSettings is null)
+        return;
+
+    if (!userSettings.SaveLoginData)
     {
         var browserService = provider.GetRequiredService<IBrowserService>();
         browserService.ClearBrowserDataAsync().GetAwaiter().GetResult();

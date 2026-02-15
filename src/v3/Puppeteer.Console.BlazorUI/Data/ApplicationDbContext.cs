@@ -7,6 +7,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public virtual DbSet<TelegramChat> TelegramChats { get; set; }
 
+    public virtual DbSet<UserSettings> UserSettings { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -17,6 +19,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(x => x.Id).ValueGeneratedOnAdd();
             entity.Property(x => x.Url).IsRequired().HasMaxLength(500);
             entity.Property(x => x.Active).IsRequired();
+            entity.Property(x => x.SaveLoginData).IsRequired();
+        });
+
+        modelBuilder.Entity<UserSettings>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).ValueGeneratedOnAdd();
             entity.Property(x => x.SaveLoginData).IsRequired();
         });
     }

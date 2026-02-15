@@ -30,6 +30,14 @@ else if (_displayEditActivity)
                 BackgroundColor="@Color.Grey"
                 FocusedColor="@Color.Blue" />
 }
+else if (_displaySettingsActivity)
+{
+    <Settings />
+    <TextButton Content="Back"
+                OnClick="CloseSettingsActivity"
+                BackgroundColor="@Color.Grey"
+                FocusedColor="@Color.Blue" />
+}
 else
 {
     <Figlet Content="Main Activity" />
@@ -39,6 +47,11 @@ else
     <Newline />
     <TextButton Content="Add Link"
                 OnClick="AddLink"
+                BackgroundColor="@Color.Grey"
+                FocusedColor="@Color.Blue" />
+
+    <TextButton Content="User Settings"
+                OnClick="DisplayUserSettings"
                 BackgroundColor="@Color.Grey"
                 FocusedColor="@Color.Blue" />
 
@@ -53,6 +66,7 @@ else
     private bool _initialized = false;
     private bool _displayAddLinkComponent = false;
     private bool _displayEditActivity = false;
+    private bool _displaySettingsActivity = false;
     private Guid _editId; 
     private List<TelegramChat> _chats = new();
 
@@ -63,6 +77,12 @@ else
             _initialized = true;
             await ReloadChats();
         }
+    }
+
+    private void DisplayUserSettings()
+    {
+        _displaySettingsActivity = true;
+        StateHasChanged();
     }
 
     private void AddLink()
@@ -76,6 +96,13 @@ else
         Console.Clear();
         _displayAddLinkComponent = false;
         _displayEditActivity = false;
+        await ReloadChats();
+    }
+
+    private async Task CloseSettingsActivity()
+    {
+        Console.Clear();
+        _displaySettingsActivity = false;
         await ReloadChats();
     }
 

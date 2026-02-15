@@ -74,7 +74,13 @@ async (
         var allowedIPs = IoptionsIPs.Value.ips;
         var ipAddress = context.Connection.RemoteIpAddress?.ToString();
 
-        if (!allowedIPs.Contains(ipAddress))
+        if (string.IsNullOrWhiteSpace(ipAddress) || !allowedIPs.Contains(ipAddress))
+        {
+            return Results.Unauthorized();
+        }
+
+        if (string.IsNullOrWhiteSpace(message.UserKey) ||
+            !await db.ApplicationActivations.AnyAsync(a => a.UserKey == message.UserKey))
         {
             return Results.Unauthorized();
         }
@@ -87,7 +93,8 @@ async (
             ChatTitle = message.ChatTitle,
             Network = message.Network,
             GmgnLink = message.GmgnLink,
-            isSent = false
+            isSent = false,
+            UserKey = message.UserKey,
         };
 
         if (entity.Address.StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
@@ -124,17 +131,54 @@ async (
     }
 });
 
+app.MapPost("/activate", async (
+    telegramMessagesDB db,
+    HttpContext context,
+    IOptions<optionsIPs> IoptionsIPs) =>
+{
+    try
+    {
+        var allowedIPs = IoptionsIPs.Value.ips;
+        var ipAddress = context.Connection.RemoteIpAddress?.ToString();
+
+        if (string.IsNullOrWhiteSpace(ipAddress) || !allowedIPs.Contains(ipAddress))
+            return Results.Unauthorized();
+
+        var applicationActivationEntity = new ApplicationActivation
+        {
+            UserKey = /*Guid.NewGuid().ToString()*/ "123",
+            ActivatedAt = DateTime.UtcNow
+        };
+
+        db.ApplicationActivations.Add(applicationActivationEntity);
+        await db.SaveChangesAsync();
+
+        return Results.Ok(applicationActivationEntity);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in /activate POST: {ex.Message}");
+        return Results.Problem("Internal Server Error: " + ex.Message);
+    }
+});
+
 app.Run();
 
 public class TelegramMessage
 {
     public string Name { get; set; } = string.Empty;
+    
     public double? MK { get; set; }
+    
     public string Address { get; set; } = string.Empty;
+    
     public string Network { get; set; } = string.Empty;
+    
     public string ChatTitle { get; set; } = string.Empty;
 
     public string GmgnLink { get; set; } = string.Empty;
+
+    public string UserKey { get; set; } = string.Empty;
 }
 
 public class TelegramApi

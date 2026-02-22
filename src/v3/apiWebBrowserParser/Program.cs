@@ -79,8 +79,11 @@ async (
             return Results.Unauthorized();
         }
 
-        if (string.IsNullOrWhiteSpace(message.UserKey) ||
-            !await db.ApplicationActivations.AnyAsync(a => a.UserKey == message.UserKey))
+        var applicationActivation = string.IsNullOrWhiteSpace(message.UserKey)
+            ? null
+            : await db.ApplicationActivations.FirstOrDefaultAsync(a => a.UserKey == message.UserKey);
+
+        if (applicationActivation is null)
         {
             return Results.Unauthorized();
         }
@@ -116,7 +119,7 @@ async (
         db.messagesEntities.Add(entity);
         await db.SaveChangesAsync();
 
-        var msg = await telegramApi.SendSequest(entity);
+        var msg = await telegramApi.SendSequest(applicationActivation.ChatId, entity);
 
         entity.isSent = true;
         await db.SaveChangesAsync();
@@ -132,6 +135,7 @@ async (
 });
 
 app.MapPost("/activate", async (
+    [FromBody] ActivationRequest activationRequest,
     telegramMessagesDB db,
     HttpContext context,
     IOptions<optionsIPs> IoptionsIPs) =>
@@ -146,8 +150,9 @@ app.MapPost("/activate", async (
 
         var applicationActivationEntity = new ApplicationActivation
         {
-            UserKey = /*Guid.NewGuid().ToString()*/ "123",
-            ActivatedAt = DateTime.UtcNow
+            UserKey = Guid.NewGuid().ToString(),
+            ActivatedAt = DateTime.UtcNow,
+            ChatId = activationRequest.ChatId
         };
 
         db.ApplicationActivations.Add(applicationActivationEntity);
@@ -163,6 +168,11 @@ app.MapPost("/activate", async (
 });
 
 app.Run();
+
+public class ActivationRequest
+{
+    public string ChatId { get; set; } = string.Empty;
+}
 
 public class TelegramMessage
 {
@@ -224,12 +234,10 @@ public class TelegramApi
         icons.Add("antenna", "%F0%9F%93%B6");
         icons.Add("SCROLL", "%F0%9F%93%9C");
     }
-    public async Task<long> SendSequest(
-
-    messagesEntity telegramMessage)
+    
+    public async Task<long> SendSequest(string userChatId, messagesEntity telegramMessage)
     {
         var res = 0L;
-
         var thread_id = telegramMessage switch
         {
             { MK: <= 100_000, isSolana: true } => optionsTelegram.message_thread_id_solana_less100k,
@@ -279,10 +287,17 @@ public class TelegramApi
                 $"{icons["chart"]} [dextools]({optionsTelegram.dextoolsUrl}app/en/base/pair-explorer/{telegramMessage.Address}) ";
         }
 
-        string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
+        //string urlString = $"bot{optionsTelegram.bot_hash[bot_hashIndex]}/" +
+        //    $"sendMessage?" +
+        //    $"message_thread_id={thread_id}&" +
+        //    $"chat_id={optionsTelegram.chat_id_coins}&" +
+        //    $"text={text}&" +
+        //    $"parse_mode=MarkDown&" +
+        //    $"disable_web_page_preview=true";
+
+        string urlString = $"bot{optionsTelegram.crypt_chat_bot_access_key}/" +
             $"sendMessage?" +
-            $"message_thread_id={thread_id}&" +
-            $"chat_id={optionsTelegram.chat_id_coins}&" +
+            $"chat_id={userChatId}&" +
             $"text={text}&" +
             $"parse_mode=MarkDown&" +
             $"disable_web_page_preview=true";

@@ -10,7 +10,8 @@
         public List<string> bot_hash { get; set; } = [];
         public string chat_id_coins { get; set; } = "";
 
-        
+        public string crypt_chat_bot_access_key { get; set; } = string.Empty;
+
         public string message_thread_id_eth_more1m_less10m { get; set; } = "";
         public string message_thread_id_solana_more1m_less10m { get; set; } = "";
         public string message_thread_id_base_more1m_less10m { get; set; } = "";

@@ -6,6 +6,8 @@ public class ApplicationActivation
 
     public string UserKey { get; set; } = string.Empty;
 
+    public string ChatId { get; set; } = string.Empty;
+
     public DateTime ActivatedAt { get; set; }
 
     public ICollection<messagesEntity> Messages { get; set; } = [];

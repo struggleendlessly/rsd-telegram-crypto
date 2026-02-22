@@ -2,6 +2,9 @@
 using Puppeteer.CryptoChat.Responses;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Puppeteer.CryptoChat.Requests;
+using Newtonsoft.Json;
+using System.Text;
 using Telegram.Bot.Types.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,7 +67,11 @@ async Task OnMenuSelection(
     {
         case "ACTIVATE":
             var client = httpFactory.CreateClient(ApplicationConstants.ApiIdentifier);
-            var response = await client.PostAsync("/activate", null);
+            
+            var activationRequest = new ActivationRequest { ChatId = msg.Chat.Id.ToString() };
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(activationRequest), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("/activate", jsonContent);
 
             if (!response.IsSuccessStatusCode)
             {
